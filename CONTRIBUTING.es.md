@@ -23,7 +23,7 @@ Abre un issue en <https://github.com/Ju4nMarin/WRAM/issues> con:
 - Una métrica nueva entra por el catálogo y un `IMetricProvider`, sin modificar los proveedores existentes.
 - Todo dato que llega de la interfaz o del archivo pasa por `ConfigCodec`.
 - Pruebas para la lógica nueva del núcleo.
-- Textos nuevos de la interfaz en los cinco idiomas (`I18N` en `settings.html`, `I18n.cpp` y `MetricCatalog.cpp`).
+- Textos nuevos de la interfaz en los seis idiomas (`I18N` en `settings.html`, `I18n.cpp` y `MetricCatalog.cpp`).
 - Si un sensor no existe en el equipo, la métrica muestra "sin sensor"; no se inventan valores.
 
 ## Licencia

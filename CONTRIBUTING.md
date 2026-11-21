@@ -25,7 +25,7 @@ Open an issue at <https://github.com/Ju4nMarin/WRAM/issues> with:
 - A new metric goes through the catalog and an `IMetricProvider`, without changing existing providers.
 - Everything that comes from the interface or the file goes through `ConfigCodec`.
 - Tests for new core logic.
-- New interface strings in all five languages (`I18N` in `settings.html`, `I18n.cpp` and `MetricCatalog.cpp`).
+- New interface strings in all six languages (`I18N` in `settings.html`, `I18n.cpp` and `MetricCatalog.cpp`).
 - If a sensor does not exist on the PC, the metric shows "no sensor"; values are never made up.
 
 ## License
