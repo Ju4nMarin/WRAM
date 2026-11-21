@@ -250,8 +250,8 @@ std::string App::BuildInitMessage() {
     out += config_.showLabels ? "true" : "false";
     out += ",\"autostart\":";
     out += config_.autostart ? "true" : "false";
-    out += ",\"hideFullscreen\":";
-    out += config_.hideOnFullscreen ? "true" : "false";
+    out += ",\"fullscreen\":" + std::to_string(config_.fullscreenMode);
+    out += ",\"overlayPos\":" + std::to_string(config_.overlayPosition);
     out += ",\"offset\":" + std::to_string(config_.offset);
     out += ",\"theme\":" + std::to_string(config_.theme);
     out += ",\"language\":" + std::to_string(config_.language);
@@ -324,7 +324,7 @@ void App::OnSettingsReset() {
 
 void App::OnSettingsClosed() {
     RefreshSamplerMask();
-    SetTimer(host_, kTimerTrim, 3000, nullptr);
+    SetTimer(host_, kTimerTrim, 5000, nullptr);  // tiempo para que terminen los procesos de WebView2
 }
 
 void App::OnBandActivate() {
@@ -369,6 +369,7 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             if (wp == kTimerSample) Tick();
             else if (wp == kTimerTrim) {
                 KillTimer(hwnd, kTimerTrim);
+                if (!settings_.IsOpen()) SettingsWindow::PurgeUserData();
                 TrimWorkingSet();
             }
             return 0;

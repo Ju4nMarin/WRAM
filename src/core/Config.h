@@ -9,6 +9,9 @@
 
 namespace wram {
 
+// Qué hace la franja cuando una ventana ocupa toda la pantalla.
+enum class FullscreenMode : int { Hide = 0, Move = 1, Keep = 2 };
+
 struct SlotConfig {
     MetricId id = MetricId::CpuLoad;
     std::wstring label;      // vacío = etiqueta por defecto del catálogo
@@ -34,7 +37,8 @@ struct Config {
     uint32_t alertColor = 0xFF5A4E;
     bool showLabels = true;
     bool autostart = false;
-    bool hideOnFullscreen = true;
+    int fullscreenMode = 0;            // FullscreenMode
+    int overlayPosition = 2;           // 0..7, ver TaskbarBand: por defecto arriba a la derecha
     int offset = 8;                    // DIP entre la franja y la bandeja
     int theme = 0;                     // ventana de configuración: 0 sistema, 1 claro, 2 oscuro
     int language = 0;                  // ver I18n.h: 0 sistema, 1 es, 2 en, 3 pt, 4 fr, 5 zh
