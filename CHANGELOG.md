@@ -2,6 +2,13 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.1.2
+
+### Fixed
+
+- "Distance from the tray" applies instantly while dragging, and the px value shown is the distance actually used.
+- The taskbar preview shows the distance at 1:1 scale from the tray, with the sample app icons where the real ones end, and never places the strip over them.
+
 ## 1.1.1
 
 ### Changed
