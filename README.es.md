@@ -30,7 +30,7 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 
 - 14 métricas disponibles, hasta 10 a la vez, en una o dos filas.
 - Umbral de aviso por métrica: el valor cambia de color al cruzarlo.
-- Se oculta en el acto con juegos, videos o presentaciones en pantalla completa y vuelve al salir.
+- En pantalla completa se oculta, flota en el recuadro de pantalla que elijas o se queda en su sitio, y reacciona en el acto al entrar y al salir.
 - Interfaz en español, inglés, portugués, francés y chino simplificado.
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
 - En reposo usa cerca de 9 MB de memoria y 0,2 % de un núcleo de CPU.
@@ -39,9 +39,9 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 
 ![Métricas en tema claro](docs/img/metricas-claro.png)
 
-| Configuración | Acerca de |
+| Pantalla completa | Configuración |
 |---|---|
-| ![Configuración](docs/img/configuracion-claro.png) | ![Acerca de](docs/img/acerca-claro.png) |
+| ![Pantalla completa](docs/img/pantalla-completa-oscuro.png) | ![Configuración](docs/img/configuracion-claro.png) |
 
 ## Métricas
 

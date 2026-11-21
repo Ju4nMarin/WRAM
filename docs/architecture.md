@@ -67,9 +67,9 @@ The timer is coalescable (`SetCoalescableTimer`), so Windows can batch wake-ups.
 - The background has alpha 1/255: invisible, but it still receives clicks.
 - It reserves the width of the widest value of each unit so the strip does not resize on every reading.
 - It is positioned with `Shell_TrayWnd` and `TrayNotifyWnd`, and follows the scale of the taskbar display (per-monitor DPI v2).
-- Full-screen hiding is event driven, without waiting for the timer:
+- Full-screen handling (hide, move to one of 8 screen spots on a translucent backdrop, or keep) is event driven, without waiting for the timer:
   - `EVENT_SYSTEM_FOREGROUND`: the active window changes.
-  - `EVENT_OBJECT_LOCATIONCHANGE` on the active window: F11 or a video going full screen without a focus change.
+  - `EVENT_OBJECT_LOCATIONCHANGE` limited to the thread of the active window and re-registered on every focus change: F11 or a video going full screen without a focus change.
   - The active window covers the taskbar monitor and is not a regular maximized window with a title bar. `SHQueryUserNotificationState` covers exclusive Direct3D games and presentations.
   - Measured: it hides in about 35 ms and comes back in about 30 ms.
 

@@ -13,7 +13,7 @@ The strip sits to the left of the system tray, on the main taskbar.
 
 Values are white or black to match the taskbar theme, and use the decimal separator of your regional settings. A metric without a sensor on the PC shows a dash.
 
-The preview at the top of the settings window reproduces the taskbar with the Windows taskbar theme, which can be different from the theme chosen for the window. The note below the preview says which one is in use.
+The preview at the top of the settings window reproduces the taskbar with the Windows taskbar theme, which can be different from the theme chosen for the window. The note below the preview says which one is in use. The Windows / Light / Dark selector next to the preview shows the strip on a light or dark taskbar for comparison; it does not change any setting.
 
 ## Settings window
 
@@ -41,6 +41,20 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 | Alert color | Red, yellow, magenta, blue or a custom color |
 | Distance from the tray | 0 to 600 px |
 
+### Full screen
+
+![Full screen](img/fullscreen-dark.png)
+
+What the strip does when a game, video or presentation takes the whole screen. It reacts instantly when entering and leaving full screen, including F11 in browsers.
+
+| Behavior | Result |
+|---|---|
+| Hide | The strip disappears and comes back when full screen ends |
+| Move | The strip floats in the chosen spot of the screen on a dark translucent backdrop |
+| Keep | The strip stays in its taskbar spot, on top of the image |
+
+With Move, the screen diagram has 8 spots (corners, edge centers and side centers); click one to choose it. Games in exclusive full screen do not allow other windows on top, so there the strip is always hidden.
+
 ### Settings
 
 ![Settings](img/settings-light.png)
@@ -50,7 +64,6 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 | Language | System, Spanish, English, Portuguese, French or Simplified Chinese. Changes the window, the menu and the default labels |
 | App theme | System, light or dark. Affects this window only; the strip and the preview follow the Windows taskbar theme |
 | Start with Windows | Entry in `HKCU\...\Run`, no administrator rights |
-| Hide in full screen | Hides the strip instantly with games, videos, presentations or F11 |
 | Refresh rate | 0.5, 1, 2 or 5 seconds |
 | Settings file | Path of `config.ini` and a button to open its folder |
 | Reset | Goes back to the six default metrics, after confirmation |
@@ -73,7 +86,8 @@ valueColor=auto
 alertColor=#ff5a4e
 labels=1
 autostart=0
-hideFullscreen=1
+fullscreen=0
+overlayPos=2
 offset=8
 theme=0
 lang=0
@@ -87,7 +101,7 @@ lang=0
 6=netup||0|0
 ```
 
-`theme`: 0 system, 1 light, 2 dark. `lang`: 0 system, 1 Spanish, 2 English, 3 Portuguese, 4 French, 5 Simplified Chinese.
+`theme`: 0 system, 1 light, 2 dark. `lang`: 0 system, 1 Spanish, 2 English, 3 Portuguese, 4 French, 5 Simplified Chinese. `fullscreen`: 0 hide, 1 move, 2 keep. `overlayPos`: 0 top left, 1 top center, 2 top right, 3 middle left, 4 middle right, 5 bottom left, 6 bottom center, 7 bottom right.
 
 Each position uses the format `key|label|threshold|alert`.
 
