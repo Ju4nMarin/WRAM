@@ -67,7 +67,7 @@ El temporizador es coalescente (`SetCoalescableTimer`), así Windows puede agrup
 - El fondo tiene alfa 1/255: es invisible pero recibe clics.
 - Reserva el ancho del valor más largo de cada unidad para que la franja no cambie de tamaño con cada lectura.
 - Se ubica con `Shell_TrayWnd` y `TrayNotifyWnd`, y sigue la escala de la pantalla de la barra (DPI por monitor v2).
-- Pantalla completa (ocultar, mover a uno de 8 recuadros sobre un fondo translúcido o dejar igual) por eventos, sin esperar al temporizador:
+- Pantalla completa (oculta, o visible en uno de 8 recuadros sobre un fondo translúcido) por eventos, sin esperar al temporizador:
   - `EVENT_SYSTEM_FOREGROUND`: cambio de ventana activa.
   - `EVENT_OBJECT_LOCATIONCHANGE` limitado al hilo de la ventana activa y registrado de nuevo en cada cambio de foco: F11 o un video que pasa a pantalla completa sin cambiar el foco.
   - Una ventana activa cubre el monitor de la barra y no es una ventana maximizada con título. Se suma `SHQueryUserNotificationState` para juegos Direct3D exclusivos y presentaciones.
