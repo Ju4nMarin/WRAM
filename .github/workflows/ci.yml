@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "feature/**", "release/**", "hotfix/**"]
+    tags: ["v*"]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  build:
+    name: Compilación y pruebas
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar y ejecutar pruebas
+        shell: cmd
+        run: build.cmd
+
+      - name: Reporte de pruebas
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: build/junit-core.xml
+          check_name: Pruebas del núcleo
+
+      - name: Hash del ejecutable
+        shell: pwsh
+        run: |
+          $h = Get-FileHash build/WRAM.exe -Algorithm SHA256
+          "$($h.Hash)  WRAM.exe" | Out-File build/WRAM.exe.sha256 -Encoding ascii
+          Get-Content build/WRAM.exe.sha256
+          "Tamaño: $((Get-Item build/WRAM.exe).Length) bytes"
+
+      - name: Artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WRAM-${{ github.sha }}
+          path: |
+            build/WRAM.exe
+            build/WRAM.exe.sha256
+            build/junit-core.xml
