@@ -34,6 +34,18 @@
 
 La heap del proceso termina ante corrupción (`HeapEnableTerminationOnCorruption`) y una sola instancia corre por sesión.
 
+## Dependencias y cadena de suministro
+
+| Dependencia | Versión | Cómo se fija |
+|---|---|---|
+| SDK Microsoft.Web.WebView2 | 1.0.4370.26 | CMake lo descarga de NuGet y verifica su SHA-256 |
+| actions/checkout | v7.0.1 | SHA completo del commit, sin credenciales persistidas |
+| actions/upload-artifact | v7.0.2 | SHA completo del commit |
+| actions/attest-build-provenance | v4.2.2 | SHA completo del commit |
+| mikepenz/action-junit-report | v6.7.1 | SHA completo del commit |
+
+Fijar las acciones por SHA de commit impide que una etiqueta movida o comprometida cambie lo que ejecuta el workflow. Dependabot (`.github/dependabot.yml`) revisa las acciones cada semana y abre un pull request hacia `develop` cuando hay una versión nueva. El token del workflow es de solo lectura, salvo en el trabajo de publicación, que recibe solo los permisos para publicar y atestar.
+
 ## Integridad del ejecutable
 
 Las versiones las compila el workflow de CI a partir del commit etiquetado, no una máquina de desarrollo. Cada versión incluye:

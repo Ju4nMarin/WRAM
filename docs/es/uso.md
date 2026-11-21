@@ -100,6 +100,8 @@ lang=0
 6=netup||0|0
 ```
 
+La franja nunca se monta sobre los íconos de las apps: la distancia máxima llega hasta donde termina el último ícono.
+
 `theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado, 6 japonés. `fullscreen`: 0 oculto, 1 visible. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
 
 Cada posición sigue el formato `clave|etiqueta|umbral|aviso`.

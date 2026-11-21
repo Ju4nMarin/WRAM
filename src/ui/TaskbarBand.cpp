@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include <shellapi.h>
+#include <UIAutomation.h>
 
 #include "../core/Format.h"
 #include "../core/MetricCatalog.h"
@@ -343,6 +344,8 @@ void TaskbarBand::Reposition() {
         const int offset = static_cast<int>(config_.offset * scale_);
         if (horizontal) {
             rc.left = std::max(g.bar.left, g.tray.left - offset - bandW_);
+            // Nunca encima de los íconos de las aplicaciones, aunque la distancia a la bandeja sea grande.
+            if (appsRight_ != kNoAppsEdge) rc.left = std::max<LONG>(rc.left, appsRight_ + static_cast<LONG>(8 * scale_));
             rc.top = g.bar.top;
         } else {
             rc.left = g.bar.left;
@@ -364,6 +367,49 @@ void TaskbarBand::Reposition() {
 void TaskbarBand::RaiseAboveTaskbar() {
     if (visible_) {
         SetWindowPos(hwnd_, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+    }
+}
+
+void TaskbarBand::RefreshTaskbarApps() {
+    // UI Automation entrega los botones de la barra (inicio, búsqueda y apps). Se toma el borde derecho del
+    // último botón que queda a la izquierda de la bandeja. Es una consulta entre procesos: se hace pocas veces.
+    lastAppsScan_ = GetTickCount64();
+    const TaskbarGeometry g = ReadTaskbar();
+    HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
+    LONG right = kNoAppsEdge;
+    if (bar && g.visible) {
+        if (!uia_) CoCreateInstance(__uuidof(CUIAutomation), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uia_.put()));
+        ComPtr<IUIAutomationElement> root;
+        ComPtr<IUIAutomationCondition> isButton;
+        ComPtr<IUIAutomationElementArray> buttons;
+        VARIANT type{};
+        type.vt = VT_I4;
+        type.lVal = UIA_ButtonControlTypeId;
+        if (uia_ && SUCCEEDED(uia_->ElementFromHandle(bar, root.put())) && root &&
+            SUCCEEDED(uia_->CreatePropertyCondition(UIA_ControlTypePropertyId, type, isButton.put())) &&
+            SUCCEEDED(root->FindAll(TreeScope_Descendants, isButton.get(), buttons.put())) && buttons) {
+            int count = 0;
+            buttons->get_Length(&count);
+            for (int i = 0; i < count; ++i) {
+                ComPtr<IUIAutomationElement> button;
+                RECT r{};
+                if (FAILED(buttons->GetElement(i, button.put())) || !button ||
+                    FAILED(button->get_CurrentBoundingRectangle(&r))) {
+                    continue;
+                }
+                if (r.right > r.left && r.right <= g.tray.left && r.top < g.bar.bottom && r.bottom > g.bar.top) {
+                    right = std::max(right, r.right);
+                }
+            }
+        }
+    }
+    const int extraBand = static_cast<int>(8 * scale_);
+    maxOffsetDip_ = (right == kNoAppsEdge || scale_ <= 0)
+                        ? Config::kMaxOffset
+                        : std::max(0, static_cast<int>((g.tray.left - right - extraBand - bandW_) / scale_));
+    if (right != appsRight_) {
+        appsRight_ = right;
+        Reposition();
     }
 }
 
@@ -452,6 +498,8 @@ void CALLBACK TaskbarBand::OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LON
     if (event == EVENT_SYSTEM_FOREGROUND) {
         // Al hacer clic en la barra, Windows la sube en el orden Z; la franja vuelve encima.
         g_band->WatchForeground(hwnd);
+        // Abrir o cerrar programas cambia los íconos de la barra; se vuelve a medir como mucho cada 2 s.
+        if (GetTickCount64() - g_band->lastAppsScan_ > 2000) g_band->RefreshTaskbarApps();
         g_band->Reposition();
     } else if (idObject == OBJID_WINDOW && idChild == CHILDID_SELF && hwnd == GetForegroundWindow()) {
         g_band->OnLocationChanged();

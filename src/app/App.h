@@ -51,6 +51,7 @@ private:
     HWND host_ = nullptr;
     HICON icon_ = nullptr;
     UINT taskbarCreatedMsg_ = 0;
+    ULONGLONG lastAppsScan_ = 0;
     ConfigStore store_;
     Config config_;
     Sampler sampler_;
