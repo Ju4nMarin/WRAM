@@ -2,6 +2,19 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.2.0
+
+### Added
+
+- Taskbar on the left or right: metrics stacked one below the other, as wide as the taskbar, above the tray.
+- Small taskbar size: the text shrinks just enough to fit.
+- Automatically hidden taskbar: the strip comes back as soon as the taskbar slides in.
+- Taskbar compatibility table in the usage guide.
+
+### Fixed
+
+- The taskbar preview shrinks proportionally in a narrow window instead of cutting off its content.
+
 ## 1.1.2
 
 ### Fixed
