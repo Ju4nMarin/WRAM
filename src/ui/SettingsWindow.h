@@ -34,6 +34,7 @@ public:
     void Show(HINSTANCE instance);
     bool IsOpen() const { return hwnd_ != nullptr; }
     void SetDarkTheme(bool dark);
+    static void PurgeUserData();
     void Post(const std::string& json);
     void Close();
 
