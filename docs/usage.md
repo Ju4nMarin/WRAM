@@ -71,6 +71,20 @@ With Visible, the screen diagram has 8 spots (corners, edge centers and side cen
 
 Version, author, license, link to the source code, compatibility and where each value comes from.
 
+## Taskbar settings
+
+How the strip behaves with each option in Windows Settings, Personalization, Taskbar, Taskbar behaviors.
+
+| Windows option | Strip |
+|---|---|
+| Taskbar position: Bottom or Top | Next to the system tray, on the same row |
+| Taskbar position: Left or Right | One metric below the other, label above value, as wide as the taskbar and above the tray. The text shrinks if it does not fit |
+| Taskbar icon alignment: Center or Left | Never covers the app icons; the maximum distance from the tray follows where they end |
+| Taskbar size: small | The text shrinks just enough to fit the thinner taskbar (down to 60%) |
+| Automatically hide the taskbar | Hides with the taskbar and comes back as it slides in |
+| Show my taskbar on all displays | The strip shows on the main taskbar only |
+| Badges, flashing, share window, show desktop corner, combine buttons, smaller app icons | No effect on the strip; app icon changes are picked up within seconds |
+
 ## Settings file
 
 `%APPDATA%\WRAM\config.ini`, UTF-8. It can be edited by hand while WRAM is closed; invalid entries are ignored and values are clamped to their allowed ranges.

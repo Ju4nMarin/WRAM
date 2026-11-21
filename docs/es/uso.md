@@ -71,6 +71,20 @@ Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los b
 
 Versión, autor, licencia, enlace al código fuente, compatibilidad y el origen de cada dato.
 
+## Opciones de la barra de tareas
+
+Cómo se comporta la franja con cada opción de Configuración de Windows, Personalización, Barra de tareas, Comportamientos de la barra de tareas.
+
+| Opción de Windows | Franja |
+|---|---|
+| Posición de la barra: abajo o arriba | Junto a la bandeja, en la misma fila |
+| Posición de la barra: izquierda o derecha | Una métrica debajo de otra, etiqueta arriba y valor abajo, del ancho de la barra y encima de la bandeja. El texto se reduce si no cabe |
+| Alineación de los íconos: centro o izquierda | Nunca tapa los íconos de las apps; la distancia máxima a la bandeja llega hasta donde terminan |
+| Tamaño de la barra: pequeño | El texto se reduce lo justo para caber en la barra más delgada (hasta 60 %) |
+| Ocultar automáticamente la barra de tareas | Se oculta con la barra y vuelve en cuanto la barra aparece |
+| Mostrar la barra de tareas en todas las pantallas | La franja se muestra solo en la barra principal |
+| Distintivos, parpadeo, compartir ventana, esquina para mostrar el escritorio, combinar botones, íconos más pequeños | Sin efecto sobre la franja; los cambios en los íconos de las apps se detectan en segundos |
+
 ## Archivo de configuración
 
 `%APPDATA%\WRAM\config.ini`, en UTF-8. Se puede editar a mano con WRAM cerrado; lo que no es válido se ignora y se ajusta a los rangos permitidos.
