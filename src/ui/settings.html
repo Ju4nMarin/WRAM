@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WRAM</title>
+<style>
+:root {
+  --f-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --f-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --logo-h: url("__LOGO_HORIZONTAL__");
+  --logo-m: url("__LOGO_MARK__");
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #202020;
+  --card: #2b2b2b;
+  --card-2: #323232;
+  --subtle: rgba(255, 255, 255, 0.06);
+  --subtle-2: rgba(255, 255, 255, 0.09);
+  --line: rgba(255, 255, 255, 0.08);
+  --stroke: rgba(255, 255, 255, 0.16);
+  --field: #1f1f1f;
+  --text: #ffffff;
+  --text-2: #d1d1d1;
+  --text-3: #a3a3a3;
+  --accent: #60cdff;
+  --accent-hover: #5ab9e6;
+  --accent-ink: #000000;
+  --accent-text: #99ebff;
+  --accent-soft: rgba(96, 205, 255, 0.12);
+  --danger: #ff99a4;
+  --danger-fill: #c42b1c;
+  --danger-soft: rgba(255, 153, 164, 0.12);
+  --knob: #d1d1d1;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f3f3;
+  --card: #ffffff;
+  --card-2: #f9f9f9;
+  --subtle: rgba(0, 0, 0, 0.04);
+  --subtle-2: rgba(0, 0, 0, 0.06);
+  --line: rgba(0, 0, 0, 0.07);
+  --stroke: rgba(0, 0, 0, 0.16);
+  --field: #ffffff;
+  --text: #1a1a1a;
+  --text-2: #3d3d3d;
+  --text-3: #616161;
+  --accent: #005fb8;
+  --accent-hover: #1a6fc0;
+  --accent-ink: #ffffff;
+  --accent-text: #005fb8;
+  --accent-soft: rgba(0, 95, 184, 0.09);
+  --danger: #c42b1c;
+  --danger-fill: #c42b1c;
+  --danger-soft: rgba(196, 43, 28, 0.08);
+  --knob: #616161;
+}
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--f-ui);
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  overflow: hidden;
+  user-select: none;
+}
+::selection { background: var(--accent); color: var(--accent-ink); }
+input, select, button { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; border-radius: var(--r-sm); }
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-thumb { background: var(--stroke); border-radius: 6px; border: 4px solid var(--bg); }
+::-webkit-scrollbar-track { background: transparent; }
+svg.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Logo recoloreable: la imagen es una máscara y el color sale del tema. */
+.logo { display: block; background: var(--text); -webkit-mask: var(--logo-h) center / contain no-repeat; mask: var(--logo-h) center / contain no-repeat; }
+.logo.mark { -webkit-mask-image: var(--logo-m); mask-image: var(--logo-m); }
+
+/* Navegación */
+.rail { display: flex; flex-direction: column; padding: var(--s-5) var(--s-2) var(--s-4); gap: 2px; }
+.brand { padding: var(--s-1) var(--s-3) var(--s-5); }
+.brand .logo { width: 118px; height: 23px; }
+.brand .logo.mark { display: none; }
+.nav-btn {
+  position: relative;
+  display: flex; align-items: center; gap: var(--s-3);
+  height: 36px; padding: 0 var(--s-3);
+  border: 0; border-radius: var(--r-md);
+  background: transparent; color: var(--text);
+  text-align: left;
+  transition: background-color 120ms var(--ease);
+}
+.nav-btn:hover { background: var(--subtle); }
+.nav-btn:active { background: var(--subtle-2); }
+.nav-btn[aria-current="page"] { background: var(--subtle-2); }
+.nav-btn[aria-current="page"]::before {
+  content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 16px; margin-top: -8px;
+  border-radius: 2px; background: var(--accent);
+}
+.rail-foot { margin-top: auto; padding: 0 var(--s-3); color: var(--text-3); font-size: 12px; }
+
+/* Área principal */
+main { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+.stage { padding: var(--s-5) var(--s-6) var(--s-4); }
+.stage-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--s-2); gap: var(--s-4); }
+.stage-title { font-size: 13px; color: var(--text-2); }
+.stage-head small { color: var(--text-3); font-size: 12px; }
+.stage-note { display: flex; align-items: center; gap: 6px; margin-top: var(--s-2); color: var(--text-3); font-size: 12px; }
+.stage-note svg { width: 14px; height: 14px; flex: none; }
+.scroll { overflow-y: auto; flex: 1; padding: var(--s-4) var(--s-6) var(--s-7); }
+h1 { font: 600 28px/1.2 var(--f-display); }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: var(--s-4); margin-bottom: var(--s-4); flex-wrap: wrap; }
+.sec-head p { color: var(--text-2); margin-top: var(--s-1); max-width: 62ch; }
+.sub { font: 600 16px/1.3 var(--f-display); margin: var(--s-6) 0 var(--s-1); }
+.sub-note { color: var(--text-2); margin-bottom: var(--s-3); max-width: 62ch; }
+
+/* Vista previa: barra de tareas simulada */
+.taskbar {
+  height: 48px;
+  border-radius: var(--r-lg);
+  display: flex; align-items: stretch; justify-content: flex-end;
+  padding-right: var(--s-2);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--line);
+  background: #1c1c1c; color: #ffffff;
+}
+.taskbar.light { background: #eeeeee; color: #1a1a1a; }
+.tb-apps { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; }
+.tb-apps i { width: 26px; height: 26px; border-radius: 6px; background: currentColor; opacity: 0.09; }
+.tb-apps i:first-child { opacity: 0.16; }
+.band { display: grid; grid-auto-flow: column; align-content: center; column-gap: 14px; padding: 0 6px; position: relative; z-index: 1; }
+.band-cell { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; white-space: nowrap; line-height: 1.2; }
+.band-cell .bl { opacity: 0.64; }
+.band-cell .bv { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.band-empty { align-self: center; font-size: 12px; opacity: 0.6; padding: 0 var(--s-3); }
+.tray { display: flex; align-items: center; gap: var(--s-3); padding-left: var(--s-3); z-index: 1; }
+.tray svg { width: 16px; height: 16px; }
+.clock { text-align: right; font: 12px/1.35 var(--f-ui); }
+
+/* Capacidad */
+.capacity { display: flex; align-items: center; gap: var(--s-3); color: var(--text-2); font-size: 13px; }
+.cap-cells { display: flex; gap: 3px; }
+.cap-cells i { width: 8px; height: 16px; border-radius: 2px; background: var(--subtle-2); }
+.cap-cells i.on { background: var(--accent); }
+.capacity b { font: 600 16px/1 var(--f-display); color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Lista de posiciones */
+.board { list-style: none; padding: 0; display: grid; gap: var(--s-2); container-type: inline-size; }
+.slot {
+  display: grid;
+  grid-template-columns: 44px minmax(110px, 1fr) 84px 104px 184px 100px;
+  grid-template-areas: "pos name label value alert actions";
+  align-items: center;
+  column-gap: var(--s-3);
+  padding: 10px var(--s-3) 10px var(--s-2);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  transition: background-color 120ms var(--ease);
+}
+.slot:hover { background: var(--card-2); }
+.slot.drop-before { box-shadow: inset 0 2px 0 var(--accent); }
+.slot.drop-after { box-shadow: inset 0 -2px 0 var(--accent); }
+.slot.dragging { opacity: 0.5; }
+.pos { grid-area: pos; display: flex; align-items: center; gap: 2px; color: var(--text-3); cursor: grab; border-radius: var(--r-sm); padding: 4px 2px; }
+.pos:active { cursor: grabbing; }
+.pos svg { width: 14px; height: 14px; opacity: 0.7; }
+.pos b { font: 600 15px/1 var(--f-display); font-variant-numeric: tabular-nums; color: var(--text-2); }
+.slot-name { grid-area: name; min-width: 0; }
+.slot-name strong { font-weight: 600; display: block; }
+.slot-name small { color: var(--text-3); font-size: 12px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: var(--r-sm); background: var(--subtle-2); color: var(--text-2); font-size: 11px; font-weight: 400; vertical-align: 1px; }
+.slot-label { grid-area: label; }
+.slot-value { grid-area: value; }
+.slot-alert { grid-area: alert; display: flex; align-items: center; gap: var(--s-2); }
+.slot-actions { grid-area: actions; display: flex; justify-content: flex-end; gap: 2px; }
+.muted { color: var(--text-3); font-size: 12px; }
+.slot.free { grid-template-areas: "pos name name value alert actions"; padding-top: 6px; padding-bottom: 6px; background: transparent; border-style: dashed; border-color: var(--stroke); }
+.slot.free .pos { cursor: default; }
+.slot.free .pos b { color: var(--text-3); font-weight: 400; }
+.link-btn { border: 0; background: none; padding: 0; color: var(--accent-text); }
+.link-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+@container (max-width: 720px) {
+  .slot {
+    grid-template-columns: 44px minmax(0, 1fr) 104px 100px;
+    grid-template-areas:
+      "pos name value actions"
+      ". label alert alert";
+    row-gap: var(--s-2);
+    padding-top: 8px; padding-bottom: 8px;
+  }
+  .slot.free { grid-template-areas: "pos name name actions"; }
+  .slot-label { justify-self: start; }
+}
+
+/* Valor en vivo */
+.val {
+  display: block;
+  padding: 4px 10px;
+  border-radius: var(--r-md);
+  background: var(--subtle);
+  font: 600 15px/1.35 var(--f-display);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.val.alert { color: var(--danger); background: var(--danger-soft); }
+.val.none { color: var(--text-3); font: 400 12px/1.8 var(--f-ui); }
+
+/* Controles */
+.field {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  border-bottom-color: var(--stroke);
+  background: var(--field);
+  outline: none;
+  transition: background-color 120ms var(--ease);
+  user-select: text;
+}
+.field:hover { background: var(--card-2); }
+.field:focus { border-bottom: 2px solid var(--accent); padding-bottom: 0; }
+.field::placeholder { color: var(--text-3); }
+.field.label-in { width: 84px; letter-spacing: 0.02em; text-transform: uppercase; }
+.field.n { width: 60px; text-align: right; font-variant-numeric: tabular-nums; }
+.field:disabled { opacity: 0.45; }
+select.field { padding-right: 30px; appearance: none; min-width: 220px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 12px; }
+select.field option { background: var(--card); color: var(--text); }
+
+.icon-btn {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--text-2);
+  transition: background-color 120ms var(--ease);
+}
+.icon-btn:hover { background: var(--subtle); color: var(--text); }
+.icon-btn:active { background: var(--subtle-2); }
+.icon-btn:disabled { opacity: 0.3; cursor: default; background: transparent; }
+.icon-btn.danger:hover { color: var(--danger); background: var(--danger-soft); }
+
+.btn {
+  height: 32px; padding: 0 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  border-bottom-color: var(--stroke);
+  background: var(--card-2);
+  color: var(--text);
+  white-space: nowrap;
+  transition: background-color 120ms var(--ease);
+}
+.btn svg { width: 14px; height: 14px; }
+.btn:hover { background: var(--subtle-2); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn.danger { background: var(--danger-fill); border-color: var(--danger-fill); color: #ffffff; }
+.btn.danger:hover { filter: brightness(1.08); }
+
+.toggle { position: relative; display: inline-flex; flex: none; width: 40px; height: 20px; }
+.toggle input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.toggle span {
+  width: 100%; height: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--text-3);
+  background: transparent;
+  transition: background-color 120ms var(--ease), border-color 120ms var(--ease);
+  pointer-events: none;
+}
+.toggle span::after {
+  content: ""; position: absolute; top: 5px; left: 5px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--knob);
+  transition: transform 180ms var(--ease), background-color 120ms var(--ease);
+}
+.toggle input:checked + span { background: var(--accent); border-color: var(--accent); }
+.toggle input:checked + span::after { transform: translateX(20px); background: var(--accent-ink); }
+.toggle input:focus-visible + span { outline: 2px solid var(--text); outline-offset: 2px; }
+.toggle input:disabled + span { opacity: 0.4; }
+
+.seg { display: inline-flex; padding: 2px; gap: 2px; background: var(--subtle); border: 1px solid var(--line); border-radius: var(--r-md); }
+.seg button { height: 28px; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-2); white-space: nowrap; }
+.seg button:hover { color: var(--text); background: var(--subtle); }
+.seg button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+.range { display: inline-flex; align-items: center; gap: var(--s-3); }
+.range input { width: 200px; accent-color: var(--accent); }
+.range output { min-width: 56px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); }
+
+.swatches { display: inline-flex; align-items: center; gap: var(--s-2); }
+.swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; padding: 0; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.3); }
+.swatch[aria-checked="true"] { border-color: var(--text); }
+input[type="color"] { width: 34px; height: 30px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--field); padding: 3px; cursor: pointer; }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
+
+/* Filas de ajustes, como la app Configuración de Windows */
+.rows { display: grid; gap: 6px; }
+.row {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-5);
+  padding: var(--s-3) var(--s-4) var(--s-3) var(--s-5);
+  min-height: 68px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md);
+}
+.row-text { min-width: 0; }
+.row-text strong { font-weight: 400; display: block; }
+.row-text small { color: var(--text-3); font-size: 12px; display: block; margin-top: 2px; max-width: 60ch; }
+.row-ctl { display: flex; align-items: center; gap: var(--s-3); flex: none; }
+.row.confirm { background: var(--danger-soft); }
+.path { font-family: "Cascadia Mono", Consolas, monospace; font-size: 12px; color: var(--text-2); user-select: text; word-break: break-all; }
+
+/* Catálogo */
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s-3); }
+.cat-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) 96px;
+  column-gap: var(--s-3); row-gap: var(--s-3);
+  padding: var(--s-4);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md);
+}
+.cat-item strong { font-weight: 600; display: block; }
+.cat-item small { color: var(--text-3); font-size: 12px; display: block; }
+.cat-item .val { grid-row: 1; grid-column: 2; align-self: start; }
+.cat-item .btn { grid-column: 1 / -1; justify-self: start; }
+.full-note { display: flex; gap: var(--s-2); align-items: center; padding: var(--s-3) var(--s-4); margin-bottom: var(--s-3); border-radius: var(--r-md); background: var(--accent-soft); border: 1px solid var(--line); }
+.full-note svg { color: var(--accent-text); }
+.empty { padding: var(--s-6) var(--s-5); text-align: center; color: var(--text-2); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); }
+.empty strong { display: block; font: 600 16px/1.3 var(--f-display); color: var(--text); margin-bottom: 4px; }
+
+/* Acerca de */
+.about-head { display: flex; align-items: center; gap: var(--s-5); padding: var(--s-5); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: var(--s-2); }
+.about-head .logo { width: 180px; height: 35px; flex: none; }
+.about-head p { color: var(--text-2); max-width: 52ch; }
+.facts { display: grid; grid-template-columns: max-content 1fr; column-gap: var(--s-6); row-gap: var(--s-2); padding: var(--s-4) var(--s-5); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); }
+.facts dt { color: var(--text-2); }
+.facts dd { color: var(--text); }
+.credit { font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+@media (max-width: 900px) {
+  body { grid-template-columns: 60px minmax(0, 1fr); }
+  .nav-btn span, .rail-foot { display: none; }
+  .nav-btn { justify-content: center; padding: 0; }
+  .brand { padding: var(--s-1) 0 var(--s-5); display: flex; justify-content: center; }
+  .brand .logo { display: none; }
+  .brand .logo.mark { display: block; width: 26px; height: 14px; }
+  .stage, .scroll { padding-left: var(--s-5); padding-right: var(--s-5); }
+  .stage { padding-top: var(--s-3); padding-bottom: var(--s-2); }
+  .stage-head small { display: none; }
+  .scroll { padding-top: var(--s-3); }
+  h1 { font-size: 22px; }
+  .sec-head { margin-bottom: var(--s-3); align-items: center; }
+  .sec-head p { display: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-metrics" viewBox="0 0 16 16"><path d="M2.5 13.5v-5M6.2 13.5v-11M9.8 13.5v-7M13.5 13.5v-9"/></symbol>
+  <symbol id="i-look" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M8 2.2v11.6" /><path d="M8 2.2a5.8 5.8 0 0 1 0 11.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.8v1.6M8 12.6v1.6M14.2 8h-1.6M3.4 8H1.8M12.4 3.6l-1.1 1.1M4.7 11.3l-1.1 1.1M12.4 12.4l-1.1-1.1M4.7 4.7L3.6 3.6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M8 7.2v3.8M8 5.2v.01"/></symbol>
+  <symbol id="i-up" viewBox="0 0 16 16"><path d="M4.5 10l3.5-3.5 3.5 3.5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="M4.5 6l3.5 3.5 3.5-3.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></symbol>
+  <symbol id="i-grip" viewBox="0 0 16 16"><path d="M6 4v.01M10 4v.01M6 8v.01M10 8v.01M6 12v.01M10 12v.01" stroke-width="2.2"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 16 16"><path d="M2.2 6.6a8.2 8.2 0 0 1 11.6 0M4.3 8.8a5.2 5.2 0 0 1 7.4 0M6.4 11a2.2 2.2 0 0 1 3.2 0"/><path d="M8 13.2v.01"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 16 16"><path d="M3 6.2h2.4L8.6 3.6v8.8L5.4 9.8H3z"/><path d="M11 5.8a3 3 0 0 1 0 4.4"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 16 16"><path d="M4.5 10l3.5-3.5 3.5 3.5"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M8 5v3.6M8 10.8v.01"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 16 16"><path d="M2 4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5V13a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"/></symbol>
+</svg>
+
+<nav class="rail" data-i18n-aria="nav.aria">
+  <div class="brand" role="img" aria-label="WRAM"><span class="logo"></span><span class="logo mark"></span></div>
+  <button class="nav-btn" data-nav="metrics" aria-current="page"><svg class="i"><use href="#i-metrics"/></svg><span data-i18n="nav.metrics"></span></button>
+  <button class="nav-btn" data-nav="look"><svg class="i"><use href="#i-look"/></svg><span data-i18n="nav.look"></span></button>
+  <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
+  <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.0.0</span></div>
+</nav>
+
+<main>
+  <div class="stage">
+    <div class="stage-head">
+      <p class="stage-title" data-i18n="stage.title"></p>
+      <small data-i18n="stage.hint"></small>
+    </div>
+    <div class="taskbar" id="taskbar" data-i18n-aria="stage.title">
+      <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="band" id="band"></div>
+      <div class="tray" aria-hidden="true">
+        <svg class="i"><use href="#i-chev"/></svg>
+        <svg class="i"><use href="#i-wifi"/></svg>
+        <svg class="i"><use href="#i-sound"/></svg>
+        <div class="clock"><div id="clock-t">--:--</div><div id="clock-d"></div></div>
+      </div>
+    </div>
+    <p class="stage-note"><svg class="i"><use href="#i-info"/></svg><span id="stage-note"></span></p>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <section id="sec-metrics" aria-labelledby="h-metrics">
+      <div class="sec-head">
+        <div>
+          <h1 id="h-metrics" data-i18n="metrics.title"></h1>
+          <p data-i18n="metrics.desc"></p>
+        </div>
+        <div class="capacity" aria-live="polite">
+          <div class="cap-cells" id="cap-cells" aria-hidden="true"></div>
+          <span id="cap-text"></span>
+        </div>
+      </div>
+      <ol class="board" id="slots" data-i18n-aria="metrics.title"></ol>
+
+      <h2 class="sub" id="h-catalog" data-i18n="catalog.title"></h2>
+      <p class="sub-note" data-i18n="catalog.desc"></p>
+      <div id="full-note" class="full-note" hidden><svg class="i"><use href="#i-warn"/></svg><span data-i18n="catalog.full"></span></div>
+      <div class="catalog" id="catalog"></div>
+    </section>
+
+    <section id="sec-look" aria-labelledby="h-look" hidden>
+      <div class="sec-head"><div><h1 id="h-look" data-i18n="look.title"></h1><p data-i18n="look.desc"></p></div></div>
+      <div class="rows">
+        <div class="row">
+          <div class="row-text"><strong id="l-rows" data-i18n="look.rows"></strong><small data-i18n="look.rowsD"></small></div>
+          <div class="row-ctl"><div class="seg" role="radiogroup" aria-labelledby="l-rows" data-bind="rows" data-type="int">
+            <button role="radio" data-v="1" data-i18n="look.rows1"></button><button role="radio" data-v="2" data-i18n="look.rows2"></button></div></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="font" data-i18n="look.font"></label></strong><small data-i18n="look.fontD"></small></div>
+          <div class="row-ctl"><select class="field" id="font" data-bind="font"></select></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="fontSize" data-i18n="look.size"></label></strong><small data-i18n="look.sizeD"></small></div>
+          <div class="row-ctl range"><input type="range" id="fontSize" data-bind="fontSize" data-type="int" min="9" max="18" step="1"><output id="fontSize-out">12 px</output></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="labels" data-i18n="look.labels"></label></strong><small data-i18n="look.labelsD"></small></div>
+          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="labels" data-bind="labels"><span></span></label></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong id="l-vcolor" data-i18n="look.vcolor"></strong><small data-i18n="look.vcolorD"></small></div>
+          <div class="row-ctl">
+            <div class="seg" role="radiogroup" aria-labelledby="l-vcolor" id="vcolor-mode">
+              <button role="radio" data-v="auto" data-i18n="look.auto"></button><button role="radio" data-v="#60cdff" data-i18n="look.blue"></button><button role="radio" data-v="custom" data-i18n="look.other"></button>
+            </div>
+            <input type="color" id="vcolor-pick" data-i18n-aria="look.vcolor" hidden>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong id="l-acolor" data-i18n="look.acolor"></strong><small data-i18n="look.acolorD"></small></div>
+          <div class="row-ctl">
+            <div class="swatches" role="radiogroup" aria-labelledby="l-acolor" id="acolor">
+              <button class="swatch" role="radio" data-v="#ff5a4e" style="background:#ff5a4e" data-i18n-aria="color.red"></button>
+              <button class="swatch" role="radio" data-v="#ffb900" style="background:#ffb900" data-i18n-aria="color.yellow"></button>
+              <button class="swatch" role="radio" data-v="#ff4fa3" style="background:#ff4fa3" data-i18n-aria="color.magenta"></button>
+              <button class="swatch" role="radio" data-v="#60cdff" style="background:#60cdff" data-i18n-aria="look.blue"></button>
+            </div>
+            <input type="color" id="acolor-pick" data-i18n-aria="look.acolor">
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="offset" data-i18n="look.offset"></label></strong><small data-i18n="look.offsetD"></small></div>
+          <div class="row-ctl range"><input type="range" id="offset" data-bind="offset" data-type="int" min="0" max="600" step="2"><output id="offset-out">8 px</output></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-settings" aria-labelledby="h-settings" hidden>
+      <div class="sec-head"><div><h1 id="h-settings" data-i18n="set.title"></h1><p data-i18n="set.desc"></p></div></div>
+      <div class="rows">
+        <div class="row">
+          <div class="row-text"><strong><label for="language" data-i18n="set.lang"></label></strong><small data-i18n="set.langD"></small></div>
+          <div class="row-ctl"><select class="field" id="language">
+            <option value="0" data-i18n="set.system"></option>
+            <option value="1">Español</option>
+            <option value="2">English</option>
+            <option value="3">Português</option>
+            <option value="4">Français</option>
+            <option value="5">中文（简体）</option>
+          </select></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong id="l-theme" data-i18n="set.theme"></strong><small data-i18n="set.themeD"></small></div>
+          <div class="row-ctl"><div class="seg" role="radiogroup" aria-labelledby="l-theme" data-bind="theme" data-type="int">
+            <button role="radio" data-v="0" data-i18n="set.system"></button><button role="radio" data-v="1" data-i18n="set.light"></button><button role="radio" data-v="2" data-i18n="set.dark"></button></div></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="autostart" data-i18n="set.autostart"></label></strong><small data-i18n="set.autostartD"></small></div>
+          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="autostart" data-bind="autostart"><span></span></label></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="hideFullscreen" data-i18n="set.fs"></label></strong><small data-i18n="set.fsD"></small></div>
+          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="hideFullscreen" data-bind="hideFullscreen"><span></span></label></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong id="l-interval" data-i18n="set.interval"></strong><small data-i18n="set.intervalD"></small></div>
+          <div class="row-ctl"><div class="seg" role="radiogroup" aria-labelledby="l-interval" data-bind="interval" data-type="int">
+            <button role="radio" data-v="500" class="num" id="iv-500">0.5 s</button><button role="radio" data-v="1000">1 s</button><button role="radio" data-v="2000">2 s</button><button role="radio" data-v="5000">5 s</button></div></div>
+        </div>
+        <div class="row">
+          <div class="row-text"><strong data-i18n="set.file"></strong><small class="path" id="config-path"></small></div>
+          <div class="row-ctl"><button class="btn" id="open-config" type="button"><svg class="i"><use href="#i-folder"/></svg><span data-i18n="set.open"></span></button></div>
+        </div>
+        <div class="row" id="reset-row">
+          <div class="row-text"><strong data-i18n="set.reset"></strong><small id="reset-text"></small></div>
+          <div class="row-ctl" id="reset-ctl"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-about" aria-labelledby="h-about" hidden>
+      <div class="sec-head"><div><h1 id="h-about" data-i18n="nav.about"></h1></div></div>
+      <div class="about-head">
+        <span class="logo" role="img" aria-label="WRAM"></span>
+        <p data-i18n="about.desc"></p>
+      </div>
+      <dl class="facts">
+        <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.0.0</dd>
+        <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
+        <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
+        <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
+      </dl>
+      <h2 class="sub" data-i18n="about.sources"></h2>
+      <p class="sub-note" data-i18n="about.sourcesD"></p>
+      <dl class="facts" id="sources"></dl>
+    </section>
+  </div>
+</main>
+
+<script>
+"use strict";
+(() => {
+  const host = window.chrome && window.chrome.webview;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const icon = (id) => {
+    const ns = "http://www.w3.org/2000/svg";
+    const s = document.createElementNS(ns, "svg");
+    s.setAttribute("class", "i");
+    const u = document.createElementNS(ns, "use");
+    u.setAttribute("href", "#i-" + id);
+    s.appendChild(u);
+    return s;
+  };
+  const pad2 = (n) => String(n).padStart(2, "0");
+
+  // ---------- Textos ----------
+  const I18N = {
+    es: {
+      "nav.aria": "Secciones", "nav.metrics": "Métricas", "nav.look": "Apariencia", "nav.settings": "Configuración", "nav.about": "Acerca de",
+      "stage.title": "Vista previa de la barra de tareas", "stage.hint": "Doble clic en la franja abre esta ventana",
+      "stage.noteDark": "La vista previa usa el tema de tu barra de tareas de Windows (oscuro), no el tema de esta ventana.",
+      "stage.noteLight": "La vista previa usa el tema de tu barra de tareas de Windows (claro), no el tema de esta ventana.",
+      "metrics.title": "Métricas en la barra", "metrics.desc": "Cada posición es un lugar fijo en la franja. Arrastra el número o usa las flechas para cambiar el orden.",
+      "cap.text": "{used} de {max} posiciones",
+      "catalog.title": "Catálogo", "catalog.desc": "Métricas disponibles que todavía no están en la barra, con su lectura actual en este equipo.",
+      "catalog.full": "Las 10 posiciones están ocupadas. Quita una métrica de la barra para añadir otra.", "catalog.allUsed": "Todas las métricas están en la barra.", "catalog.add": "Añadir a la barra",
+      "slot.approx": "aproximada", "slot.drag": "Arrastra para mover", "slot.label": "Etiqueta de {name}", "slot.thr": "Umbral de aviso de {name}",
+      "slot.below": "bajo", "slot.above": "sobre", "slot.alertBelow": "Avisar cuando baje del umbral", "slot.alertAbove": "Avisar cuando supere el umbral",
+      "slot.noAlert": "Sin aviso para esta métrica", "slot.up": "Subir {name}", "slot.down": "Bajar {name}", "slot.remove": "Quitar {name} de la barra",
+      "slot.free": "Libre", "slot.addFrom": "Añadir desde el catálogo", "slot.emptyT": "La barra está vacía", "slot.emptyD": "Añade una métrica del catálogo para que aparezca junto a la bandeja.",
+      "val.none": "sin sensor", "band.empty": "Sin métricas",
+      "look.title": "Apariencia", "look.desc": "Cómo se ve la franja en la barra de tareas. Los cambios se aplican al instante.",
+      "look.rows": "Filas", "look.rowsD": "Con dos filas caben más métricas en menos ancho.", "look.rows1": "1 fila", "look.rows2": "2 filas",
+      "look.font": "Fuente", "look.fontD": "Segoe UI Variable es la fuente de Windows 11. Bahnschrift es más estrecha y deja más espacio.",
+      "look.size": "Tamaño del texto", "look.sizeD": "En píxeles a escala 100 %. Windows lo ajusta a tu escala de pantalla.",
+      "look.labels": "Mostrar etiquetas", "look.labelsD": "Sin etiquetas la franja ocupa menos, pero solo se ven los números.",
+      "look.vcolor": "Color de los valores", "look.vcolorD": "Automático usa blanco o negro según el tema de la barra de tareas.",
+      "look.auto": "Automático", "look.blue": "Azul", "look.other": "Otro",
+      "look.acolor": "Color de aviso", "look.acolorD": "Un valor cambia a este color cuando cruza su umbral.",
+      "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala si tapa íconos de la barra o si prefieres más aire.",
+      "color.red": "Rojo", "color.yellow": "Amarillo", "color.magenta": "Magenta",
+      "set.title": "Configuración", "set.desc": "Idioma, tema de esta ventana, inicio con Windows y comportamiento de la franja.",
+      "set.lang": "Idioma", "set.langD": "Sistema usa el idioma de Windows. Cambia esta ventana, el menú y las etiquetas por defecto.",
+      "set.theme": "Tema de la aplicación", "set.themeD": "Solo esta ventana. La franja sigue el tema de la barra de tareas de Windows.",
+      "set.system": "Sistema", "set.light": "Claro", "set.dark": "Oscuro",
+      "set.autostart": "Iniciar con Windows", "set.autostartD": "Se registra solo para tu usuario, sin permisos de administrador.",
+      "set.fs": "Ocultar en pantalla completa", "set.fsD": "La franja desaparece en el acto al entrar en un juego, un video o una presentación, y vuelve al salir.",
+      "set.interval": "Frecuencia de actualización", "set.intervalD": "Intervalos más largos gastan menos CPU y batería.",
+      "set.file": "Archivo de configuración", "set.open": "Abrir carpeta",
+      "set.reset": "Restablecer", "set.resetD": "Vuelve a las seis métricas iniciales y borra etiquetas, umbrales y apariencia. El inicio con Windows no cambia.",
+      "set.resetQ": "Se perderán las métricas elegidas, sus etiquetas y umbrales. ¿Restablecer?", "set.resetBtn": "Restablecer valores", "set.cancel": "Cancelar", "set.resetOk": "Restablecer",
+      "about.desc": "Monitor del sistema para la barra de tareas de Windows. Muestra hasta 10 métricas junto a la bandeja, sin permisos de administrador ni drivers.",
+      "about.dev": "Desarrollado por", "about.version": "Versión", "about.license": "Licencia", "about.source": "Código fuente", "about.compat": "Compatibilidad",
+      "about.compatV": "Windows 10 (versión 1903 o posterior) y Windows 11, 64 bits",
+      "about.sources": "De dónde sale cada dato", "about.sourcesD": "Lecturas del propio Windows. Cuando un equipo no expone un sensor, la métrica muestra \"sin sensor\".",
+      "about.approx": "Depende de la placa: puede ser aproximada o no existir."
+    },
+    en: {
+      "nav.aria": "Sections", "nav.metrics": "Metrics", "nav.look": "Appearance", "nav.settings": "Settings", "nav.about": "About",
+      "stage.title": "Taskbar preview", "stage.hint": "Double-click the strip to open this window",
+      "stage.noteDark": "The preview follows your Windows taskbar theme (dark), not the theme of this window.",
+      "stage.noteLight": "The preview follows your Windows taskbar theme (light), not the theme of this window.",
+      "metrics.title": "Metrics on the taskbar", "metrics.desc": "Each position is a fixed spot on the strip. Drag the number or use the arrows to reorder.",
+      "cap.text": "{used} of {max} positions",
+      "catalog.title": "Catalog", "catalog.desc": "Metrics not on the taskbar yet, with their current reading on this PC.",
+      "catalog.full": "All 10 positions are in use. Remove a metric from the taskbar to add another.", "catalog.allUsed": "Every metric is on the taskbar.", "catalog.add": "Add to taskbar",
+      "slot.approx": "approximate", "slot.drag": "Drag to move", "slot.label": "Label for {name}", "slot.thr": "Alert threshold for {name}",
+      "slot.below": "below", "slot.above": "above", "slot.alertBelow": "Alert when it drops below the threshold", "slot.alertAbove": "Alert when it goes above the threshold",
+      "slot.noAlert": "No alert for this metric", "slot.up": "Move {name} up", "slot.down": "Move {name} down", "slot.remove": "Remove {name} from the taskbar",
+      "slot.free": "Free", "slot.addFrom": "Add from the catalog", "slot.emptyT": "The taskbar strip is empty", "slot.emptyD": "Add a metric from the catalog to show it next to the tray.",
+      "val.none": "no sensor", "band.empty": "No metrics",
+      "look.title": "Appearance", "look.desc": "How the strip looks on the taskbar. Changes apply instantly.",
+      "look.rows": "Rows", "look.rowsD": "Two rows fit more metrics in less width.", "look.rows1": "1 row", "look.rows2": "2 rows",
+      "look.font": "Font", "look.fontD": "Segoe UI Variable is the Windows 11 font. Bahnschrift is narrower and saves space.",
+      "look.size": "Text size", "look.sizeD": "In pixels at 100% scale. Windows adjusts it to your display scale.",
+      "look.labels": "Show labels", "look.labelsD": "Without labels the strip is narrower, but only numbers are shown.",
+      "look.vcolor": "Value color", "look.vcolorD": "Automatic uses white or black to match the taskbar theme.",
+      "look.auto": "Automatic", "look.blue": "Blue", "look.other": "Other",
+      "look.acolor": "Alert color", "look.acolorD": "A value turns this color when it crosses its threshold.",
+      "look.offset": "Distance from the tray", "look.offsetD": "Move it away if it covers taskbar icons or if you want more room.",
+      "color.red": "Red", "color.yellow": "Yellow", "color.magenta": "Magenta",
+      "set.title": "Settings", "set.desc": "Language, theme of this window, startup and strip behavior.",
+      "set.lang": "Language", "set.langD": "System uses the Windows language. Changes this window, the menu and the default labels.",
+      "set.theme": "App theme", "set.themeD": "This window only. The strip follows the Windows taskbar theme.",
+      "set.system": "System", "set.light": "Light", "set.dark": "Dark",
+      "set.autostart": "Start with Windows", "set.autostartD": "Registered for your user only, without administrator rights.",
+      "set.fs": "Hide in full screen", "set.fsD": "The strip disappears instantly when a game, video or presentation goes full screen, and comes back when it exits.",
+      "set.interval": "Refresh rate", "set.intervalD": "Longer intervals use less CPU and battery.",
+      "set.file": "Settings file", "set.open": "Open folder",
+      "set.reset": "Reset", "set.resetD": "Goes back to the six default metrics and clears labels, thresholds and appearance. Startup with Windows is kept.",
+      "set.resetQ": "Your metrics, labels and thresholds will be lost. Reset?", "set.resetBtn": "Reset settings", "set.cancel": "Cancel", "set.resetOk": "Reset",
+      "about.desc": "System monitor for the Windows taskbar. Shows up to 10 metrics next to the tray, without administrator rights or drivers.",
+      "about.dev": "Developed by", "about.version": "Version", "about.license": "License", "about.source": "Source code", "about.compat": "Compatibility",
+      "about.compatV": "Windows 10 (version 1903 or later) and Windows 11, 64-bit",
+      "about.sources": "Where each value comes from", "about.sourcesD": "Readings from Windows itself. When a PC does not expose a sensor, the metric shows \"no sensor\".",
+      "about.approx": "Depends on the motherboard: it can be approximate or missing."
+    },
+    pt: {
+      "nav.aria": "Seções", "nav.metrics": "Métricas", "nav.look": "Aparência", "nav.settings": "Configurações", "nav.about": "Sobre",
+      "stage.title": "Prévia da barra de tarefas", "stage.hint": "Clique duas vezes na faixa para abrir esta janela",
+      "stage.noteDark": "A prévia segue o tema da barra de tarefas do Windows (escuro), não o tema desta janela.",
+      "stage.noteLight": "A prévia segue o tema da barra de tarefas do Windows (claro), não o tema desta janela.",
+      "metrics.title": "Métricas na barra", "metrics.desc": "Cada posição é um lugar fixo na faixa. Arraste o número ou use as setas para mudar a ordem.",
+      "cap.text": "{used} de {max} posições",
+      "catalog.title": "Catálogo", "catalog.desc": "Métricas que ainda não estão na barra, com a leitura atual deste computador.",
+      "catalog.full": "As 10 posições estão ocupadas. Remova uma métrica da barra para adicionar outra.", "catalog.allUsed": "Todas as métricas estão na barra.", "catalog.add": "Adicionar à barra",
+      "slot.approx": "aproximada", "slot.drag": "Arraste para mover", "slot.label": "Rótulo de {name}", "slot.thr": "Limite de alerta de {name}",
+      "slot.below": "abaixo", "slot.above": "acima", "slot.alertBelow": "Alertar quando ficar abaixo do limite", "slot.alertAbove": "Alertar quando passar do limite",
+      "slot.noAlert": "Sem alerta para esta métrica", "slot.up": "Subir {name}", "slot.down": "Descer {name}", "slot.remove": "Remover {name} da barra",
+      "slot.free": "Livre", "slot.addFrom": "Adicionar do catálogo", "slot.emptyT": "A faixa está vazia", "slot.emptyD": "Adicione uma métrica do catálogo para exibi-la ao lado da bandeja.",
+      "val.none": "sem sensor", "band.empty": "Sem métricas",
+      "look.title": "Aparência", "look.desc": "Como a faixa aparece na barra de tarefas. As mudanças são aplicadas na hora.",
+      "look.rows": "Linhas", "look.rowsD": "Com duas linhas cabem mais métricas em menos largura.", "look.rows1": "1 linha", "look.rows2": "2 linhas",
+      "look.font": "Fonte", "look.fontD": "Segoe UI Variable é a fonte do Windows 11. Bahnschrift é mais estreita e economiza espaço.",
+      "look.size": "Tamanho do texto", "look.sizeD": "Em pixels na escala de 100%. O Windows ajusta à escala da sua tela.",
+      "look.labels": "Mostrar rótulos", "look.labelsD": "Sem rótulos a faixa fica menor, mas só os números aparecem.",
+      "look.vcolor": "Cor dos valores", "look.vcolorD": "Automático usa branco ou preto conforme o tema da barra de tarefas.",
+      "look.auto": "Automático", "look.blue": "Azul", "look.other": "Outra",
+      "look.acolor": "Cor de alerta", "look.acolorD": "Um valor muda para esta cor quando passa do limite.",
+      "look.offset": "Distância da bandeja", "look.offsetD": "Afaste se cobrir ícones da barra ou se quiser mais espaço.",
+      "color.red": "Vermelho", "color.yellow": "Amarelo", "color.magenta": "Magenta",
+      "set.title": "Configurações", "set.desc": "Idioma, tema desta janela, inicialização com o Windows e comportamento da faixa.",
+      "set.lang": "Idioma", "set.langD": "Sistema usa o idioma do Windows. Muda esta janela, o menu e os rótulos padrão.",
+      "set.theme": "Tema do aplicativo", "set.themeD": "Só esta janela. A faixa segue o tema da barra de tarefas do Windows.",
+      "set.system": "Sistema", "set.light": "Claro", "set.dark": "Escuro",
+      "set.autostart": "Iniciar com o Windows", "set.autostartD": "Registrado só para o seu usuário, sem permissões de administrador.",
+      "set.fs": "Ocultar em tela cheia", "set.fsD": "A faixa some na hora quando um jogo, vídeo ou apresentação entra em tela cheia, e volta ao sair.",
+      "set.interval": "Frequência de atualização", "set.intervalD": "Intervalos maiores gastam menos CPU e bateria.",
+      "set.file": "Arquivo de configuração", "set.open": "Abrir pasta",
+      "set.reset": "Redefinir", "set.resetD": "Volta às seis métricas iniciais e apaga rótulos, limites e aparência. A inicialização com o Windows não muda.",
+      "set.resetQ": "As métricas, rótulos e limites escolhidos serão perdidos. Redefinir?", "set.resetBtn": "Redefinir valores", "set.cancel": "Cancelar", "set.resetOk": "Redefinir",
+      "about.desc": "Monitor do sistema para a barra de tarefas do Windows. Mostra até 10 métricas ao lado da bandeja, sem permissões de administrador nem drivers.",
+      "about.dev": "Desenvolvido por", "about.version": "Versão", "about.license": "Licença", "about.source": "Código-fonte", "about.compat": "Compatibilidade",
+      "about.compatV": "Windows 10 (versão 1903 ou posterior) e Windows 11, 64 bits",
+      "about.sources": "De onde vem cada dado", "about.sourcesD": "Leituras do próprio Windows. Quando um computador não expõe um sensor, a métrica mostra \"sem sensor\".",
+      "about.approx": "Depende da placa-mãe: pode ser aproximada ou não existir."
+    },
+    fr: {
+      "nav.aria": "Sections", "nav.metrics": "Mesures", "nav.look": "Apparence", "nav.settings": "Paramètres", "nav.about": "À propos",
+      "stage.title": "Aperçu de la barre des tâches", "stage.hint": "Double-cliquez sur la bande pour ouvrir cette fenêtre",
+      "stage.noteDark": "L’aperçu suit le thème de votre barre des tâches Windows (sombre), pas celui de cette fenêtre.",
+      "stage.noteLight": "L’aperçu suit le thème de votre barre des tâches Windows (clair), pas celui de cette fenêtre.",
+      "metrics.title": "Mesures dans la barre", "metrics.desc": "Chaque position est un emplacement fixe de la bande. Faites glisser le numéro ou utilisez les flèches pour changer l’ordre.",
+      "cap.text": "{used} sur {max} positions",
+      "catalog.title": "Catalogue", "catalog.desc": "Mesures qui ne sont pas encore dans la barre, avec leur lecture actuelle sur ce PC.",
+      "catalog.full": "Les 10 positions sont occupées. Retirez une mesure de la barre pour en ajouter une autre.", "catalog.allUsed": "Toutes les mesures sont dans la barre.", "catalog.add": "Ajouter à la barre",
+      "slot.approx": "approximative", "slot.drag": "Faire glisser pour déplacer", "slot.label": "Étiquette de {name}", "slot.thr": "Seuil d’alerte de {name}",
+      "slot.below": "sous", "slot.above": "au-dessus", "slot.alertBelow": "Alerter quand la valeur passe sous le seuil", "slot.alertAbove": "Alerter quand la valeur dépasse le seuil",
+      "slot.noAlert": "Pas d’alerte pour cette mesure", "slot.up": "Monter {name}", "slot.down": "Descendre {name}", "slot.remove": "Retirer {name} de la barre",
+      "slot.free": "Libre", "slot.addFrom": "Ajouter depuis le catalogue", "slot.emptyT": "La bande est vide", "slot.emptyD": "Ajoutez une mesure du catalogue pour l’afficher à côté de la zone de notification.",
+      "val.none": "pas de capteur", "band.empty": "Aucune mesure",
+      "look.title": "Apparence", "look.desc": "L’aspect de la bande dans la barre des tâches. Les changements s’appliquent immédiatement.",
+      "look.rows": "Lignes", "look.rowsD": "Avec deux lignes, plus de mesures tiennent dans moins de largeur.", "look.rows1": "1 ligne", "look.rows2": "2 lignes",
+      "look.font": "Police", "look.fontD": "Segoe UI Variable est la police de Windows 11. Bahnschrift est plus étroite et prend moins de place.",
+      "look.size": "Taille du texte", "look.sizeD": "En pixels à l’échelle 100 %. Windows l’adapte à l’échelle de votre écran.",
+      "look.labels": "Afficher les étiquettes", "look.labelsD": "Sans étiquettes la bande est plus étroite, mais seuls les chiffres s’affichent.",
+      "look.vcolor": "Couleur des valeurs", "look.vcolorD": "Automatique utilise le blanc ou le noir selon le thème de la barre des tâches.",
+      "look.auto": "Automatique", "look.blue": "Bleu", "look.other": "Autre",
+      "look.acolor": "Couleur d’alerte", "look.acolorD": "Une valeur prend cette couleur quand elle franchit son seuil.",
+      "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la si elle masque des icônes ou si vous voulez plus d’espace.",
+      "color.red": "Rouge", "color.yellow": "Jaune", "color.magenta": "Magenta",
+      "set.title": "Paramètres", "set.desc": "Langue, thème de cette fenêtre, démarrage avec Windows et comportement de la bande.",
+      "set.lang": "Langue", "set.langD": "Système utilise la langue de Windows. Change cette fenêtre, le menu et les étiquettes par défaut.",
+      "set.theme": "Thème de l’application", "set.themeD": "Cette fenêtre seulement. La bande suit le thème de la barre des tâches Windows.",
+      "set.system": "Système", "set.light": "Clair", "set.dark": "Sombre",
+      "set.autostart": "Démarrer avec Windows", "set.autostartD": "Enregistré pour votre utilisateur seulement, sans droits d’administrateur.",
+      "set.fs": "Masquer en plein écran", "set.fsD": "La bande disparaît aussitôt quand un jeu, une vidéo ou une présentation passe en plein écran, et revient à la sortie.",
+      "set.interval": "Fréquence d’actualisation", "set.intervalD": "Des intervalles plus longs consomment moins de CPU et de batterie.",
+      "set.file": "Fichier de configuration", "set.open": "Ouvrir le dossier",
+      "set.reset": "Réinitialiser", "set.resetD": "Revient aux six mesures initiales et efface étiquettes, seuils et apparence. Le démarrage avec Windows ne change pas.",
+      "set.resetQ": "Les mesures choisies, leurs étiquettes et seuils seront perdus. Réinitialiser ?", "set.resetBtn": "Réinitialiser les valeurs", "set.cancel": "Annuler", "set.resetOk": "Réinitialiser",
+      "about.desc": "Moniteur système pour la barre des tâches Windows. Affiche jusqu’à 10 mesures à côté de la zone de notification, sans droits d’administrateur ni pilotes.",
+      "about.dev": "Développé par", "about.version": "Version", "about.license": "Licence", "about.source": "Code source", "about.compat": "Compatibilité",
+      "about.compatV": "Windows 10 (version 1903 ou ultérieure) et Windows 11, 64 bits",
+      "about.sources": "D’où vient chaque valeur", "about.sourcesD": "Lectures fournies par Windows. Quand un PC n’expose pas un capteur, la mesure affiche « pas de capteur ».",
+      "about.approx": "Dépend de la carte mère : peut être approximative ou absente."
+    },
+    zh: {
+      "nav.aria": "分区", "nav.metrics": "指标", "nav.look": "外观", "nav.settings": "设置", "nav.about": "关于",
+      "stage.title": "任务栏预览", "stage.hint": "双击任务栏上的显示条可打开此窗口",
+      "stage.noteDark": "预览跟随 Windows 任务栏主题（深色），而不是此窗口的主题。",
+      "stage.noteLight": "预览跟随 Windows 任务栏主题（浅色），而不是此窗口的主题。",
+      "metrics.title": "任务栏上的指标", "metrics.desc": "每个位置都是显示条上的固定位置。拖动编号或使用箭头调整顺序。",
+      "cap.text": "已用 {used} / {max} 个位置",
+      "catalog.title": "指标目录", "catalog.desc": "尚未放到任务栏上的指标，以及它们在这台电脑上的当前读数。",
+      "catalog.full": "10 个位置都已占用。从任务栏移除一个指标后才能添加新的。", "catalog.allUsed": "所有指标都已在任务栏上。", "catalog.add": "添加到任务栏",
+      "slot.approx": "近似值", "slot.drag": "拖动以移动", "slot.label": "{name} 的标签", "slot.thr": "{name} 的警报阈值",
+      "slot.below": "低于", "slot.above": "高于", "slot.alertBelow": "低于阈值时警报", "slot.alertAbove": "高于阈值时警报",
+      "slot.noAlert": "此指标没有警报", "slot.up": "上移 {name}", "slot.down": "下移 {name}", "slot.remove": "从任务栏移除 {name}",
+      "slot.free": "空闲", "slot.addFrom": "从目录添加", "slot.emptyT": "显示条是空的", "slot.emptyD": "从目录添加一个指标，它会显示在通知区域旁边。",
+      "val.none": "无传感器", "band.empty": "没有指标",
+      "look.title": "外观", "look.desc": "显示条在任务栏上的样子。更改会立即生效。",
+      "look.rows": "行数", "look.rowsD": "两行可以在更窄的宽度内放下更多指标。", "look.rows1": "1 行", "look.rows2": "2 行",
+      "look.font": "字体", "look.fontD": "Segoe UI Variable 是 Windows 11 的字体。Bahnschrift 更窄，更省空间。",
+      "look.size": "文字大小", "look.sizeD": "以 100% 缩放下的像素计。Windows 会按你的显示缩放调整。",
+      "look.labels": "显示标签", "look.labelsD": "不显示标签时显示条更窄，但只显示数字。",
+      "look.vcolor": "数值颜色", "look.vcolorD": "自动会根据任务栏主题使用白色或黑色。",
+      "look.auto": "自动", "look.blue": "蓝色", "look.other": "其他",
+      "look.acolor": "警报颜色", "look.acolorD": "数值越过阈值时变为此颜色。",
+      "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了任务栏图标或想留出更多空间，可以拉开距离。",
+      "color.red": "红色", "color.yellow": "黄色", "color.magenta": "品红",
+      "set.title": "设置", "set.desc": "语言、此窗口的主题、开机启动和显示条的行为。",
+      "set.lang": "语言", "set.langD": "系统表示使用 Windows 的语言。会更改此窗口、菜单和默认标签。",
+      "set.theme": "应用主题", "set.themeD": "仅限此窗口。显示条跟随 Windows 任务栏主题。",
+      "set.system": "系统", "set.light": "浅色", "set.dark": "深色",
+      "set.autostart": "开机时启动", "set.autostartD": "仅为当前用户注册，无需管理员权限。",
+      "set.fs": "全屏时隐藏", "set.fsD": "游戏、视频或演示进入全屏时显示条立即隐藏，退出后恢复。",
+      "set.interval": "刷新频率", "set.intervalD": "间隔越长，CPU 和电池消耗越少。",
+      "set.file": "配置文件", "set.open": "打开文件夹",
+      "set.reset": "重置", "set.resetD": "恢复为初始的六个指标，并清除标签、阈值和外观。开机启动设置不变。",
+      "set.resetQ": "已选择的指标、标签和阈值将会丢失。确定重置吗？", "set.resetBtn": "重置设置", "set.cancel": "取消", "set.resetOk": "重置",
+      "about.desc": "用于 Windows 任务栏的系统监视器。在通知区域旁显示最多 10 个指标，无需管理员权限或驱动程序。",
+      "about.dev": "开发者", "about.version": "版本", "about.license": "许可证", "about.source": "源代码", "about.compat": "兼容性",
+      "about.compatV": "Windows 10（1903 或更高版本）和 Windows 11，64 位",
+      "about.sources": "每项数据的来源", "about.sourcesD": "读数来自 Windows 本身。当电脑没有提供某个传感器时，该指标显示“无传感器”。",
+      "about.approx": "取决于主板：可能是近似值，也可能不存在。"
+    }
+  };
+  const LANG_BY_SETTING = { 1: "es", 2: "en", 3: "pt", 4: "fr", 5: "zh" };
+  let lang = "es";
+  function t(key, vars) {
+    let s = (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+    if (vars) for (const k in vars) s = s.replace("{" + k + "}", vars[k]);
+    return s;
+  }
+  function applyStaticTexts() {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+    $$("[data-i18n]").forEach((n) => { n.textContent = t(n.dataset.i18n); });
+    $$("[data-i18n-aria]").forEach((n) => { n.setAttribute("aria-label", t(n.dataset.i18nAria)); });
+    $("#iv-500").textContent = (S.dec === "," ? "0,5" : "0.5") + " s";
+  }
+
+  const UNIT = {
+    percent: { thr: "%", widest: "100%" },
+    celsius: { thr: "°C", widest: "100°" },
+    mhz: { thr: "", widest: "8,88 GHz" },
+    gb: { thr: "GB", widest: "88,8 GB" },
+    rate: { thr: "MB/s", widest: "888 KB/s" },
+    duration: { thr: "", widest: "88d 88h" },
+    count: { thr: "", widest: "8888" }
+  };
+
+  const S = { dec: ",", catalog: [], byKey: {}, cfg: null, limits: { slots: 10, label: 8 }, values: {}, alerts: new Set(), taskbarLight: false, appsLight: false };
+
+  // ---------- Comunicación con la app ----------
+  let applyTimer = 0;
+  function send(msg) { if (host) host.postMessage(msg); }
+  function serialize(c) {
+    const lines = ["[general]",
+      "interval=" + c.interval, "rows=" + c.rows, "font=" + c.font, "fontSize=" + c.fontSize,
+      "valueColor=" + c.valueColor, "alertColor=" + c.alertColor, "labels=" + (c.labels ? 1 : 0),
+      "autostart=" + (c.autostart ? 1 : 0), "hideFullscreen=" + (c.hideFullscreen ? 1 : 0), "offset=" + c.offset,
+      "theme=" + c.theme, "lang=" + c.language, "", "[slots]"];
+    c.slots.forEach((s, i) => lines.push((i + 1) + "=" + [s.key, cleanLabel(s.label), Number(s.thr) || 0, s.alert ? 1 : 0].join("|")));
+    return lines.join("\n") + "\n";
+  }
+  function commit(immediate) {
+    renderPreview();
+    clearTimeout(applyTimer);
+    const run = () => send("apply\n" + serialize(S.cfg));
+    if (immediate) run(); else applyTimer = setTimeout(run, 180);
+  }
+  function cleanLabel(v) {
+    return String(v || "").replace(/[|=\[\]\u0000-\u001f]/g, "").slice(0, S.limits.label).toUpperCase();
+  }
+
+  // ---------- Tema ----------
+  const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  function applyTheme() {
+    const th = S.cfg ? S.cfg.theme : 0;
+    const dark = th === 2 || (th === 0 && (host ? !S.appsLight : darkQuery.matches));
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  }
+  darkQuery.addEventListener("change", applyTheme);
+
+  // ---------- Navegación ----------
+  function go(name) {
+    $$(".nav-btn").forEach((b) => b.setAttribute("aria-current", b.dataset.nav === name ? "page" : "false"));
+    $$("main section").forEach((s) => { s.hidden = s.id !== "sec-" + name; });
+    $("#scroll").scrollTop = 0;
+  }
+  $$(".nav-btn").forEach((b) => b.addEventListener("click", () => go(b.dataset.nav)));
+  $$("[data-open]").forEach((b) => b.addEventListener("click", () => send("open\n" + b.dataset.open)));
+  $("#open-config").addEventListener("click", () => send("open\nconfig"));
+
+  // ---------- Vista previa ----------
+  function valueColor() {
+    const v = S.cfg.valueColor;
+    return v === "auto" ? (S.taskbarLight ? "#1a1a1a" : "#ffffff") : v;
+  }
+  const measureCtx = document.createElement("canvas").getContext("2d");
+  function measure(text, c) {
+    measureCtx.font = "600 " + c.fontSize + 'px "' + c.font + '"';
+    return Math.ceil(measureCtx.measureText(text).width);
+  }
+  function renderPreview() {
+    const c = S.cfg;
+    $("#taskbar").classList.toggle("light", S.taskbarLight);
+    $("#stage-note").textContent = t(S.taskbarLight ? "stage.noteLight" : "stage.noteDark");
+    const band = $("#band");
+    band.textContent = "";
+    band.style.gridTemplateRows = "repeat(" + Math.min(c.rows, Math.max(1, c.slots.length)) + ", auto)";
+    band.style.fontFamily = '"' + c.font + '", "Segoe UI", sans-serif';
+    band.style.marginRight = Math.min(c.offset, 160) + "px";
+    if (!c.slots.length) {
+      band.appendChild(el("span", "band-empty", t("band.empty")));
+      return;
+    }
+    c.slots.forEach((s) => {
+      const meta = S.byKey[s.key];
+      const cell = el("span", "band-cell");
+      if (c.labels) {
+        const l = el("span", "bl", cleanLabel(s.label) || meta.label);
+        l.style.fontSize = Math.max(7, c.fontSize * 0.8) + "px";
+        cell.appendChild(l);
+      }
+      const val = S.values[s.key];
+      const v = el("span", "bv", val ? val[1] : "—");
+      v.style.fontSize = c.fontSize + "px";
+      v.style.minWidth = measure(UNIT[meta.unit].widest, c) + "px";
+      v.style.color = S.alerts.has(s.key) ? c.alertColor : valueColor();
+      v.dataset.key = s.key;
+      cell.appendChild(v);
+      band.appendChild(cell);
+    });
+  }
+  function tickClock() {
+    const d = new Date();
+    $("#clock-t").textContent = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+    $("#clock-d").textContent = pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear();
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  // ---------- Componentes ----------
+  function liveValue(key) {
+    const v = el("span", "val");
+    v.dataset.val = key;
+    paintValue(v, S.values[key]);
+    return v;
+  }
+  function paintValue(n, val) {
+    n.textContent = val ? val[1] : t("val.none");
+    n.classList.toggle("none", !val);
+    n.classList.toggle("alert", !!val && S.alerts.has(n.dataset.val));
+  }
+  function toggle(checked, label, onChange) {
+    const wrap = el("label", "toggle");
+    const input = el("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    input.setAttribute("aria-label", label);
+    input.addEventListener("change", () => onChange(input.checked));
+    wrap.append(input, el("span"));
+    return wrap;
+  }
+  function iconButton(id, label, onClick, extra) {
+    const b = el("button", "icon-btn" + (extra ? " " + extra : ""));
+    b.type = "button";
+    b.setAttribute("aria-label", label);
+    b.title = label;
+    b.appendChild(icon(id));
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  // ---------- Posiciones ----------
+  let dragFrom = -1;
+  function moveSlot(from, to, focusSel) {
+    const list = S.cfg.slots;
+    if (to < 0 || to >= list.length || from === to) return;
+    const [item] = list.splice(from, 1);
+    list.splice(to, 0, item);
+    renderSlots();
+    commit(true);
+    if (focusSel) {
+      const row = $$("#slots .slot")[to];
+      const btn = row && $(focusSel, row);
+      if (btn && !btn.disabled) btn.focus();
+    }
+  }
+  function renderSlots() {
+    const list = $("#slots");
+    list.textContent = "";
+    const slots = S.cfg.slots;
+    const max = S.limits.slots;
+    if (!slots.length) {
+      const li = el("li", "empty");
+      li.append(el("strong", null, t("slot.emptyT")), el("span", null, t("slot.emptyD")));
+      list.appendChild(li);
+    }
+    slots.forEach((s, i) => {
+      const meta = S.byKey[s.key];
+      const vars = { name: meta.name };
+      const li = el("li", "slot");
+
+      const pos = el("div", "pos");
+      pos.title = t("slot.drag");
+      pos.append(icon("grip"), el("b", null, pad2(i + 1)));
+      pos.addEventListener("pointerdown", () => { li.draggable = true; });
+
+      const name = el("div", "slot-name");
+      const strong = el("strong", null, meta.name);
+      if (meta.approx) strong.appendChild(el("span", "tag", t("slot.approx")));
+      name.append(strong, el("small", null, meta.source));
+
+      const label = el("input", "field label-in");
+      label.value = s.label;
+      label.placeholder = meta.label;
+      label.maxLength = S.limits.label;
+      label.spellcheck = false;
+      label.setAttribute("aria-label", t("slot.label", vars));
+      label.addEventListener("input", () => {
+        const clean = cleanLabel(label.value);
+        if (label.value !== clean) label.value = clean;
+        s.label = clean;
+        commit(false);
+      });
+      const labelWrap = el("div", "slot-label");
+      labelWrap.appendChild(label);
+
+      const value = el("div", "slot-value");
+      value.appendChild(liveValue(s.key));
+
+      const alertBox = el("div", "slot-alert");
+      if (meta.thrMax > 0) {
+        const num = el("input", "field n");
+        num.type = "number";
+        num.min = 0;
+        num.max = meta.thrMax;
+        num.step = 1;
+        num.value = s.thr;
+        num.disabled = !s.alert;
+        num.setAttribute("aria-label", t("slot.thr", vars));
+        num.addEventListener("input", () => {
+          s.thr = Math.min(meta.thrMax, Math.max(0, Number(num.value) || 0));
+          commit(false);
+        });
+        num.addEventListener("blur", () => { num.value = s.thr; });
+        const hint = t(meta.below ? "slot.alertBelow" : "slot.alertAbove");
+        const tg = toggle(s.alert, hint + " · " + meta.name, (on) => {
+          s.alert = on;
+          num.disabled = !on;
+          if (on && !(s.thr > 0)) { s.thr = meta.thr || Math.round(meta.thrMax / 2); num.value = s.thr; }
+          commit(true);
+        });
+        tg.title = hint;
+        alertBox.append(tg, el("span", "muted", t(meta.below ? "slot.below" : "slot.above")), num, el("span", "muted", UNIT[meta.unit].thr));
+      } else {
+        alertBox.appendChild(el("span", "muted", t("slot.noAlert")));
+      }
+
+      const actions = el("div", "slot-actions");
+      const up = iconButton("up", t("slot.up", vars), () => moveSlot(i, i - 1, "[data-act=up]"));
+      up.dataset.act = "up";
+      up.disabled = i === 0;
+      const down = iconButton("down", t("slot.down", vars), () => moveSlot(i, i + 1, "[data-act=down]"));
+      down.dataset.act = "down";
+      down.disabled = i === slots.length - 1;
+      const rm = iconButton("x", t("slot.remove", vars), () => {
+        slots.splice(i, 1);
+        renderAll();
+        commit(true);
+      }, "danger");
+      actions.append(up, down, rm);
+
+      li.append(pos, name, labelWrap, value, alertBox, actions);
+
+      li.addEventListener("dragstart", (e) => {
+        dragFrom = i;
+        li.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", String(i));
+      });
+      li.addEventListener("dragend", () => {
+        li.draggable = false;
+        li.classList.remove("dragging");
+        $$("#slots .slot").forEach((r) => r.classList.remove("drop-before", "drop-after"));
+      });
+      li.addEventListener("dragover", (e) => {
+        if (dragFrom < 0) return;
+        e.preventDefault();
+        const r = li.getBoundingClientRect();
+        const after = e.clientY > r.top + r.height / 2;
+        li.classList.toggle("drop-after", after);
+        li.classList.toggle("drop-before", !after);
+      });
+      li.addEventListener("dragleave", () => li.classList.remove("drop-before", "drop-after"));
+      li.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const after = li.classList.contains("drop-after");
+        let to = i + (after ? 1 : 0);
+        if (dragFrom < to) to -= 1;
+        const from = dragFrom;
+        dragFrom = -1;
+        moveSlot(from, to);
+      });
+      list.appendChild(li);
+    });
+
+    // Posiciones libres: siempre se ven las 10.
+    if (slots.length) {
+      for (let k = slots.length; k < max; k++) {
+        const li = el("li", "slot free");
+        const pos = el("div", "pos");
+        pos.append(el("b", null, pad2(k + 1)));
+        const name = el("div", "slot-name");
+        const add = el("button", "link-btn", t("slot.addFrom"));
+        add.type = "button";
+        add.addEventListener("click", () => $("#h-catalog").scrollIntoView({ behavior: "smooth", block: "start" }));
+        name.append(el("span", "muted", t("slot.free") + " · "), add);
+        li.append(pos, name);
+        list.appendChild(li);
+      }
+    }
+
+    $("#cap-text").textContent = t("cap.text", { used: slots.length, max: max });
+    const cells = $("#cap-cells");
+    cells.textContent = "";
+    for (let k = 0; k < max; k++) cells.appendChild(el("i", k < slots.length ? "on" : ""));
+  }
+
+  // ---------- Catálogo ----------
+  function renderCatalog() {
+    const used = new Set(S.cfg.slots.map((s) => s.key));
+    const full = S.cfg.slots.length >= S.limits.slots;
+    $("#full-note").hidden = !full;
+    const box = $("#catalog");
+    box.textContent = "";
+    const free = S.catalog.filter((m) => !used.has(m.key));
+    if (!free.length) {
+      box.appendChild(el("p", "muted", t("catalog.allUsed")));
+      return;
+    }
+    free.forEach((m) => {
+      const card = el("div", "cat-item");
+      const txt = el("div");
+      const strong = el("strong", null, m.name);
+      if (m.approx) strong.appendChild(el("span", "tag", t("slot.approx")));
+      txt.append(strong, el("small", null, m.source));
+      const add = el("button", "btn");
+      add.type = "button";
+      add.append(icon("plus"), el("span", null, t("catalog.add")));
+      add.disabled = full;
+      add.addEventListener("click", () => {
+        if (S.cfg.slots.length >= S.limits.slots) return;
+        S.cfg.slots.push({ key: m.key, label: "", thr: m.thr, alert: m.thrMax > 0 && m.thr > 0 });
+        renderAll();
+        commit(true);
+      });
+      card.append(txt, liveValue(m.key), add);
+      box.appendChild(card);
+    });
+  }
+
+  // ---------- Ajustes enlazados ----------
+  function bindSettings() {
+    const c = S.cfg;
+    $$("[data-bind]").forEach((n) => {
+      const key = n.dataset.bind;
+      const asInt = n.dataset.type === "int";
+      if (n.classList.contains("seg")) {
+        $$("button", n).forEach((b) => {
+          b.setAttribute("aria-checked", String(String(c[key]) === b.dataset.v));
+          b.onclick = () => {
+            c[key] = asInt ? parseInt(b.dataset.v, 10) : b.dataset.v;
+            bindSettings();
+            if (key === "theme") applyTheme();
+            commit(true);
+          };
+        });
+      } else if (n.type === "checkbox") {
+        n.checked = !!c[key];
+        n.onchange = () => { c[key] = n.checked; commit(true); };
+      } else if (n.tagName === "SELECT") {
+        n.value = c[key];
+        n.onchange = () => { c[key] = n.value; commit(true); };
+      } else if (n.type === "range") {
+        n.value = c[key];
+        const out = $("#" + n.id + "-out");
+        if (out) out.textContent = c[key] + " px";
+        n.oninput = () => {
+          c[key] = asInt ? parseInt(n.value, 10) : n.value;
+          if (out) out.textContent = c[key] + " px";
+          commit(false);
+        };
+      }
+    });
+
+    const langSel = $("#language");
+    langSel.value = String(c.language || 0);
+    langSel.onchange = () => {
+      c.language = parseInt(langSel.value, 10);
+      // Con un idioma explícito se cambia al instante; con Sistema la app responde con el idioma de Windows.
+      if (LANG_BY_SETTING[c.language]) { lang = LANG_BY_SETTING[c.language]; refreshTexts(); }
+      commit(true);
+    };
+
+    const preset = "#60cdff";
+    const mode = c.valueColor === "auto" ? "auto" : (c.valueColor.toLowerCase() === preset ? preset : "custom");
+    const pick = $("#vcolor-pick");
+    pick.hidden = mode !== "custom";
+    if (mode === "custom") pick.value = c.valueColor;
+    $$("#vcolor-mode button").forEach((b) => {
+      b.setAttribute("aria-checked", String(b.dataset.v === mode));
+      b.onclick = () => {
+        c.valueColor = b.dataset.v === "custom" ? (mode === "custom" ? c.valueColor : "#ffb900") : b.dataset.v;
+        bindSettings();
+        commit(true);
+      };
+    });
+    pick.oninput = () => { c.valueColor = pick.value; commit(false); };
+
+    $$("#acolor button").forEach((b) => {
+      b.setAttribute("aria-checked", String(b.dataset.v === c.alertColor.toLowerCase()));
+      b.onclick = () => { c.alertColor = b.dataset.v; bindSettings(); commit(true); };
+    });
+    const apick = $("#acolor-pick");
+    apick.value = c.alertColor;
+    apick.oninput = () => {
+      c.alertColor = apick.value;
+      $$("#acolor button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === apick.value)));
+      commit(false);
+    };
+  }
+
+  // Restablecer con confirmación en línea, sin modal.
+  let resetConfirming = false;
+  function renderReset(confirming) {
+    resetConfirming = confirming;
+    const row = $("#reset-row");
+    const ctl = $("#reset-ctl");
+    row.classList.toggle("confirm", confirming);
+    $("#reset-text").textContent = t(confirming ? "set.resetQ" : "set.resetD");
+    ctl.textContent = "";
+    if (!confirming) {
+      const b = el("button", "btn", t("set.resetBtn"));
+      b.type = "button";
+      b.id = "reset";
+      b.addEventListener("click", () => { renderReset(true); $("#reset-cancel").focus(); });
+      ctl.appendChild(b);
+      return;
+    }
+    const cancel = el("button", "btn", t("set.cancel"));
+    cancel.type = "button";
+    cancel.id = "reset-cancel";
+    cancel.addEventListener("click", () => { renderReset(false); $("#reset").focus(); });
+    const ok = el("button", "btn danger", t("set.resetOk"));
+    ok.type = "button";
+    ok.addEventListener("click", () => { renderReset(false); send("reset"); });
+    ctl.append(cancel, ok);
+  }
+
+  function renderAbout(m) {
+    $("#about-ver").textContent = m.version;
+    $("#rail-ver").textContent = m.version;
+    $("#config-path").textContent = m.configPath || "";
+    const dl = $("#sources");
+    dl.textContent = "";
+    S.catalog.forEach((c) => {
+      dl.append(el("dt", null, c.name), el("dd", null, c.source + (c.approx ? ". " + t("about.approx") : ".")));
+    });
+  }
+
+  function renderAll() {
+    renderSlots();
+    renderCatalog();
+    renderPreview();
+  }
+  function refreshTexts() {
+    applyStaticTexts();
+    renderReset(resetConfirming);
+    if (S.cfg) renderAll();
+  }
+
+  // ---------- Mensajes de la app ----------
+  let lastInit = null;
+  function onInit(m) {
+    lastInit = m;
+    lang = I18N[m.lang] ? m.lang : "en";
+    S.dec = m.decimal || ".";
+    S.catalog = m.catalog;
+    S.byKey = Object.fromEntries(m.catalog.map((c) => [c.key, c]));
+    S.cfg = m.config;
+    S.limits = m.limits;
+    S.taskbarLight = !!m.taskbarLight;
+    S.appsLight = !!m.appsLight;
+    const font = $("#font");
+    font.textContent = "";
+    m.fonts.forEach((f) => { const o = el("option", null, f); o.value = f; font.appendChild(o); });
+    $("#fontSize").min = m.limits.fontMin;
+    $("#fontSize").max = m.limits.fontMax;
+    applyTheme();
+    applyStaticTexts();
+    bindSettings();
+    renderReset(false);
+    renderAll();
+    renderAbout(m);
+  }
+  function onValues(m) {
+    S.values = m.v;
+    S.alerts = new Set(m.a);
+    $$("[data-val]").forEach((n) => paintValue(n, S.values[n.dataset.val]));
+    $$("#band .bv").forEach((v) => {
+      const val = S.values[v.dataset.key];
+      v.textContent = val ? val[1] : "—";
+      v.style.color = S.alerts.has(v.dataset.key) ? S.cfg.alertColor : valueColor();
+    });
+  }
+
+  const hash = location.hash.slice(1).split("&");
+  if (/^(metrics|look|settings|about)$/.test(hash[0])) go(hash[0]);
+
+  if (host) {
+    host.addEventListener("message", (e) => {
+      const m = e.data;
+      if (!m || typeof m !== "object") return;
+      if (m.t === "init") onInit(m);
+      else if (m.t === "v" && S.cfg) onValues(m);
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") send("close"); });
+    send("ready");
+  } else {
+    const demoLang = hash.find((p) => I18N[p]) || "es";
+    demo(hash.indexOf("light") >= 0 ? 1 : hash.indexOf("dark") >= 0 ? 2 : 0, demoLang);
+  }
+
+  // Datos de muestra para abrir el HTML fuera de la app (desarrollo y capturas).
+  function demo(theme, demoLang) {
+    const names = {
+      es: [["Uso de CPU", "Contador de utilidad del procesador", "CPU"], ["Temperatura de CPU", "Zona térmica ACPI de la placa", "T.CPU"], ["Frecuencia de CPU", "Frecuencia base por rendimiento actual", "FREQ"], ["Uso de RAM", "Memoria física en uso", "RAM"], ["RAM en uso", "Memoria física en uso, en GB", "MEM"], ["Uso de GPU", "Motor 3D, igual que el Administrador de tareas", "GPU"], ["Temperatura de GPU", "Sensor que el driver expone a Windows", "T.GPU"], ["VRAM en uso", "Memoria dedicada de la GPU", "VRAM"], ["Actividad de disco", "Tiempo activo del disco más ocupado", "DISCO"], ["Descarga", "Suma de todas las interfaces de red", "BAJ"], ["Subida", "Suma de todas las interfaces de red", "SUB"], ["Batería", "Estado de energía del sistema", "BAT"], ["Tiempo encendido", "Desde el último arranque", "ON"], ["Procesos", "Procesos en ejecución", "PROC"]],
+      en: [["CPU usage", "Processor utility counter", "CPU"], ["CPU temperature", "Motherboard ACPI thermal zone", "T.CPU"], ["CPU clock", "Base frequency times current performance", "FREQ"], ["RAM usage", "Physical memory in use", "RAM"], ["RAM in use", "Physical memory in use, in GB", "MEM"], ["GPU usage", "3D engine, same as Task Manager", "GPU"], ["GPU temperature", "Sensor exposed by the driver to Windows", "T.GPU"], ["VRAM in use", "Dedicated GPU memory", "VRAM"], ["Disk activity", "Active time of the busiest disk", "DISK"], ["Download", "Sum of all network interfaces", "DOWN"], ["Upload", "Sum of all network interfaces", "UP"], ["Battery", "System power status", "BAT"], ["Uptime", "Since the last boot", "ON"], ["Processes", "Running processes", "PROC"]]
+    };
+    const keys = ["cpu", "cputemp", "cpuclock", "ram", "ramused", "gpu", "gputemp", "vram", "disk", "netdown", "netup", "battery", "uptime", "procs"];
+    const meta = [["percent", 90, 100, false, false], ["celsius", 85, 120, false, true], ["mhz", 0, 0, false, false], ["percent", 90, 100, false, false], ["gb", 0, 1024, false, false], ["percent", 95, 100, false, false], ["celsius", 80, 120, false, false], ["gb", 0, 256, false, false], ["percent", 95, 100, false, false], ["rate", 0, 10000, false, false], ["rate", 0, 10000, false, false], ["percent", 20, 100, true, false], ["duration", 0, 0, false, false], ["count", 0, 10000, false, false]];
+    const tbl = names[demoLang] || names.en;
+    const cat = keys.map((key, i) => ({ key, name: tbl[i][0], source: tbl[i][1], label: tbl[i][2], unit: meta[i][0], thr: meta[i][1], thrMax: meta[i][2], below: meta[i][3], approx: meta[i][4] }));
+    const dec = demoLang === "en" || demoLang === "zh" ? "." : ",";
+    const f = (n, d) => n.toFixed(d).replace(".", dec);
+    onInit({
+      t: "init", version: "1.0.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
+      limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
+      configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, hideFullscreen: true, offset: 8, theme: theme, language: 0,
+        slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
+          { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
+    });
+    const rate = (b) => { const u = ["B/s", "KB/s", "MB/s"]; let i = 0; while (b >= 1000 && i < 2) { b /= 1024; i++; } return (i === 0 || b >= 10 ? b.toFixed(0) : f(b, 1)) + " " + u[i]; };
+    let k = 0;
+    const step = () => {
+      k++;
+      const cpu = 18 + 9 * Math.sin(k / 3), gpu = 44 + 6 * Math.cos(k / 4), down = 3.3e6 + 4e5 * Math.sin(k);
+      onValues({ t: "v", a: ["gputemp"], v: {
+        cpu: [cpu, cpu.toFixed(0) + "%"], cputemp: null, cpuclock: [4210, f(4.21, 2) + " GHz"], ram: [61, "61%"], ramused: [9.8, f(9.8, 1) + " GB"],
+        gpu: [gpu, gpu.toFixed(0) + "%"], gputemp: [78, "78°"], vram: [3.1, f(3.1, 1) + " GB"], disk: [4, "4%"],
+        netdown: [down, rate(down)], netup: [215000, rate(215000)], battery: null, uptime: [11520, "3:12"], procs: [287, "287"] } });
+    };
+    step();
+    setInterval(step, 1000);
+  }
+})();
+</script>
+</body>
+</html>
