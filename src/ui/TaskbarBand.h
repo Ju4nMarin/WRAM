@@ -50,18 +50,21 @@ private:
         float x = 0;
         float y = 0;
         float columnWidth = 0;
+        float labelY = 0;
     };
 
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
     static void CALLBACK OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD, DWORD);
     void OnLocationChanged();
     void WatchForeground(HWND fg);
+    void WatchTaskbar();
     enum class Fullscreen { None, Window, Exclusive };
     Fullscreen DetectFullscreen(RECT& monitor) const;
     LRESULT Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool EnsureFactories();
     void RebuildFormats();
+    void FitToBar(int thickness);
     float Measure(IDWriteTextFormat* format, const std::wstring& text) const;
     void Layout();
     void Render();
@@ -96,11 +99,17 @@ private:
     float lineHeight_ = 0;
     float valueBaseline_ = 0;
     float labelBaseline_ = 0;
+    float labelLineHeight_ = 0;
+    float fontScale_ = 1.0f;
+    bool vertical_ = false;
+    int barThickness_ = 0;
+    HWINEVENTHOOK barHook_ = nullptr;
+    HWND barHwnd_ = nullptr;
     bool lightTheme_ = false;
     bool visible_ = false;
     RECT lastRect_{};
     static constexpr LONG kNoAppsEdge = -2147483647 - 1;
-    LONG appsRight_ = kNoAppsEdge;
+    LONG appsRight_ = kNoAppsEdge;  // borde de los íconos de apps: x en barra horizontal, y en vertical
     int maxOffsetDip_ = Config::kMaxOffset;
     int appsGapDip_ = -1;
     ULONGLONG lastAppsScan_ = 0;
