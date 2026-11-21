@@ -24,6 +24,29 @@
   <img src="docs/img/taskbar-dark.png" alt="WRAM strip on the Windows 11 taskbar, next to the system tray">
 </picture>
 
+<p align="center">
+  <img alt="C++17" src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
+  <img alt="Windows" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?style=for-the-badge">
+  <img alt="Win32 API" src="https://img.shields.io/badge/Win32-API-0078D4?style=for-the-badge">
+  <img alt="Direct2D" src="https://img.shields.io/badge/Direct2D-DirectWrite-5E5E5E?style=for-the-badge">
+  <img alt="WebView2" src="https://img.shields.io/badge/WebView2-Edge-0C59A4?style=for-the-badge">
+  <br>
+  <img alt="HTML5" src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+  <img alt="CSS3" src="https://img.shields.io/badge/CSS3-663399?style=for-the-badge&logo=css&logoColor=white">
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+  <img alt="CMake" src="https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white">
+  <img alt="MSVC" src="https://img.shields.io/badge/MSVC-Visual%20Studio%202022-5C2D91?style=for-the-badge">
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white">
+  <img alt="Sigstore" src="https://img.shields.io/badge/Sigstore-attested-2E2F71?style=for-the-badge">
+</p>
+
+<p align="center">
+  <a href="https://github.com/Ju4nMarin/WRAM/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Ju4nMarin/WRAM?style=flat-square"></a>
+  <a href="https://github.com/Ju4nMarin/WRAM/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Ju4nMarin/WRAM/ci.yml?branch=main&style=flat-square&label=CI"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
+  <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20450%20KB-blue?style=flat-square">
+</p>
+
 ## What it does
 
 WRAM draws a text strip to the left of the system tray with the metrics you choose: CPU, RAM and GPU usage, temperatures, network, disk, battery and more. It is configured from its own window, in light or dark theme, and every change shows up on the taskbar instantly.
