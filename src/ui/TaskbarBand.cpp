@@ -296,11 +296,11 @@ void TaskbarBand::Reposition() {
     fullscreen_ = DetectFullscreen(monitor);
     const auto mode = static_cast<FullscreenMode>(config_.fullscreenMode);
 
-    // Con una ventana en pantalla completa la franja puede ocultarse, flotar en una esquina o quedarse en su sitio.
-    // Sobre un juego Direct3D exclusivo nada puede dibujarse encima, así que solo se oculta.
-    const bool overlay = fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Move;
-    const bool hide = cells_.empty() || (fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Hide) ||
-                      (fullscreen_ == Fullscreen::Exclusive && mode != FullscreenMode::Keep) || (!overlay && !g.visible);
+    // Con una ventana en pantalla completa la franja se oculta o se muestra flotando en la posición elegida.
+    // Sobre un juego Direct3D exclusivo nada puede dibujarse encima, así que siempre se oculta.
+    const bool overlay = fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Visible;
+    const bool hide = cells_.empty() || fullscreen_ == Fullscreen::Exclusive ||
+                      (fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Hidden) || (!overlay && !g.visible);
     if (hide) {
         if (visible_) ShowWindow(hwnd_, SW_HIDE);
         visible_ = false;

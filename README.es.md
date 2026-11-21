@@ -30,7 +30,7 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 
 - 14 métricas disponibles, hasta 10 a la vez, en una o dos filas.
 - Umbral de aviso por métrica: el valor cambia de color al cruzarlo.
-- En pantalla completa se oculta, flota en el recuadro de pantalla que elijas o se queda en su sitio, y reacciona en el acto al entrar y al salir.
+- En pantalla completa puede quedar oculta o visible en el recuadro de pantalla que elijas, y reacciona en el acto al entrar y al salir.
 - Interfaz en español, inglés, portugués, francés, chino simplificado y japonés.
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
 - En reposo usa cerca de 9 MB de memoria y 0,2 % de un núcleo de CPU.
