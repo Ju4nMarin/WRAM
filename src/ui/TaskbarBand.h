@@ -51,6 +51,9 @@ private:
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
     static void CALLBACK OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD, DWORD);
     void OnLocationChanged();
+    void WatchForeground(HWND fg);
+    enum class Fullscreen { None, Window, Exclusive };
+    Fullscreen DetectFullscreen(RECT& monitor) const;
     LRESULT Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool EnsureFactories();
@@ -60,13 +63,14 @@ private:
     void Render();
     void ResizeSurface(int width, int height);
     void ReadTheme();
-    bool ShouldHide() const;
+
 
     IBandEvents& events_;
     HWND hwnd_ = nullptr;
     HWINEVENTHOOK hook_ = nullptr;
     HWINEVENTHOOK locationHook_ = nullptr;
-    bool hiddenForFullscreen_ = false;
+    Fullscreen fullscreen_ = Fullscreen::None;
+    bool overlay_ = false;
     Config config_;
     std::vector<Cell> cells_;
 

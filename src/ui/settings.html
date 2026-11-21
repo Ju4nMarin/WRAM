@@ -126,6 +126,38 @@ main { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
 .stage-head small { color: var(--text-3); font-size: 12px; }
 .stage-note { display: flex; align-items: center; gap: 6px; margin-top: var(--s-2); color: var(--text-3); font-size: 12px; }
 .stage-note svg { width: 14px; height: 14px; flex: none; }
+.stage-ctl { display: flex; align-items: center; gap: var(--s-3); }
+.seg.seg-sm button { height: 22px; padding: 0 10px; font-size: 12px; }
+
+/* Pantalla completa: monitor de ejemplo con 8 recuadros elegibles */
+.row.pos-row { flex-direction: column; align-items: stretch; gap: var(--s-4); padding-bottom: var(--s-4); }
+.screen {
+  position: relative;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 8px;
+  aspect-ratio: 16 / 9; width: 100%; max-width: 560px; align-self: center;
+  padding: 10px;
+  border-radius: var(--r-lg);
+  background: #121212;
+  border: 6px solid #2f2f2f;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.screen-label { grid-column: 2; grid-row: 2; align-self: center; justify-self: center; color: rgba(255, 255, 255, 0.4); font-size: 12px; }
+.spot {
+  display: grid; place-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.22); border-radius: var(--r-md);
+  background: transparent; color: #fff; padding: 4px;
+  transition: background-color 120ms var(--ease), border-color 120ms var(--ease);
+}
+.spot:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.4); }
+.spot[aria-checked="true"] { border: 2px solid var(--accent); background: rgba(96, 205, 255, 0.08); }
+.spot:disabled { cursor: default; }
+.screen.off .spot { opacity: 0.35; }
+.chip { display: grid; grid-template-columns: repeat(2, auto); gap: 2px 10px; padding: 5px 8px; border-radius: 6px; background: rgba(20, 20, 20, 0.85); font-size: 10px; line-height: 1.25; }
+.chip-cell { display: flex; justify-content: space-between; gap: 5px; white-space: nowrap; }
+.chip-cell i { font-style: normal; opacity: 0.68; }
+.chip-cell b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fs-note { display: flex; align-items: center; gap: 6px; }
+.fs-note svg { width: 14px; height: 14px; flex: none; }
 .scroll { overflow-y: auto; flex: 1; padding: var(--s-4) var(--s-6) var(--s-7); }
 h1 { font: 600 28px/1.2 var(--f-display); }
 .sec-head { display: flex; justify-content: space-between; align-items: end; gap: var(--s-4); margin-bottom: var(--s-4); flex-wrap: wrap; }
@@ -393,6 +425,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <symbol id="i-chev" viewBox="0 0 16 16"><path d="M4.5 10l3.5-3.5 3.5 3.5"/></symbol>
   <symbol id="i-warn" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M8 5v3.6M8 10.8v.01"/></symbol>
   <symbol id="i-folder" viewBox="0 0 16 16"><path d="M2 4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-screen" viewBox="0 0 16 16"><rect x="1.8" y="2.8" width="12.4" height="8.4" rx="1.2"/><path d="M5.5 13.6h5M8 11.2v2.4"/></symbol>
   <symbol id="i-link" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5V13a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"/></symbol>
 </svg>
 
@@ -400,6 +433,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <div class="brand" role="img" aria-label="WRAM"><span class="logo"></span><span class="logo mark"></span></div>
   <button class="nav-btn" data-nav="metrics" aria-current="page"><svg class="i"><use href="#i-metrics"/></svg><span data-i18n="nav.metrics"></span></button>
   <button class="nav-btn" data-nav="look"><svg class="i"><use href="#i-look"/></svg><span data-i18n="nav.look"></span></button>
+  <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
   <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.0.0</span></div>
@@ -409,7 +443,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <div class="stage">
     <div class="stage-head">
       <p class="stage-title" data-i18n="stage.title"></p>
-      <small data-i18n="stage.hint"></small>
+      <div class="stage-ctl"><small data-i18n="stage.hint"></small><div class="seg seg-sm" role="radiogroup" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" data-i18n="stage.barWin"></button><button role="radio" data-v="light" data-i18n="stage.barLight"></button><button role="radio" data-v="dark" data-i18n="stage.barDark"></button></div></div>
     </div>
     <div class="taskbar" id="taskbar" data-i18n-aria="stage.title">
       <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -516,10 +550,6 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="row-ctl"><label class="toggle"><input type="checkbox" id="autostart" data-bind="autostart"><span></span></label></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="hideFullscreen" data-i18n="set.fs"></label></strong><small data-i18n="set.fsD"></small></div>
-          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="hideFullscreen" data-bind="hideFullscreen"><span></span></label></div>
-        </div>
-        <div class="row">
           <div class="row-text"><strong id="l-interval" data-i18n="set.interval"></strong><small data-i18n="set.intervalD"></small></div>
           <div class="row-ctl"><div class="seg" role="radiogroup" aria-labelledby="l-interval" data-bind="interval" data-type="int">
             <button role="radio" data-v="500" class="num" id="iv-500">0.5 s</button><button role="radio" data-v="1000">1 s</button><button role="radio" data-v="2000">2 s</button><button role="radio" data-v="5000">5 s</button></div></div>
@@ -531,6 +561,26 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
         <div class="row" id="reset-row">
           <div class="row-text"><strong data-i18n="set.reset"></strong><small id="reset-text"></small></div>
           <div class="row-ctl" id="reset-ctl"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-fs" aria-labelledby="h-fs" hidden>
+      <div class="sec-head"><div><h1 id="h-fs" data-i18n="nav.fs"></h1><p data-i18n="fs.desc"></p></div></div>
+      <div class="rows">
+        <div class="row">
+          <div class="row-text"><strong id="l-fsmode" data-i18n="fs.mode"></strong><small id="fs-mode-desc"></small></div>
+          <div class="row-ctl"><div class="seg" role="radiogroup" aria-labelledby="l-fsmode" data-bind="fullscreen" data-type="int">
+            <button role="radio" data-v="0" data-i18n="fs.hide"></button><button role="radio" data-v="1" data-i18n="fs.move"></button><button role="radio" data-v="2" data-i18n="fs.keep"></button></div></div>
+        </div>
+        <div class="row pos-row" id="pos-row">
+          <div class="pos-head">
+            <div class="row-text"><strong id="l-pos" data-i18n="fs.pos"></strong><small id="fs-pos-desc"></small></div>
+          </div>
+          <div class="screen" id="screen" role="radiogroup" aria-labelledby="l-pos">
+            <span class="screen-label" data-i18n="fs.screen"></span>
+          </div>
+          <p class="muted fs-note"><svg class="i"><use href="#i-info"/></svg><span data-i18n="fs.exclusive"></span></p>
         </div>
       </div>
     </section>
@@ -610,6 +660,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Oscuro",
       "set.autostart": "Iniciar con Windows", "set.autostartD": "Se registra solo para tu usuario, sin permisos de administrador.",
       "set.fs": "Ocultar en pantalla completa", "set.fsD": "La franja desaparece en el acto al entrar en un juego, un video o una presentación, y vuelve al salir.",
+      "nav.fs": "Pantalla completa", "fs.desc": "Qué hace el indicador cuando un juego, un video o una presentación ocupa toda la pantalla.", "fs.mode": "Comportamiento", "fs.modeD": "Se aplica en el acto al entrar y al salir de pantalla completa.", "fs.hide": "Ocultar", "fs.move": "Mover", "fs.keep": "Dejar igual", "fs.hideD": "El indicador desaparece y vuelve al salir de pantalla completa.", "fs.moveD": "El indicador flota en el recuadro elegido, con un fondo oscuro para leerse sobre cualquier imagen.", "fs.keepD": "El indicador se queda en su lugar de la barra, encima de la imagen.", "fs.pos": "Posición en pantalla", "fs.posD": "Haz clic en el recuadro donde quieres ver el indicador en pantalla completa.", "fs.posOff": "Elige Mover para usar una posición propia.", "fs.exclusive": "Los juegos en pantalla completa exclusiva no permiten dibujar encima; ahí el indicador se oculta.",
+      "fs.p0": "Arriba a la izquierda", "fs.p1": "Arriba al centro", "fs.p2": "Arriba a la derecha", "fs.p3": "Centro a la izquierda", "fs.p4": "Centro a la derecha", "fs.p5": "Abajo a la izquierda", "fs.p6": "Abajo al centro", "fs.p7": "Abajo a la derecha", "fs.screen": "Tu pantalla",
+      "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Oscura", "stage.noteForced": "Vista previa con la barra en tema {mode}. Tu barra de Windows usa tema {win}.", "word.light": "claro", "word.dark": "oscuro",
       "set.interval": "Frecuencia de actualización", "set.intervalD": "Intervalos más largos gastan menos CPU y batería.",
       "set.file": "Archivo de configuración", "set.open": "Abrir carpeta",
       "set.reset": "Restablecer", "set.resetD": "Vuelve a las seis métricas iniciales y borra etiquetas, umbrales y apariencia. El inicio con Windows no cambia.",
@@ -650,6 +703,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "System", "set.light": "Light", "set.dark": "Dark",
       "set.autostart": "Start with Windows", "set.autostartD": "Registered for your user only, without administrator rights.",
       "set.fs": "Hide in full screen", "set.fsD": "The strip disappears instantly when a game, video or presentation goes full screen, and comes back when it exits.",
+      "nav.fs": "Full screen", "fs.desc": "What the indicator does when a game, video or presentation takes the whole screen.", "fs.mode": "Behavior", "fs.modeD": "Applies instantly when entering and leaving full screen.", "fs.hide": "Hide", "fs.move": "Move", "fs.keep": "Keep", "fs.hideD": "The indicator disappears and comes back when full screen ends.", "fs.moveD": "The indicator floats in the chosen spot, on a dark backdrop that reads over any image.", "fs.keepD": "The indicator stays in its taskbar spot, on top of the image.", "fs.pos": "Position on screen", "fs.posD": "Click the spot where you want the indicator in full screen.", "fs.posOff": "Choose Move to use a custom position.", "fs.exclusive": "Games in exclusive full screen do not allow drawing on top; there the indicator is hidden.",
+      "fs.p0": "Top left", "fs.p1": "Top center", "fs.p2": "Top right", "fs.p3": "Middle left", "fs.p4": "Middle right", "fs.p5": "Bottom left", "fs.p6": "Bottom center", "fs.p7": "Bottom right", "fs.screen": "Your screen",
+      "stage.bar": "Taskbar", "stage.barWin": "Windows", "stage.barLight": "Light", "stage.barDark": "Dark", "stage.noteForced": "Preview with a {mode} taskbar. Your Windows taskbar uses the {win} theme.", "word.light": "light", "word.dark": "dark",
       "set.interval": "Refresh rate", "set.intervalD": "Longer intervals use less CPU and battery.",
       "set.file": "Settings file", "set.open": "Open folder",
       "set.reset": "Reset", "set.resetD": "Goes back to the six default metrics and clears labels, thresholds and appearance. Startup with Windows is kept.",
@@ -690,6 +746,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Escuro",
       "set.autostart": "Iniciar com o Windows", "set.autostartD": "Registrado só para o seu usuário, sem permissões de administrador.",
       "set.fs": "Ocultar em tela cheia", "set.fsD": "A faixa some na hora quando um jogo, vídeo ou apresentação entra em tela cheia, e volta ao sair.",
+      "nav.fs": "Tela cheia", "fs.desc": "O que o indicador faz quando um jogo, vídeo ou apresentação ocupa a tela inteira.", "fs.mode": "Comportamento", "fs.modeD": "Aplicado na hora ao entrar e sair da tela cheia.", "fs.hide": "Ocultar", "fs.move": "Mover", "fs.keep": "Manter", "fs.hideD": "O indicador some e volta ao sair da tela cheia.", "fs.moveD": "O indicador flutua no quadro escolhido, com fundo escuro para ser lido sobre qualquer imagem.", "fs.keepD": "O indicador fica no seu lugar na barra, por cima da imagem.", "fs.pos": "Posição na tela", "fs.posD": "Clique no quadro onde quer ver o indicador em tela cheia.", "fs.posOff": "Escolha Mover para usar uma posição própria.", "fs.exclusive": "Jogos em tela cheia exclusiva não permitem desenhar por cima; nesse caso o indicador fica oculto.",
+      "fs.p0": "Superior esquerdo", "fs.p1": "Superior central", "fs.p2": "Superior direito", "fs.p3": "Centro esquerdo", "fs.p4": "Centro direito", "fs.p5": "Inferior esquerdo", "fs.p6": "Inferior central", "fs.p7": "Inferior direito", "fs.screen": "Sua tela",
+      "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Escura", "stage.noteForced": "Prévia com a barra no tema {mode}. Sua barra do Windows usa o tema {win}.", "word.light": "claro", "word.dark": "escuro",
       "set.interval": "Frequência de atualização", "set.intervalD": "Intervalos maiores gastam menos CPU e bateria.",
       "set.file": "Arquivo de configuração", "set.open": "Abrir pasta",
       "set.reset": "Redefinir", "set.resetD": "Volta às seis métricas iniciais e apaga rótulos, limites e aparência. A inicialização com o Windows não muda.",
@@ -730,6 +789,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Système", "set.light": "Clair", "set.dark": "Sombre",
       "set.autostart": "Démarrer avec Windows", "set.autostartD": "Enregistré pour votre utilisateur seulement, sans droits d’administrateur.",
       "set.fs": "Masquer en plein écran", "set.fsD": "La bande disparaît aussitôt quand un jeu, une vidéo ou une présentation passe en plein écran, et revient à la sortie.",
+      "nav.fs": "Plein écran", "fs.desc": "Ce que fait l’indicateur quand un jeu, une vidéo ou une présentation occupe tout l’écran.", "fs.mode": "Comportement", "fs.modeD": "S’applique aussitôt à l’entrée et à la sortie du plein écran.", "fs.hide": "Masquer", "fs.move": "Déplacer", "fs.keep": "Laisser", "fs.hideD": "L’indicateur disparaît et revient à la sortie du plein écran.", "fs.moveD": "L’indicateur flotte dans l’emplacement choisi, sur un fond sombre lisible sur n’importe quelle image.", "fs.keepD": "L’indicateur reste à sa place dans la barre, par-dessus l’image.", "fs.pos": "Position à l’écran", "fs.posD": "Cliquez sur l’emplacement où afficher l’indicateur en plein écran.", "fs.posOff": "Choisissez Déplacer pour utiliser une position personnalisée.", "fs.exclusive": "Les jeux en plein écran exclusif ne permettent pas de dessiner par-dessus ; l’indicateur y est masqué.",
+      "fs.p0": "En haut à gauche", "fs.p1": "En haut au centre", "fs.p2": "En haut à droite", "fs.p3": "Au milieu à gauche", "fs.p4": "Au milieu à droite", "fs.p5": "En bas à gauche", "fs.p6": "En bas au centre", "fs.p7": "En bas à droite", "fs.screen": "Votre écran",
+      "stage.bar": "Barre", "stage.barWin": "Windows", "stage.barLight": "Claire", "stage.barDark": "Sombre", "stage.noteForced": "Aperçu avec une barre en thème {mode}. Votre barre Windows utilise le thème {win}.", "word.light": "clair", "word.dark": "sombre",
       "set.interval": "Fréquence d’actualisation", "set.intervalD": "Des intervalles plus longs consomment moins de CPU et de batterie.",
       "set.file": "Fichier de configuration", "set.open": "Ouvrir le dossier",
       "set.reset": "Réinitialiser", "set.resetD": "Revient aux six mesures initiales et efface étiquettes, seuils et apparence. Le démarrage avec Windows ne change pas.",
@@ -770,6 +832,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "系统", "set.light": "浅色", "set.dark": "深色",
       "set.autostart": "开机时启动", "set.autostartD": "仅为当前用户注册，无需管理员权限。",
       "set.fs": "全屏时隐藏", "set.fsD": "游戏、视频或演示进入全屏时显示条立即隐藏，退出后恢复。",
+      "nav.fs": "全屏", "fs.desc": "游戏、视频或演示占满整个屏幕时指示条的行为。", "fs.mode": "行为", "fs.modeD": "进入和退出全屏时立即生效。", "fs.hide": "隐藏", "fs.move": "移动", "fs.keep": "保持", "fs.hideD": "指示条隐藏，退出全屏后恢复。", "fs.moveD": "指示条浮动在所选位置，带深色背景，在任何画面上都清晰可读。", "fs.keepD": "指示条留在任务栏上的位置，显示在画面上方。", "fs.pos": "屏幕位置", "fs.posD": "点击你希望全屏时显示指示条的位置。", "fs.posOff": "选择“移动”后可自定义位置。", "fs.exclusive": "独占全屏的游戏不允许在其上方绘制，此时指示条会隐藏。",
+      "fs.p0": "左上", "fs.p1": "上方居中", "fs.p2": "右上", "fs.p3": "左侧居中", "fs.p4": "右侧居中", "fs.p5": "左下", "fs.p6": "下方居中", "fs.p7": "右下", "fs.screen": "你的屏幕",
+      "stage.bar": "任务栏", "stage.barWin": "Windows", "stage.barLight": "浅色", "stage.barDark": "深色", "stage.noteForced": "预览使用{mode}任务栏。你的 Windows 任务栏使用{win}主题。", "word.light": "浅色", "word.dark": "深色",
       "set.interval": "刷新频率", "set.intervalD": "间隔越长，CPU 和电池消耗越少。",
       "set.file": "配置文件", "set.open": "打开文件夹",
       "set.reset": "重置", "set.resetD": "恢复为初始的六个指标，并清除标签、阈值和外观。开机启动设置不变。",
@@ -814,7 +879,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const lines = ["[general]",
       "interval=" + c.interval, "rows=" + c.rows, "font=" + c.font, "fontSize=" + c.fontSize,
       "valueColor=" + c.valueColor, "alertColor=" + c.alertColor, "labels=" + (c.labels ? 1 : 0),
-      "autostart=" + (c.autostart ? 1 : 0), "hideFullscreen=" + (c.hideFullscreen ? 1 : 0), "offset=" + c.offset,
+      "autostart=" + (c.autostart ? 1 : 0), "fullscreen=" + c.fullscreen, "overlayPos=" + c.overlayPos, "offset=" + c.offset,
       "theme=" + c.theme, "lang=" + c.language, "", "[slots]"];
     c.slots.forEach((s, i) => lines.push((i + 1) + "=" + [s.key, cleanLabel(s.label), Number(s.thr) || 0, s.alert ? 1 : 0].join("|")));
     return lines.join("\n") + "\n";
@@ -849,19 +914,30 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   $("#open-config").addEventListener("click", () => send("open\nconfig"));
 
   // ---------- Vista previa ----------
+  // La vista previa puede forzar barra clara u oscura para comparar; no cambia la configuración.
+  let previewBar = "auto";
+  function previewLight() { return previewBar === "auto" ? S.taskbarLight : previewBar === "light"; }
   function valueColor() {
     const v = S.cfg.valueColor;
-    return v === "auto" ? (S.taskbarLight ? "#1a1a1a" : "#ffffff") : v;
+    return v === "auto" ? (previewLight() ? "#1a1a1a" : "#ffffff") : v;
   }
   const measureCtx = document.createElement("canvas").getContext("2d");
   function measure(text, c) {
     measureCtx.font = "600 " + c.fontSize + 'px "' + c.font + '"';
     return Math.ceil(measureCtx.measureText(text).width);
   }
+  function renderBarMode() {
+    $$("#bar-mode button").forEach((b) => {
+      b.setAttribute("aria-checked", String(b.dataset.v === previewBar));
+      b.onclick = () => { previewBar = b.dataset.v; renderBarMode(); renderPreview(); };
+    });
+  }
   function renderPreview() {
     const c = S.cfg;
-    $("#taskbar").classList.toggle("light", S.taskbarLight);
-    $("#stage-note").textContent = t(S.taskbarLight ? "stage.noteLight" : "stage.noteDark");
+    $("#taskbar").classList.toggle("light", previewLight());
+    $("#stage-note").textContent = previewBar === "auto"
+      ? t(S.taskbarLight ? "stage.noteLight" : "stage.noteDark")
+      : t("stage.noteForced", { mode: t(previewBar === "light" ? "word.light" : "word.dark"), win: t(S.taskbarLight ? "word.light" : "word.dark") });
     const band = $("#band");
     band.textContent = "";
     band.style.gridTemplateRows = "repeat(" + Math.min(c.rows, Math.max(1, c.slots.length)) + ", auto)";
@@ -1131,6 +1207,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             c[key] = asInt ? parseInt(b.dataset.v, 10) : b.dataset.v;
             bindSettings();
             if (key === "theme") applyTheme();
+            if (key === "fullscreen") renderFullscreen();
             commit(true);
           };
         });
@@ -1227,10 +1304,55 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     });
   }
 
+  // ---------- Pantalla completa ----------
+  // Recuadros del monitor de ejemplo: [posición, columna, fila] en una cuadrícula de 3 × 3 sin el centro.
+  const SCREEN_SPOTS = [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 1, 2], [4, 3, 2], [5, 1, 3], [6, 2, 3], [7, 3, 3]];
+  function renderFullscreen() {
+    const c = S.cfg;
+    const mode = c.fullscreen;
+    $("#fs-mode-desc").textContent = t(mode === 1 ? "fs.moveD" : mode === 2 ? "fs.keepD" : "fs.hideD");
+    $("#fs-pos-desc").textContent = t(mode === 1 ? "fs.posD" : "fs.posOff");
+    const screen = $("#screen");
+    screen.classList.toggle("off", mode !== 1);
+    $$(".spot", screen).forEach((n) => n.remove());
+    SCREEN_SPOTS.forEach(([pos, col, row]) => {
+      const b = el("button", "spot");
+      b.type = "button";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(c.overlayPos === pos));
+      b.setAttribute("aria-label", t("fs.p" + pos));
+      b.title = t("fs.p" + pos);
+      b.disabled = mode !== 1;
+      b.style.gridColumn = String(col);
+      b.style.gridRow = String(row);
+      if (c.overlayPos === pos) {
+        const chip = el("span", "chip");
+        c.slots.slice(0, 4).forEach((s) => {
+          const meta = S.byKey[s.key];
+          const val = S.values[s.key];
+          const cell = el("span", "chip-cell");
+          const vb = el("b", null, val ? val[1] : "—");
+          vb.dataset.key = s.key;
+          cell.append(el("i", null, cleanLabel(s.label) || meta.label), vb);
+          chip.appendChild(cell);
+        });
+        b.appendChild(chip);
+      }
+      b.addEventListener("click", () => {
+        c.overlayPos = pos;
+        renderFullscreen();
+        commit(true);
+        $$(".spot", screen).find((n) => n.getAttribute("aria-checked") === "true").focus();
+      });
+      screen.appendChild(b);
+    });
+  }
+
   function renderAll() {
     renderSlots();
     renderCatalog();
     renderPreview();
+    renderFullscreen();
   }
   function refreshTexts() {
     applyStaticTexts();
@@ -1259,6 +1381,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     applyStaticTexts();
     bindSettings();
     renderReset(false);
+    renderBarMode();
     renderAll();
     renderAbout(m);
   }
@@ -1266,6 +1389,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     S.values = m.v;
     S.alerts = new Set(m.a);
     $$("[data-val]").forEach((n) => paintValue(n, S.values[n.dataset.val]));
+    $$("#screen .chip b").forEach((b) => {
+      const val = S.values[b.dataset.key];
+      b.textContent = val ? val[1] : "—";
+    });
     $$("#band .bv").forEach((v) => {
       const val = S.values[v.dataset.key];
       v.textContent = val ? val[1] : "—";
@@ -1274,7 +1401,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   }
 
   const hash = location.hash.slice(1).split("&");
-  if (/^(metrics|look|settings|about)$/.test(hash[0])) go(hash[0]);
+  if (/^(metrics|look|fs|settings|about)$/.test(hash[0])) go(hash[0]);
 
   if (host) {
     host.addEventListener("message", (e) => {
@@ -1287,6 +1414,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     send("ready");
   } else {
     const demoLang = hash.find((p) => I18N[p]) || "es";
+    if (hash.indexOf("barlight") >= 0) previewBar = "light";
     demo(hash.indexOf("light") >= 0 ? 1 : hash.indexOf("dark") >= 0 ? 2 : 0, demoLang);
   }
 
@@ -1307,7 +1435,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
-      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, hideFullscreen: true, offset: 8, theme: theme, language: 0,
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, fullscreen: 1, overlayPos: 2, offset: 8, theme: theme, language: 0,
         slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
           { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
     });

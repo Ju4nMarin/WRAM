@@ -13,7 +13,7 @@ La franja se ubica a la izquierda de la bandeja del sistema, en la barra de tare
 
 Los valores usan blanco o negro según el tema de la barra de tareas, y el separador decimal de tu configuración regional. Una métrica sin sensor en el equipo muestra un guion.
 
-La vista previa de la ventana de configuración reproduce la barra con el tema de la barra de tareas de Windows, que puede ser distinto del tema elegido para la ventana. Lo indica la nota debajo de la vista previa.
+La vista previa de la ventana de configuración reproduce la barra con el tema de la barra de tareas de Windows, que puede ser distinto del tema elegido para la ventana. Lo indica la nota debajo de la vista previa. El selector Windows / Clara / Oscura junto a la vista previa muestra la franja sobre una barra clara u oscura para comparar; no cambia ningún ajuste.
 
 ## Ventana de configuración
 
@@ -41,6 +41,20 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 | Color de aviso | Rojo, amarillo, magenta, azul u otro color |
 | Distancia a la bandeja | 0 a 600 px |
 
+### Pantalla completa
+
+![Pantalla completa](../img/pantalla-completa-oscuro.png)
+
+Qué hace la franja cuando un juego, un video o una presentación ocupa toda la pantalla. Reacciona en el acto al entrar y al salir, también con F11 en el navegador.
+
+| Comportamiento | Resultado |
+|---|---|
+| Ocultar | La franja desaparece y vuelve al salir de pantalla completa |
+| Mover | La franja flota en el recuadro elegido de la pantalla, con un fondo oscuro translúcido |
+| Dejar igual | La franja se queda en su lugar de la barra, encima de la imagen |
+
+Con Mover, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los bordes superior e inferior y centros laterales); se elige con un clic. Los juegos en pantalla completa exclusiva no permiten otras ventanas encima, así que ahí la franja siempre se oculta.
+
 ### Configuración
 
 ![Configuración](../img/configuracion-claro.png)
@@ -50,7 +64,6 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 | Idioma | Sistema, español, inglés, portugués, francés o chino simplificado. Cambia la ventana, el menú y las etiquetas por defecto |
 | Tema de la aplicación | Sistema, claro u oscuro. Solo afecta a esta ventana; la franja y la vista previa siguen el tema de la barra de tareas de Windows |
 | Iniciar con Windows | Registro en `HKCU\...\Run`, sin administrador |
-| Ocultar en pantalla completa | Oculta la franja al instante con juegos, videos, presentaciones o F11 |
 | Frecuencia de actualización | 0,5, 1, 2 o 5 segundos |
 | Archivo de configuración | Ruta de `config.ini` y botón para abrir su carpeta |
 | Restablecer | Vuelve a las seis métricas iniciales, con confirmación |
@@ -73,7 +86,8 @@ valueColor=auto
 alertColor=#ff5a4e
 labels=1
 autostart=0
-hideFullscreen=1
+fullscreen=0
+overlayPos=2
 offset=8
 theme=0
 lang=0
@@ -86,6 +100,8 @@ lang=0
 5=netdown||0|0
 6=netup||0|0
 ```
+
+`theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado. `fullscreen`: 0 ocultar, 1 mover, 2 dejar igual. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
 
 Cada posición sigue el formato `clave|etiqueta|umbral|aviso`.
 

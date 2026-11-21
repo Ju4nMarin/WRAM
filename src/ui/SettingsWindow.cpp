@@ -3,10 +3,12 @@
 #include <algorithm>
 
 #include <dwmapi.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <wrl.h>
 
 #include <WebView2.h>
+#include <WebView2EnvironmentOptions.h>
 
 #include "../../res/resource.h"
 #include "../core/I18n.h"
@@ -147,8 +149,13 @@ void SettingsWindow::Show(HINSTANCE instance) {
 void SettingsWindow::CreateBrowser() {
     const unsigned generation = ++generation_;
     const std::wstring folder = UserDataFolder();
+    // La interfaz es local y estática: sin descargas de componentes (DRM, filtros, voz) ni cachés en disco.
+    auto options = Microsoft::WRL::Make<CoreWebView2EnvironmentOptions>();
+    options->put_AdditionalBrowserArguments(
+        L"--disable-component-update --disable-background-networking --disable-gpu-shader-disk-cache "
+        L"--disk-cache-size=1 --no-pings --disable-features=msSmartScreenProtection,SpareRendererForSitePerProcess");
     const HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(
-        nullptr, folder.c_str(), nullptr,
+        nullptr, folder.c_str(), options.Get(),
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [this, generation](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
                 if (generation != generation_ || !hwnd_) return S_OK;
@@ -303,6 +310,18 @@ void SettingsWindow::ResizeBrowser() {
     RECT rc;
     GetClientRect(hwnd_, &rc);
     controller_->put_Bounds(rc);
+}
+
+void SettingsWindow::PurgeUserData() {
+    // Perfil temporal de WebView2: se borra con la ventana cerrada para no dejar datos en disco.
+    std::wstring from = UserDataFolder();
+    if (GetFileAttributesW(from.c_str()) == INVALID_FILE_ATTRIBUTES) return;
+    from.push_back(L'\0');  // SHFileOperation espera una lista terminada en doble nulo
+    SHFILEOPSTRUCTW op{};
+    op.wFunc = FO_DELETE;
+    op.pFrom = from.c_str();
+    op.fFlags = FOF_NO_UI;
+    SHFileOperationW(&op);
 }
 
 void SettingsWindow::ReleaseBrowser() {

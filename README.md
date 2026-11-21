@@ -30,7 +30,7 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 
 - 14 metrics available, up to 10 at a time, in one or two rows.
 - Per-metric alert threshold: the value changes color when it crosses it.
-- Hides instantly when a game, video or presentation goes full screen, and comes back when it exits.
+- In full screen it hides, floats in a spot you pick on the screen, or stays put, and reacts instantly when entering and leaving.
 - Interface in Spanish, English, Portuguese, French and Simplified Chinese.
 - No administrator rights, no drivers, no runtime: a single `WRAM.exe`.
 - At idle it uses about 9 MB of memory and 0.2% of one CPU core.
@@ -39,9 +39,9 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 
 ![Metrics, light theme](docs/img/metrics-light.png)
 
-| Settings | About |
+| Full screen | Settings |
 |---|---|
-| ![Settings](docs/img/settings-light.png) | ![About](docs/img/about-light.png) |
+| ![Full screen](docs/img/fullscreen-dark.png) | ![Settings](docs/img/settings-light.png) |
 
 ## Metrics
 
