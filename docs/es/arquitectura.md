@@ -27,7 +27,7 @@ tests/        pruebas del núcleo
 | `sensors/GpuThermalProvider` | Temperatura de GPU con `D3DKMTQueryAdapterInfo` |
 | `sensors/SystemProviders` | Memoria, batería y tiempo encendido |
 | `sensors/Sampler` | Orquesta los proveedores y arma cada `MetricFrame` |
-| `ui/TaskbarBand` | Franja: posición junto a la bandeja, medición, dibujo y ocultado en pantalla completa |
+| `ui/TaskbarBand` | Franja: posición junto a la bandeja (limitada por los íconos de las apps, leídos con UI Automation), medición, dibujo y pantalla completa |
 | `ui/TrayIcon` | Ícono del área de notificación |
 | `ui/SettingsWindow` | Ventana con WebView2, tema de la barra de título y canal de mensajes |
 | `ui/settings.html` | Interfaz de configuración |

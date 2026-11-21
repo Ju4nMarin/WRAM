@@ -34,6 +34,18 @@
 
 The process heap terminates on corruption (`HeapEnableTerminationOnCorruption`) and only one instance runs per session.
 
+## Dependencies and supply chain
+
+| Dependency | Version | How it is pinned |
+|---|---|---|
+| Microsoft.Web.WebView2 SDK | 1.0.4370.26 | Downloaded by CMake from NuGet and checked against its SHA-256 |
+| actions/checkout | v7.0.1 | Full commit SHA, without persisted credentials |
+| actions/upload-artifact | v7.0.2 | Full commit SHA |
+| actions/attest-build-provenance | v4.2.2 | Full commit SHA |
+| mikepenz/action-junit-report | v6.7.1 | Full commit SHA |
+
+Pinning actions by commit SHA means a moved or compromised tag cannot change what the workflow runs. Dependabot (`.github/dependabot.yml`) checks the actions every week and opens a pull request to `develop` when there is a new version. The workflow token is read-only except in the release job, which only gets the permissions it needs to publish and attest.
+
 ## Executable integrity
 
 Releases are built by the CI workflow from the tagged commit, not on a developer machine. Each release includes:
