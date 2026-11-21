@@ -36,7 +36,25 @@ La heap del proceso termina ante corrupción (`HeapEnableTerminationOnCorruption
 
 ## Integridad del ejecutable
 
-Cada versión publicada incluye el hash SHA-256 de `WRAM.exe`. Las propiedades del archivo muestran el autor, la versión y el copyright en los metadatos de versión.
+Las versiones las compila el workflow de CI a partir del commit etiquetado, no una máquina de desarrollo. Cada versión incluye:
+
+- El hash SHA-256 de `WRAM.exe`.
+- Una atestación de procedencia firmada con Sigstore a través de GitHub. Prueba que el archivo salió del workflow de este repositorio a partir de ese commit. Se verifica con GitHub CLI:
+
+  ```
+  gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
+  ```
+
+Las propiedades del archivo (pestaña Detalles) muestran los metadatos de versión:
+
+| Campo | Valor |
+|---|---|
+| Nombre del producto | WRAM |
+| Descripción | WRAM - monitor del sistema en la barra de tareas |
+| Compañía | Juan Guillermo Marín Córdoba |
+| Copyright | © 2026 Juan Guillermo Marín Córdoba. Licencia MIT. |
+| Comentarios | Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM |
+| Nombre original | WRAM.exe |
 
 ## Reporte de vulnerabilidades
 

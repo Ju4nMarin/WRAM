@@ -38,6 +38,12 @@ Para comprobar que el archivo es el publicado, compara su hash con el que figura
 Get-FileHash .\WRAM.exe -Algorithm SHA256
 ```
 
+Con GitHub CLI también se puede verificar que lo compiló el CI de este repositorio:
+
+```
+gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
+```
+
 ## Iniciar con Windows
 
 En la configuración, sección Configuración, activa "Iniciar con Windows". Se registra en `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` solo para tu usuario.
