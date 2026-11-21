@@ -37,7 +37,7 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 | Font | Segoe UI Variable Text, Bahnschrift, Segoe UI, Cascadia Mono, Consolas |
 | Text size | 9 to 18 px at 100% scale |
 | Show labels | Yes or no |
-| Value color | Automatic, blue or a custom color |
+| Value color | Default (white or black to match the taskbar) or custom |
 | Alert color | Red, yellow, magenta, blue or a custom color |
 | Distance from the tray | 0 to 600 px |
 
@@ -61,7 +61,7 @@ With Move, the screen diagram has 8 spots (corners, edge centers and side center
 
 | Setting | Description |
 |---|---|
-| Language | System, Spanish, English, Portuguese, French or Simplified Chinese. Changes the window, the menu and the default labels |
+| Language | System, Spanish, English, Portuguese, French, Simplified Chinese or Japanese. Changes the window, the menu and the default labels |
 | App theme | System, light or dark. Affects this window only; the strip and the preview follow the Windows taskbar theme |
 | Start with Windows | Entry in `HKCU\...\Run`, no administrator rights |
 | Refresh rate | 0.5, 1, 2 or 5 seconds |
@@ -101,7 +101,7 @@ lang=0
 6=netup||0|0
 ```
 
-`theme`: 0 system, 1 light, 2 dark. `lang`: 0 system, 1 Spanish, 2 English, 3 Portuguese, 4 French, 5 Simplified Chinese. `fullscreen`: 0 hide, 1 move, 2 keep. `overlayPos`: 0 top left, 1 top center, 2 top right, 3 middle left, 4 middle right, 5 bottom left, 6 bottom center, 7 bottom right.
+`theme`: 0 system, 1 light, 2 dark. `lang`: 0 system, 1 Spanish, 2 English, 3 Portuguese, 4 French, 5 Simplified Chinese, 6 Japanese. `fullscreen`: 0 hide, 1 move, 2 keep. `overlayPos`: 0 top left, 1 top center, 2 top right, 3 middle left, 4 middle right, 5 bottom left, 6 bottom center, 7 bottom right.
 
 Each position uses the format `key|label|threshold|alert`.
 

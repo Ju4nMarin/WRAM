@@ -30,7 +30,7 @@ build\wram_tests.exe --junit build\junit-core.xml
 
 ## Interfaz de configuración
 
-`src/ui/settings.html` se puede abrir directamente en Edge: sin el programa usa datos de muestra. El fragmento de la URL elige sección, tema e idioma (`es`, `en`, `pt`, `fr`, `zh`):
+`src/ui/settings.html` se puede abrir directamente en Edge: sin el programa usa datos de muestra. El fragmento de la URL elige sección, tema e idioma (`es`, `en`, `pt`, `fr`, `zh`, `ja`):
 
 ```
 settings.html#metrics&dark
