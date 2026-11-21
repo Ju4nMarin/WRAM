@@ -449,7 +449,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.1</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.2</span></div>
 </nav>
 
 <main>
@@ -607,7 +607,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.1</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.2</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -946,7 +946,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     renderPreview();
     clearTimeout(applyTimer);
     const run = () => send("apply\n" + serialize(S.cfg));
-    if (immediate) run(); else applyTimer = setTimeout(run, 180);
+    if (immediate) run(); else applyTimer = setTimeout(run, 50);
   }
   function cleanLabel(v) {
     return String(v || "").replace(/[|=\[\]\u0000-\u001f]/g, "").slice(0, S.limits.label).toUpperCase();
@@ -990,6 +990,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       b.onclick = () => { previewBar = b.dataset.v; renderBarMode(); renderPreview(); };
     });
   }
+  function effectiveOffset() {
+    const omax = typeof S.omax === "number" ? S.omax : Infinity;
+    return Math.max(0, Math.min(S.cfg.offset, omax));
+  }
   function renderPreview() {
     const c = S.cfg;
     $("#taskbar").classList.toggle("light", previewLight());
@@ -1000,7 +1004,17 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     band.textContent = "";
     band.style.gridTemplateRows = "repeat(" + Math.min(c.rows, Math.max(1, c.slots.length)) + ", auto)";
     band.style.fontFamily = '"' + c.font + '", "Segoe UI", sans-serif';
-    band.style.marginRight = Math.min(c.offset, 160) + "px";
+    // Escala 1:1 con la barra real, medida desde la bandeja: la misma distancia en px y los íconos de las apps
+    // donde realmente terminan, para que la vista previa muestre el mismo límite.
+    band.style.marginRight = effectiveOffset() + "px";
+    const apps = $("#taskbar .tb-apps");
+    if (S.agap >= 0) {
+      apps.style.left = "auto";
+      apps.style.right = ($("#taskbar .tray").offsetWidth + 8 + S.agap) + "px";
+    } else {
+      apps.style.left = "";
+      apps.style.right = "";
+    }
     if (!c.slots.length) {
       band.appendChild(el("span", "band-empty", t("band.empty")));
       return;
@@ -1022,6 +1036,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       cell.appendChild(v);
       band.appendChild(cell);
     });
+    // Con el contenido ya armado se conoce el ancho de la franja: tampoco en la vista previa se monta sobre las apps.
+    if (S.agap >= 0) {
+      const limit = Math.max(0, S.agap - 8 - band.offsetWidth);
+      band.style.marginRight = Math.min(effectiveOffset(), limit) + "px";
+    }
   }
   function tickClock() {
     const d = new Date();
@@ -1288,10 +1307,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       } else if (n.type === "range") {
         n.value = c[key];
         const out = $("#" + n.id + "-out");
-        if (out) out.textContent = c[key] + " px";
+        if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + " px";
         n.oninput = () => {
           c[key] = asInt ? parseInt(n.value, 10) : n.value;
-          if (out) out.textContent = c[key] + " px";
+          if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + " px";
           commit(false);
         };
       }
@@ -1459,10 +1478,15 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     if (typeof m.omax === "number") {
       const slider = $("#offset");
       const max = String(Math.max(0, Math.min(600, m.omax)));
+      S.omax = m.omax;
       if (slider.max !== max) {
         slider.max = max;
-        if (S.cfg.offset > m.omax) $("#offset-out").textContent = slider.value + " px";
+        $("#offset-out").textContent = effectiveOffset() + " px";
       }
+    }
+    if (typeof m.agap === "number" && m.agap !== S.agap) {
+      S.agap = m.agap;
+      renderPreview();
     }
     $$("[data-val]").forEach((n) => paintValue(n, S.values[n.dataset.val]));
     $$("#screen .chip b").forEach((b) => {
@@ -1507,11 +1531,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.1.1", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.1.2", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
-      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, fullscreen: 1, overlayPos: 2, offset: 8, theme: theme, language: 0,
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
         slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
           { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
     });
@@ -1520,7 +1544,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const step = () => {
       k++;
       const cpu = 18 + 9 * Math.sin(k / 3), gpu = 44 + 6 * Math.cos(k / 4), down = 3.3e6 + 4e5 * Math.sin(k);
-      onValues({ t: "v", a: ["gputemp"], v: {
+      onValues({ t: "v", omax: 250, agap: 560, a: ["gputemp"], v: {
         cpu: [cpu, cpu.toFixed(0) + "%"], cputemp: null, cpuclock: [4210, f(4.21, 2) + " GHz"], ram: [61, "61%"], ramused: [9.8, f(9.8, 1) + " GB"],
         gpu: [gpu, gpu.toFixed(0) + "%"], gputemp: [78, "78°"], vram: [3.1, f(3.1, 1) + " GB"], disk: [4, "4%"],
         netdown: [down, rate(down)], netup: [215000, rate(215000)], battery: null, uptime: [11520, "3:12"], procs: [287, "287"] } });
