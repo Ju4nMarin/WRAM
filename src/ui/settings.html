@@ -230,9 +230,7 @@ h1 { font: 600 28px/1.2 var(--f-display); }
 .tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: var(--r-sm); background: var(--subtle-2); color: var(--text-2); font-size: 11px; font-weight: 400; vertical-align: 1px; }
 .slot-label { grid-area: label; }
 .slot-value { grid-area: value; }
-/* "Aproximada" se apoya sobre el borde superior del valor: no ocupa espacio ni mueve el resto de la fila. */
 .val-box { position: relative; display: block; min-width: 0; }
-.val-box .tag { position: absolute; top: -9px; right: 6px; margin: 0; padding: 0 5px; font-size: 10px; line-height: 16px; border-radius: 4px; background: var(--card); border: 1px solid var(--line); color: var(--text-2); white-space: nowrap; pointer-events: none; }
 .val.none span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .slot-alert { grid-area: alert; display: flex; align-items: center; gap: var(--s-2); }
 .slot-actions { grid-area: actions; display: flex; justify-content: flex-end; gap: 2px; }
@@ -451,7 +449,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.0</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.1</span></div>
 </nav>
 
 <main>
@@ -609,7 +607,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.0</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.1</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -1043,11 +1041,6 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   function valueBox(key, meta) {
     const box = el("span", "val-box");
     box.appendChild(liveValue(key));
-    if (meta.approx) {
-      const tag = el("span", "tag", t("slot.approx"));
-      tag.dataset.approx = key;
-      box.appendChild(tag);
-    }
     return box;
   }
   function paintValue(n, val) {
@@ -1514,7 +1507,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.1.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.1.1", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",

@@ -2,12 +2,18 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.1.1
+
+### Changed
+
+- The "approximate" tag is no longer shown next to the values; the About section still explains which readings depend on the motherboard.
+
 ## 1.1.0
 
 ### Changed
 
 - "Distance from the tray" stops before the taskbar app icons; the slider maximum follows where the last app icon ends.
-- The "approximate" tag sits on the edge of the value instead of next to the metric name, so it no longer shifts the row.
+
 - Shorter "no sensor" text in Japanese and French so it fits in the value box.
 - GitHub Actions updated to their latest versions (checkout v7.0.1, upload-artifact v7.0.2, attest-build-provenance v4.2.2, action-junit-report v6.7.1) and pinned by commit SHA.
 - WebView2 SDK updated to 1.0.4370.26.
