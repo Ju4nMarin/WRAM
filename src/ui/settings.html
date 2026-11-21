@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8">
@@ -152,6 +152,11 @@ main { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
 .spot[aria-checked="true"] { border: 2px solid var(--accent); background: rgba(96, 205, 255, 0.08); }
 .spot:disabled { cursor: default; }
 .screen.off .spot { opacity: 0.35; }
+:root[data-theme="light"] .screen { background: #e9ecef; border-color: #c9cdd2; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+:root[data-theme="light"] .screen-label { color: rgba(0, 0, 0, 0.45); }
+:root[data-theme="light"] .spot { border-color: rgba(0, 0, 0, 0.22); }
+:root[data-theme="light"] .spot:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.4); }
+:root[data-theme="light"] .spot[aria-checked="true"] { border-color: var(--accent); background: rgba(0, 95, 184, 0.07); }
 .chip { display: grid; grid-template-columns: repeat(2, auto); gap: 2px 10px; padding: 5px 8px; border-radius: 6px; background: rgba(20, 20, 20, 0.85); font-size: 10px; line-height: 1.25; }
 .chip-cell { display: flex; justify-content: space-between; gap: 5px; white-space: nowrap; }
 .chip-cell i { font-style: normal; opacity: 0.68; }
@@ -443,7 +448,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <div class="stage">
     <div class="stage-head">
       <p class="stage-title" data-i18n="stage.title"></p>
-      <div class="stage-ctl"><small data-i18n="stage.hint"></small><div class="seg seg-sm" role="radiogroup" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" data-i18n="stage.barWin"></button><button role="radio" data-v="light" data-i18n="stage.barLight"></button><button role="radio" data-v="dark" data-i18n="stage.barDark"></button></div></div>
+      <div class="stage-ctl"><div class="seg seg-sm" role="radiogroup" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" data-i18n="stage.barWin"></button><button role="radio" data-v="light" data-i18n="stage.barLight"></button><button role="radio" data-v="dark" data-i18n="stage.barDark"></button></div></div>
     </div>
     <div class="taskbar" id="taskbar" data-i18n-aria="stage.title">
       <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -502,7 +507,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="row-text"><strong id="l-vcolor" data-i18n="look.vcolor"></strong><small data-i18n="look.vcolorD"></small></div>
           <div class="row-ctl">
             <div class="seg" role="radiogroup" aria-labelledby="l-vcolor" id="vcolor-mode">
-              <button role="radio" data-v="auto" data-i18n="look.auto"></button><button role="radio" data-v="#60cdff" data-i18n="look.blue"></button><button role="radio" data-v="custom" data-i18n="look.other"></button>
+              <button role="radio" data-v="auto" data-i18n="look.auto"></button><button role="radio" data-v="custom" data-i18n="look.other"></button>
             </div>
             <input type="color" id="vcolor-pick" data-i18n-aria="look.vcolor" hidden>
           </div>
@@ -538,6 +543,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             <option value="3">Português</option>
             <option value="4">Français</option>
             <option value="5">中文（简体）</option>
+            <option value="6">日本語</option>
           </select></div>
         </div>
         <div class="row">
@@ -649,8 +655,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.font": "Fuente", "look.fontD": "Segoe UI Variable es la fuente de Windows 11. Bahnschrift es más estrecha y deja más espacio.",
       "look.size": "Tamaño del texto", "look.sizeD": "En píxeles a escala 100 %. Windows lo ajusta a tu escala de pantalla.",
       "look.labels": "Mostrar etiquetas", "look.labelsD": "Sin etiquetas la franja ocupa menos, pero solo se ven los números.",
-      "look.vcolor": "Color de los valores", "look.vcolorD": "Automático usa blanco o negro según el tema de la barra de tareas.",
-      "look.auto": "Automático", "look.blue": "Azul", "look.other": "Otro",
+      "look.vcolor": "Color de los valores", "look.vcolorD": "Predeterminado usa blanco o negro según el tema de la barra de tareas. Personalizado usa el color que elijas.",
+      "look.auto": "Predeterminado", "look.blue": "Azul", "look.other": "Personalizado",
       "look.acolor": "Color de aviso", "look.acolorD": "Un valor cambia a este color cuando cruza su umbral.",
       "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala si tapa íconos de la barra o si prefieres más aire.",
       "color.red": "Rojo", "color.yellow": "Amarillo", "color.magenta": "Magenta",
@@ -692,8 +698,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.font": "Font", "look.fontD": "Segoe UI Variable is the Windows 11 font. Bahnschrift is narrower and saves space.",
       "look.size": "Text size", "look.sizeD": "In pixels at 100% scale. Windows adjusts it to your display scale.",
       "look.labels": "Show labels", "look.labelsD": "Without labels the strip is narrower, but only numbers are shown.",
-      "look.vcolor": "Value color", "look.vcolorD": "Automatic uses white or black to match the taskbar theme.",
-      "look.auto": "Automatic", "look.blue": "Blue", "look.other": "Other",
+      "look.vcolor": "Value color", "look.vcolorD": "Default uses white or black to match the taskbar theme. Custom uses the color you pick.",
+      "look.auto": "Default", "look.blue": "Blue", "look.other": "Custom",
       "look.acolor": "Alert color", "look.acolorD": "A value turns this color when it crosses its threshold.",
       "look.offset": "Distance from the tray", "look.offsetD": "Move it away if it covers taskbar icons or if you want more room.",
       "color.red": "Red", "color.yellow": "Yellow", "color.magenta": "Magenta",
@@ -735,8 +741,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.font": "Fonte", "look.fontD": "Segoe UI Variable é a fonte do Windows 11. Bahnschrift é mais estreita e economiza espaço.",
       "look.size": "Tamanho do texto", "look.sizeD": "Em pixels na escala de 100%. O Windows ajusta à escala da sua tela.",
       "look.labels": "Mostrar rótulos", "look.labelsD": "Sem rótulos a faixa fica menor, mas só os números aparecem.",
-      "look.vcolor": "Cor dos valores", "look.vcolorD": "Automático usa branco ou preto conforme o tema da barra de tarefas.",
-      "look.auto": "Automático", "look.blue": "Azul", "look.other": "Outra",
+      "look.vcolor": "Cor dos valores", "look.vcolorD": "Padrão usa branco ou preto conforme o tema da barra de tarefas. Personalizada usa a cor que você escolher.",
+      "look.auto": "Padrão", "look.blue": "Azul", "look.other": "Personalizada",
       "look.acolor": "Cor de alerta", "look.acolorD": "Um valor muda para esta cor quando passa do limite.",
       "look.offset": "Distância da bandeja", "look.offsetD": "Afaste se cobrir ícones da barra ou se quiser mais espaço.",
       "color.red": "Vermelho", "color.yellow": "Amarelo", "color.magenta": "Magenta",
@@ -778,8 +784,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.font": "Police", "look.fontD": "Segoe UI Variable est la police de Windows 11. Bahnschrift est plus étroite et prend moins de place.",
       "look.size": "Taille du texte", "look.sizeD": "En pixels à l’échelle 100 %. Windows l’adapte à l’échelle de votre écran.",
       "look.labels": "Afficher les étiquettes", "look.labelsD": "Sans étiquettes la bande est plus étroite, mais seuls les chiffres s’affichent.",
-      "look.vcolor": "Couleur des valeurs", "look.vcolorD": "Automatique utilise le blanc ou le noir selon le thème de la barre des tâches.",
-      "look.auto": "Automatique", "look.blue": "Bleu", "look.other": "Autre",
+      "look.vcolor": "Couleur des valeurs", "look.vcolorD": "Par défaut utilise le blanc ou le noir selon le thème de la barre des tâches. Personnalisée utilise la couleur choisie.",
+      "look.auto": "Par défaut", "look.blue": "Bleu", "look.other": "Personnalisée",
       "look.acolor": "Couleur d’alerte", "look.acolorD": "Une valeur prend cette couleur quand elle franchit son seuil.",
       "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la si elle masque des icônes ou si vous voulez plus d’espace.",
       "color.red": "Rouge", "color.yellow": "Jaune", "color.magenta": "Magenta",
@@ -802,6 +808,49 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "about.sources": "D’où vient chaque valeur", "about.sourcesD": "Lectures fournies par Windows. Quand un PC n’expose pas un capteur, la mesure affiche « pas de capteur ».",
       "about.approx": "Dépend de la carte mère : peut être approximative ou absente."
     },
+    ja: {
+      "nav.aria": "セクション", "nav.metrics": "メトリクス", "nav.look": "外観", "nav.settings": "設定", "nav.about": "バージョン情報",
+      "stage.title": "タスクバーのプレビュー",
+      "stage.noteDark": "プレビューは Windows タスクバーのテーマ（ダーク）に従います。このウィンドウのテーマではありません。",
+      "stage.noteLight": "プレビューは Windows タスクバーのテーマ（ライト）に従います。このウィンドウのテーマではありません。",
+      "metrics.title": "タスクバーのメトリクス", "metrics.desc": "各位置はストリップ上の固定の場所です。番号をドラッグするか矢印で順番を変更します。",
+      "cap.text": "{max} 個中 {used} 個使用",
+      "catalog.title": "カタログ", "catalog.desc": "まだタスクバーにないメトリクスと、この PC での現在の値です。",
+      "catalog.full": "10 個の位置がすべて使用中です。別のメトリクスを追加するには、タスクバーから 1 つ削除してください。", "catalog.allUsed": "すべてのメトリクスがタスクバーにあります。", "catalog.add": "タスクバーに追加",
+      "slot.approx": "概算", "slot.drag": "ドラッグして移動", "slot.label": "{name} のラベル", "slot.thr": "{name} の警告しきい値",
+      "slot.below": "未満", "slot.above": "超過", "slot.alertBelow": "しきい値を下回ったら警告", "slot.alertAbove": "しきい値を上回ったら警告",
+      "slot.noAlert": "このメトリクスには警告がありません", "slot.up": "{name} を上へ", "slot.down": "{name} を下へ", "slot.remove": "{name} をタスクバーから削除",
+      "slot.free": "空き", "slot.addFrom": "カタログから追加", "slot.emptyT": "ストリップは空です", "slot.emptyD": "カタログからメトリクスを追加すると、通知領域の横に表示されます。",
+      "val.none": "センサーなし", "band.empty": "メトリクスなし",
+      "look.title": "外観", "look.desc": "タスクバー上のストリップの見た目です。変更はすぐに反映されます。",
+      "look.rows": "行数", "look.rowsD": "2 行にすると、狭い幅により多くのメトリクスを表示できます。", "look.rows1": "1 行", "look.rows2": "2 行",
+      "look.font": "フォント", "look.fontD": "Segoe UI Variable は Windows 11 のフォントです。Bahnschrift は幅が狭く、スペースを節約できます。",
+      "look.size": "文字サイズ", "look.sizeD": "100% スケールでのピクセル数です。Windows が表示スケールに合わせて調整します。",
+      "look.labels": "ラベルを表示", "look.labelsD": "ラベルなしではストリップが短くなりますが、数値だけが表示されます。",
+      "look.vcolor": "値の色", "look.vcolorD": "既定ではタスクバーのテーマに合わせて白または黒を使います。カスタムでは選んだ色を使います。",
+      "look.auto": "既定", "look.blue": "青", "look.other": "カスタム",
+      "look.acolor": "警告の色", "look.acolorD": "値がしきい値を超えると、この色に変わります。",
+      "look.offset": "通知領域からの距離", "look.offsetD": "タスクバーのアイコンに重なる場合や、余白を広げたい場合に離します。",
+      "color.red": "赤", "color.yellow": "黄", "color.magenta": "マゼンタ",
+      "set.title": "設定", "set.desc": "言語、このウィンドウのテーマ、Windows 起動時の実行、ストリップの動作。",
+      "set.lang": "言語", "set.langD": "システムは Windows の言語を使います。このウィンドウ、メニュー、既定のラベルが変わります。",
+      "set.theme": "アプリのテーマ", "set.themeD": "このウィンドウのみ。ストリップは Windows タスクバーのテーマに従います。",
+      "set.system": "システム", "set.light": "ライト", "set.dark": "ダーク",
+      "set.autostart": "Windows の起動時に実行", "set.autostartD": "現在のユーザーにのみ登録され、管理者権限は不要です。",
+      "set.fs": "全画面で非表示", "set.fsD": "ゲーム、動画、プレゼンテーションが全画面になるとすぐに非表示になり、終了すると戻ります。",
+      "nav.fs": "全画面", "fs.desc": "ゲーム、動画、プレゼンテーションが画面全体を使うときのインジケーターの動作です。", "fs.mode": "動作", "fs.modeD": "全画面の開始時と終了時にすぐ適用されます。", "fs.hide": "非表示", "fs.move": "移動", "fs.keep": "そのまま", "fs.hideD": "インジケーターは非表示になり、全画面が終わると戻ります。", "fs.moveD": "インジケーターは選んだ位置に浮かび、どの映像の上でも読める暗い背景で表示されます。", "fs.keepD": "インジケーターはタスクバー上の位置のまま、映像の上に表示されます。", "fs.pos": "画面上の位置", "fs.posD": "全画面でインジケーターを表示したい位置をクリックします。", "fs.posOff": "独自の位置を使うには「移動」を選びます。", "fs.exclusive": "排他的全画面のゲームでは上に描画できないため、インジケーターは非表示になります。",
+      "fs.p0": "左上", "fs.p1": "上中央", "fs.p2": "右上", "fs.p3": "左中央", "fs.p4": "右中央", "fs.p5": "左下", "fs.p6": "下中央", "fs.p7": "右下", "fs.screen": "あなたの画面",
+      "stage.bar": "タスクバー", "stage.barWin": "Windows", "stage.barLight": "ライト", "stage.barDark": "ダーク", "stage.noteForced": "{mode}のタスクバーでプレビューしています。Windows のタスクバーは{win}テーマです。", "word.light": "ライト", "word.dark": "ダーク",
+      "set.interval": "更新間隔", "set.intervalD": "間隔を長くすると CPU とバッテリーの消費が減ります。",
+      "set.file": "設定ファイル", "set.open": "フォルダーを開く",
+      "set.reset": "リセット", "set.resetD": "最初の 6 つのメトリクスに戻し、ラベル、しきい値、外観を消去します。Windows 起動時の設定は変わりません。",
+      "set.resetQ": "選んだメトリクス、ラベル、しきい値が失われます。リセットしますか？", "set.resetBtn": "設定をリセット", "set.cancel": "キャンセル", "set.resetOk": "リセット",
+      "about.desc": "Windows タスクバー用のシステムモニターです。通知領域の横に最大 10 個のメトリクスを表示します。管理者権限やドライバーは不要です。",
+      "about.dev": "開発者", "about.version": "バージョン", "about.license": "ライセンス", "about.source": "ソースコード", "about.compat": "互換性",
+      "about.compatV": "Windows 10（バージョン 1903 以降）および Windows 11、64 ビット",
+      "about.sources": "各データの取得元", "about.sourcesD": "Windows 自体からの値です。PC がセンサーを提供していない場合、メトリクスには「センサーなし」と表示されます。",
+      "about.approx": "マザーボードによって異なります。概算値の場合や、存在しない場合があります。"
+    },
     zh: {
       "nav.aria": "分区", "nav.metrics": "指标", "nav.look": "外观", "nav.settings": "设置", "nav.about": "关于",
       "stage.title": "任务栏预览", "stage.hint": "双击任务栏上的显示条可打开此窗口",
@@ -821,8 +870,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.font": "字体", "look.fontD": "Segoe UI Variable 是 Windows 11 的字体。Bahnschrift 更窄，更省空间。",
       "look.size": "文字大小", "look.sizeD": "以 100% 缩放下的像素计。Windows 会按你的显示缩放调整。",
       "look.labels": "显示标签", "look.labelsD": "不显示标签时显示条更窄，但只显示数字。",
-      "look.vcolor": "数值颜色", "look.vcolorD": "自动会根据任务栏主题使用白色或黑色。",
-      "look.auto": "自动", "look.blue": "蓝色", "look.other": "其他",
+      "look.vcolor": "数值颜色", "look.vcolorD": "默认会根据任务栏主题使用白色或黑色。自定义使用你选择的颜色。",
+      "look.auto": "默认", "look.blue": "蓝色", "look.other": "自定义",
       "look.acolor": "警报颜色", "look.acolorD": "数值越过阈值时变为此颜色。",
       "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了任务栏图标或想留出更多空间，可以拉开距离。",
       "color.red": "红色", "color.yellow": "黄色", "color.magenta": "品红",
@@ -846,7 +895,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "about.approx": "取决于主板：可能是近似值，也可能不存在。"
     }
   };
-  const LANG_BY_SETTING = { 1: "es", 2: "en", 3: "pt", 4: "fr", 5: "zh" };
+  const LANG_BY_SETTING = { 1: "es", 2: "en", 3: "pt", 4: "fr", 5: "zh", 6: "ja" };
   let lang = "es";
   function t(key, vars) {
     let s = (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
@@ -854,7 +903,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     return s;
   }
   function applyStaticTexts() {
-    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang === "ja" ? "ja-JP" : lang;
     $$("[data-i18n]").forEach((n) => { n.textContent = t(n.dataset.i18n); });
     $$("[data-i18n-aria]").forEach((n) => { n.setAttribute("aria-label", t(n.dataset.i18nAria)); });
     $("#iv-500").textContent = (S.dec === "," ? "0,5" : "0.5") + " s";
@@ -1238,15 +1287,14 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       commit(true);
     };
 
-    const preset = "#60cdff";
-    const mode = c.valueColor === "auto" ? "auto" : (c.valueColor.toLowerCase() === preset ? preset : "custom");
+    const mode = c.valueColor === "auto" ? "auto" : "custom";
     const pick = $("#vcolor-pick");
     pick.hidden = mode !== "custom";
     if (mode === "custom") pick.value = c.valueColor;
     $$("#vcolor-mode button").forEach((b) => {
       b.setAttribute("aria-checked", String(b.dataset.v === mode));
       b.onclick = () => {
-        c.valueColor = b.dataset.v === "custom" ? (mode === "custom" ? c.valueColor : "#ffb900") : b.dataset.v;
+        c.valueColor = b.dataset.v === "custom" ? (mode === "custom" ? c.valueColor : "#60cdff") : b.dataset.v;
         bindSettings();
         commit(true);
       };
@@ -1428,7 +1476,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const meta = [["percent", 90, 100, false, false], ["celsius", 85, 120, false, true], ["mhz", 0, 0, false, false], ["percent", 90, 100, false, false], ["gb", 0, 1024, false, false], ["percent", 95, 100, false, false], ["celsius", 80, 120, false, false], ["gb", 0, 256, false, false], ["percent", 95, 100, false, false], ["rate", 0, 10000, false, false], ["rate", 0, 10000, false, false], ["percent", 20, 100, true, false], ["duration", 0, 0, false, false], ["count", 0, 10000, false, false]];
     const tbl = names[demoLang] || names.en;
     const cat = keys.map((key, i) => ({ key, name: tbl[i][0], source: tbl[i][1], label: tbl[i][2], unit: meta[i][0], thr: meta[i][1], thrMax: meta[i][2], below: meta[i][3], approx: meta[i][4] }));
-    const dec = demoLang === "en" || demoLang === "zh" ? "." : ",";
+    const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
       t: "init", version: "1.0.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,

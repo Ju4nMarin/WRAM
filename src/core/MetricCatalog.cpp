@@ -97,12 +97,30 @@ constexpr MetricTexts kChinese{{
     {"进程", "正在运行的进程", L"进程"},
 }};
 
+constexpr MetricTexts kJapanese{{
+    {"CPU 使用率", "プロセッサ使用率カウンター", L"CPU"},
+    {"CPU 温度", "マザーボードの ACPI サーマルゾーン", L"CPU温"},
+    {"CPU クロック", "ベース周波数 × 現在のパフォーマンス", L"周波数"},
+    {"メモリ使用率", "使用中の物理メモリ", L"メモリ"},
+    {"使用中のメモリ", "使用中の物理メモリ（GB）", L"使用中"},
+    {"GPU 使用率", "3D エンジン、タスク マネージャーと同じ", L"GPU"},
+    {"GPU 温度", "ドライバーが Windows に提供するセンサー", L"GPU温"},
+    {"使用中の VRAM", "GPU 専用メモリ", L"VRAM"},
+    {"ディスク使用率", "最も使用率の高いディスクのアクティブ時間", L"ディスク"},
+    {"ダウンロード", "すべてのネットワーク インターフェイスの合計", L"受信"},
+    {"アップロード", "すべてのネットワーク インターフェイスの合計", L"送信"},
+    {"バッテリー", "システムの電源状態", L"電池"},
+    {"稼働時間", "前回の起動から", L"稼働"},
+    {"プロセス", "実行中のプロセス", L"PROC"},
+}};
+
 const LocalizedText* Localized(MetricId id) {
     switch (CurrentLang()) {
         case Lang::En: return &kEnglish[ToIndex(id)];
         case Lang::Pt: return &kPortuguese[ToIndex(id)];
         case Lang::Fr: return &kFrench[ToIndex(id)];
         case Lang::Zh: return &kChinese[ToIndex(id)];
+        case Lang::Ja: return &kJapanese[ToIndex(id)];
         default: return nullptr;
     }
 }
