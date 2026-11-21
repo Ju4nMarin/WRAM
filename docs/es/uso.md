@@ -13,7 +13,7 @@ La franja se ubica a la izquierda de la bandeja del sistema, en la barra de tare
 
 Los valores usan blanco o negro según el tema de la barra de tareas, y el separador decimal de tu configuración regional. Una métrica sin sensor en el equipo muestra un guion.
 
-La vista previa de la ventana de configuración reproduce la barra con el tema de la barra de tareas de Windows, que puede ser distinto del tema elegido para la ventana. Lo indica la nota debajo de la vista previa. El selector Windows / Clara / Oscura junto a la vista previa muestra la franja sobre una barra clara u oscura para comparar; no cambia ningún ajuste.
+La vista previa de la ventana de configuración reproduce la barra con el tema de la barra de tareas de Windows, que puede ser distinto del tema elegido para la ventana. Lo indica la nota debajo de la vista previa. Los tres botones con ícono junto a la vista previa (Windows, clara y oscura) muestran la franja con el tema de la barra de Windows o sobre una barra clara u oscura para comparar; no cambian ningún ajuste.
 
 ## Ventana de configuración
 
@@ -49,11 +49,10 @@ Qué hace la franja cuando un juego, un video o una presentación ocupa toda la 
 
 | Comportamiento | Resultado |
 |---|---|
-| Ocultar | La franja desaparece y vuelve al salir de pantalla completa |
-| Mover | La franja flota en el recuadro elegido de la pantalla, con un fondo oscuro translúcido |
-| Dejar igual | La franja se queda en su lugar de la barra, encima de la imagen |
+| Oculto | La franja se oculta mientras haya algo en pantalla completa y vuelve al salir |
+| Visible | La franja se muestra en el recuadro que elijas de la pantalla, con un fondo oscuro translúcido |
 
-Con Mover, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los bordes superior e inferior y centros laterales); se elige con un clic. Los juegos en pantalla completa exclusiva no permiten otras ventanas encima, así que ahí la franja siempre se oculta.
+Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los bordes superior e inferior y centros laterales); se elige con un clic. Los juegos en pantalla completa exclusiva no permiten otras ventanas encima, así que ahí la franja siempre se oculta.
 
 ### Configuración
 
@@ -101,7 +100,7 @@ lang=0
 6=netup||0|0
 ```
 
-`theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado, 6 japonés. `fullscreen`: 0 ocultar, 1 mover, 2 dejar igual. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
+`theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado, 6 japonés. `fullscreen`: 0 oculto, 1 visible. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
 
 Cada posición sigue el formato `clave|etiqueta|umbral|aviso`.
 

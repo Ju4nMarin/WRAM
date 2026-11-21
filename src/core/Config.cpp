@@ -194,11 +194,11 @@ Config Parse(std::string_view ini) {
                 if (ParseColor(value, col) && col != Config::kAutoColor) c.alertColor = col;
             } else if (key == "labels") ParseBool(value, c.showLabels);
             else if (key == "autostart") ParseBool(value, c.autostart);
-            else if (key == "fullscreen" && text::ParseInt(value, n)) c.fullscreenMode = Clamp<int>(n, 0, 2);
+            else if (key == "fullscreen" && text::ParseInt(value, n)) c.fullscreenMode = n > 0 ? 1 : 0;
             else if (key == "overlayPos" && text::ParseInt(value, n)) c.overlayPosition = Clamp<int>(n, 0, 7);
-            else if (key == "hideFullscreen") {  // formato anterior: 1 ocultar, 0 dejar igual
+            else if (key == "hideFullscreen") {  // formato anterior: 1 ocultar, 0 visible
                 bool hideOld = true;
-                if (ParseBool(value, hideOld)) c.fullscreenMode = hideOld ? 0 : 2;
+                if (ParseBool(value, hideOld)) c.fullscreenMode = hideOld ? 0 : 1;
             }
             else if (key == "font") {
                 const std::wstring font = text::Utf8ToWide(value);

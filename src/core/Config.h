@@ -9,8 +9,8 @@
 
 namespace wram {
 
-// Qué hace la franja cuando una ventana ocupa toda la pantalla.
-enum class FullscreenMode : int { Hide = 0, Move = 1, Keep = 2 };
+// Qué hace la franja cuando una ventana ocupa toda la pantalla: ocultarse o mostrarse en la posición elegida.
+enum class FullscreenMode : int { Hidden = 0, Visible = 1 };
 
 struct SlotConfig {
     MetricId id = MetricId::CpuLoad;
