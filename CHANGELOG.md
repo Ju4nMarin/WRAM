@@ -2,6 +2,20 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.1.0
+
+### Changed
+
+- "Distance from the tray" stops before the taskbar app icons; the slider maximum follows where the last app icon ends.
+- The "approximate" tag sits on the edge of the value instead of next to the metric name, so it no longer shifts the row.
+- Shorter "no sensor" text in Japanese and French so it fits in the value box.
+- GitHub Actions updated to their latest versions (checkout v7.0.1, upload-artifact v7.0.2, attest-build-provenance v4.2.2, action-junit-report v6.7.1) and pinned by commit SHA.
+- WebView2 SDK updated to 1.0.4370.26.
+
+### Added
+
+- Dependabot checks the GitHub Actions every week.
+
 ## 1.0.0
 
 ### Added
@@ -9,7 +23,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and sem
 - Strip next to the system tray with up to 10 metrics in one or two rows.
 - 14 metrics: CPU usage, temperature and clock; RAM usage and RAM in use; GPU usage and temperature; VRAM; disk activity; download; upload; battery; uptime and processes.
 - Per-metric alert threshold that changes the value color.
-- Settings window with Metrics, Appearance, Settings and About sections, in light, dark or system theme.
+- Settings window with Metrics, Appearance, Full screen, Settings and About sections, in light, dark or system theme.
 - Interface in Spanish, English, Portuguese, French, Simplified Chinese and Japanese.
 - Full-screen behavior: hidden, or visible in one of 8 screen spots. Reacts instantly, including F11 and videos.
 - Taskbar preview with a light or dark taskbar selector.
