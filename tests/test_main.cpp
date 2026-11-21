@@ -100,6 +100,18 @@ TEST(parse_drops_duplicates_unknown_keys_and_caps_at_ten) {
     CHECK(c.slots[1].id == MetricId::RamLoad);
 }
 
+TEST(fullscreen_mode_and_legacy_key) {
+    Config c = Config::Defaults();
+    c.fullscreenMode = static_cast<int>(FullscreenMode::Move);
+    c.overlayPosition = 7;
+    const Config back = ConfigCodec::Parse(ConfigCodec::Serialize(c));
+    CHECK(back.fullscreenMode == 1);
+    CHECK(back.overlayPosition == 7);
+    CHECK(ConfigCodec::Parse("[general]\nhideFullscreen=0\n").fullscreenMode == 2);
+    CHECK(ConfigCodec::Parse("[general]\nhideFullscreen=1\n").fullscreenMode == 0);
+    CHECK(ConfigCodec::Parse("[general]\nfullscreen=9\noverlayPos=40\n").overlayPosition == 7);
+}
+
 TEST(parse_empty_slots_section_means_no_metrics) {
     const Config c = ConfigCodec::Parse("[general]\nrows=1\n[slots]\n");
     CHECK(c.slots.empty());
