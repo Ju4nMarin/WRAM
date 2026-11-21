@@ -407,6 +407,7 @@ void TaskbarBand::RefreshTaskbarApps() {
     maxOffsetDip_ = (right == kNoAppsEdge || scale_ <= 0)
                         ? Config::kMaxOffset
                         : std::max(0, static_cast<int>((g.tray.left - right - extraBand - bandW_) / scale_));
+    appsGapDip_ = (right == kNoAppsEdge || scale_ <= 0) ? -1 : static_cast<int>((g.tray.left - right) / scale_);
     if (right != appsRight_) {
         appsRight_ = right;
         Reposition();

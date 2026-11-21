@@ -9,8 +9,8 @@ IDR_SETTINGS_HTML RCDATA "settings.min.html"
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "wram.manifest"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,1,0
- PRODUCTVERSION 1,1,1,0
+ FILEVERSION 1,1,2,0
+ PRODUCTVERSION 1,1,2,0
  FILEFLAGSMASK 0x3fL
  FILEFLAGS 0x0L
  FILEOS VOS_NT_WINDOWS32
@@ -23,12 +23,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Juan Guillermo Marín Córdoba"
             VALUE "FileDescription", "WRAM - monitor del sistema en la barra de tareas"
-            VALUE "FileVersion", "1.1.1"
+            VALUE "FileVersion", "1.1.2"
             VALUE "InternalName", "WRAM"
             VALUE "LegalCopyright", "© 2026 Juan Guillermo Marín Córdoba. Licencia MIT."
             VALUE "OriginalFilename", "WRAM.exe"
             VALUE "ProductName", "WRAM"
-            VALUE "ProductVersion", "1.1.1"
+            VALUE "ProductVersion", "1.1.2"
             VALUE "Comments", "Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM"
         END
     END

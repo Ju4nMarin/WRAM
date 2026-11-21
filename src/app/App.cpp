@@ -25,7 +25,7 @@ constexpr UINT_PTR kTimerSample = 1;
 constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.1.1";
+constexpr char kVersion[] = "1.1.2";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -159,7 +159,13 @@ void App::ApplyConfig(Config config, bool persist) {
     if (persist) store_.Save(config_);
     RefreshSamplerMask();
     band_.ApplyConfig(config_);
-    band_.RefreshTaskbarApps();
+    // Medir los íconos de la barra es una consulta entre procesos: al arrastrar un control llegan muchos
+    // cambios seguidos y se reutiliza la última medición para que la franja responda al instante.
+    const ULONGLONG now = GetTickCount64();
+    if (now - lastAppsScan_ >= 3000) {
+        lastAppsScan_ = now;
+        band_.RefreshTaskbarApps();
+    }
     band_.Update(sampler_.Last());
     settings_.SetDarkTheme(SettingsUseDarkTheme());
     // Con otro idioma cambian los nombres del catálogo: la ventana los recibe de nuevo.
@@ -198,7 +204,8 @@ void App::RestartTimer() {
 }
 
 std::string App::ValuesMessage(const MetricFrame& frame) const {
-    std::string out = "{\"t\":\"v\",\"omax\":" + std::to_string(band_.MaxOffsetDip()) + ",\"v\":{";
+    std::string out = "{\"t\":\"v\",\"omax\":" + std::to_string(band_.MaxOffsetDip()) +
+                      ",\"agap\":" + std::to_string(band_.AppsGapDip()) + ",\"v\":{";
     for (size_t i = 0; i < kMetricCount; ++i) {
         const auto id = static_cast<MetricId>(i);
         const MetricInfo& info = Info(id);
