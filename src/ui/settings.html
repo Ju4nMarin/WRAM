@@ -183,6 +183,8 @@ h1 { font: 600 28px/1.2 var(--f-display); }
   background: #1c1c1c; color: #ffffff;
 }
 .taskbar.light { background: #eeeeee; color: #1a1a1a; }
+/* Contenido de la barra a escala 1:1 desde la bandeja; si no cabe en la ventana se reduce entero en vez de recortarse. */
+.tb-inner { position: absolute; top: 0; right: 0; bottom: 0; width: 100%; display: flex; align-items: stretch; justify-content: flex-end; padding-right: var(--s-2); transform-origin: right center; }
 .tb-apps { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; }
 .tb-apps i { width: 26px; height: 26px; border-radius: 6px; background: currentColor; opacity: 0.09; }
 .tb-apps i:first-child { opacity: 0.16; }
@@ -449,7 +451,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.2</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.2.0</span></div>
 </nav>
 
 <main>
@@ -459,6 +461,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       <div class="stage-ctl"><div class="seg seg-icons" role="radiogroup" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" data-i18n-aria="stage.barWin" data-i18n-title="stage.barWin"><svg class="i"><use href="#i-win"/></svg></button><button role="radio" data-v="light" data-i18n-aria="stage.barLight" data-i18n-title="stage.barLight"><svg class="i"><use href="#i-sun"/></svg></button><button role="radio" data-v="dark" data-i18n-aria="stage.barDark" data-i18n-title="stage.barDark"><svg class="i"><use href="#i-moon"/></svg></button></div></div>
     </div>
     <div class="taskbar" id="taskbar" data-i18n-aria="stage.title">
+      <div class="tb-inner" id="tb-inner">
       <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="band" id="band"></div>
       <div class="tray" aria-hidden="true">
@@ -466,6 +469,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
         <svg class="i"><use href="#i-wifi"/></svg>
         <svg class="i"><use href="#i-sound"/></svg>
         <div class="clock"><div id="clock-t">--:--</div><div id="clock-d"></div></div>
+      </div>
       </div>
     </div>
     <p class="stage-note"><svg class="i"><use href="#i-info"/></svg><span id="stage-note"></span></p>
@@ -607,7 +611,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.2</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.2.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -1041,7 +1045,27 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       const limit = Math.max(0, S.agap - 8 - band.offsetWidth);
       band.style.marginRight = Math.min(effectiveOffset(), limit) + "px";
     }
+    fitPreview();
   }
+  // Si la franja, la distancia y la bandeja no caben en el ancho de la ventana, todo se reduce en proporción.
+  function fitPreview() {
+    const inner = $("#tb-inner");
+    const band = $("#band");
+    inner.style.transform = "";
+    inner.style.width = "100%";
+    const available = $("#taskbar").clientWidth;
+    const needed = $("#taskbar .tray").offsetWidth + 8 + (parseFloat(band.style.marginRight) || 0) + band.offsetWidth + 16;
+    const scale = Math.min(1, available / needed);
+    if (scale < 1) {
+      inner.style.width = (100 / scale) + "%";
+      inner.style.transform = "scale(" + scale.toFixed(3) + ")";
+    }
+  }
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { if (S.cfg) fitPreview(); }, 30);
+  });
   function tickClock() {
     const d = new Date();
     $("#clock-t").textContent = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
@@ -1531,7 +1555,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.1.2", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.2.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
