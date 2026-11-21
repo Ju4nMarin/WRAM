@@ -27,7 +27,7 @@ tests/        core tests
 | `sensors/GpuThermalProvider` | GPU temperature through `D3DKMTQueryAdapterInfo` |
 | `sensors/SystemProviders` | Memory, battery and uptime |
 | `sensors/Sampler` | Runs the providers and builds each `MetricFrame` |
-| `ui/TaskbarBand` | Strip: position next to the tray, measuring, drawing and hiding in full screen |
+| `ui/TaskbarBand` | Strip: position next to the tray (limited by the app icons, read through UI Automation), measuring, drawing and full-screen behavior |
 | `ui/TrayIcon` | Notification area icon |
 | `ui/SettingsWindow` | WebView2 window, title bar theme and message channel |
 | `ui/settings.html` | Settings interface, with its own strings in six languages |

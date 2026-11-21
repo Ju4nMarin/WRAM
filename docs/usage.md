@@ -100,6 +100,8 @@ lang=0
 6=netup||0|0
 ```
 
+The strip never goes over the taskbar app icons: the maximum distance follows where the last app icon ends.
+
 `theme`: 0 system, 1 light, 2 dark. `lang`: 0 system, 1 Spanish, 2 English, 3 Portuguese, 4 French, 5 Simplified Chinese, 6 Japanese. `fullscreen`: 0 hidden, 1 visible. `overlayPos`: 0 top left, 1 top center, 2 top right, 3 middle left, 4 middle right, 5 bottom left, 6 bottom center, 7 bottom right.
 
 Each position uses the format `key|label|threshold|alert`.
