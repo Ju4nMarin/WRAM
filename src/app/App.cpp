@@ -25,7 +25,7 @@ constexpr UINT_PTR kTimerSample = 1;
 constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.0.0";
+constexpr char kVersion[] = "1.1.0";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -137,6 +137,13 @@ void App::Tick() {
     const MetricFrame& frame = sampler_.Sample();
     band_.Update(frame);
     band_.Reposition();
+    // Los íconos de la barra cambian al abrir o cerrar programas. Con la configuración abierta se mide más
+    // seguido para que el límite de "Distancia a la bandeja" esté al día.
+    const ULONGLONG now = GetTickCount64();
+    if (now - lastAppsScan_ >= (settings_.IsOpen() ? 3000u : 20000u)) {
+        lastAppsScan_ = now;
+        band_.RefreshTaskbarApps();
+    }
     if (settings_.IsOpen()) settings_.Post(ValuesMessage(frame));
 }
 
@@ -152,6 +159,7 @@ void App::ApplyConfig(Config config, bool persist) {
     if (persist) store_.Save(config_);
     RefreshSamplerMask();
     band_.ApplyConfig(config_);
+    band_.RefreshTaskbarApps();
     band_.Update(sampler_.Last());
     settings_.SetDarkTheme(SettingsUseDarkTheme());
     // Con otro idioma cambian los nombres del catálogo: la ventana los recibe de nuevo.
@@ -190,7 +198,7 @@ void App::RestartTimer() {
 }
 
 std::string App::ValuesMessage(const MetricFrame& frame) const {
-    std::string out = "{\"t\":\"v\",\"v\":{";
+    std::string out = "{\"t\":\"v\",\"omax\":" + std::to_string(band_.MaxOffsetDip()) + ",\"v\":{";
     for (size_t i = 0; i < kMetricCount; ++i) {
         const auto id = static_cast<MetricId>(i);
         const MetricInfo& info = Info(id);
