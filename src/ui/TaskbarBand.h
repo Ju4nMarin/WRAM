@@ -8,6 +8,7 @@
 
 #include <d2d1.h>
 #include <dwrite.h>
+#include <UIAutomation.h>
 
 namespace wram {
 
@@ -34,6 +35,8 @@ public:
     void Reposition();
     void RaiseAboveTaskbar();
     void OnSystemChange();  // tema, DPI o explorer reiniciado
+    void RefreshTaskbarApps();  // dónde terminan los íconos de las apps en la barra
+    int MaxOffsetDip() const { return maxOffsetDip_; }
 
 private:
     struct Cell {
@@ -95,6 +98,11 @@ private:
     bool lightTheme_ = false;
     bool visible_ = false;
     RECT lastRect_{};
+    static constexpr LONG kNoAppsEdge = -2147483647 - 1;
+    LONG appsRight_ = kNoAppsEdge;
+    int maxOffsetDip_ = Config::kMaxOffset;
+    ULONGLONG lastAppsScan_ = 0;
+    ComPtr<IUIAutomation> uia_;
 };
 
 }  // namespace wram
