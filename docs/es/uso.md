@@ -37,7 +37,7 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 | Fuente | Segoe UI Variable Text, Bahnschrift, Segoe UI, Cascadia Mono, Consolas |
 | Tamaño del texto | 9 a 18 px a escala 100 % |
 | Mostrar etiquetas | Sí o no |
-| Color de los valores | Automático, azul u otro color |
+| Color de los valores | Predeterminado (blanco o negro según la barra) o personalizado |
 | Color de aviso | Rojo, amarillo, magenta, azul u otro color |
 | Distancia a la bandeja | 0 a 600 px |
 
@@ -61,7 +61,7 @@ Con Mover, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los bor
 
 | Ajuste | Descripción |
 |---|---|
-| Idioma | Sistema, español, inglés, portugués, francés o chino simplificado. Cambia la ventana, el menú y las etiquetas por defecto |
+| Idioma | Sistema, español, inglés, portugués, francés, chino simplificado o japonés. Cambia la ventana, el menú y las etiquetas por defecto |
 | Tema de la aplicación | Sistema, claro u oscuro. Solo afecta a esta ventana; la franja y la vista previa siguen el tema de la barra de tareas de Windows |
 | Iniciar con Windows | Registro en `HKCU\...\Run`, sin administrador |
 | Frecuencia de actualización | 0,5, 1, 2 o 5 segundos |
@@ -101,7 +101,7 @@ lang=0
 6=netup||0|0
 ```
 
-`theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado. `fullscreen`: 0 ocultar, 1 mover, 2 dejar igual. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
+`theme`: 0 sistema, 1 claro, 2 oscuro. `lang`: 0 sistema, 1 español, 2 inglés, 3 portugués, 4 francés, 5 chino simplificado, 6 japonés. `fullscreen`: 0 ocultar, 1 mover, 2 dejar igual. `overlayPos`: 0 arriba izquierda, 1 arriba centro, 2 arriba derecha, 3 centro izquierda, 4 centro derecha, 5 abajo izquierda, 6 abajo centro, 7 abajo derecha.
 
 Cada posición sigue el formato `clave|etiqueta|umbral|aviso`.
 

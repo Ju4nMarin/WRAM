@@ -31,7 +31,7 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 - 14 metrics available, up to 10 at a time, in one or two rows.
 - Per-metric alert threshold: the value changes color when it crosses it.
 - In full screen it hides, floats in a spot you pick on the screen, or stays put, and reacts instantly when entering and leaving.
-- Interface in Spanish, English, Portuguese, French and Simplified Chinese.
+- Interface in Spanish, English, Portuguese, French, Simplified Chinese and Japanese.
 - No administrator rights, no drivers, no runtime: a single `WRAM.exe`.
 - At idle it uses about 9 MB of memory and 0.2% of one CPU core.
 

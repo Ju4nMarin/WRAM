@@ -20,7 +20,7 @@ tests/        core tests
 | `core/MetricCatalog` | Catalog of the 14 metrics: key, name, source and label in each language, unit, default threshold and alert direction |
 | `core/Format` | Text for each value and the widest possible text per unit, with the user's decimal separator |
 | `core/Config` | Settings model and `ConfigCodec` (INI to `Config` and back), no I/O |
-| `core/I18n` | Active language (Spanish, English, Portuguese, French, Simplified Chinese) and native strings |
+| `core/I18n` | Active language (Spanish, English, Portuguese, French, Simplified Chinese, Japanese) and native strings |
 | `platform/ConfigStore` | Atomic read and write of `%APPDATA%\WRAM\config.ini` |
 | `platform/Autostart` | Startup with Windows under `HKCU\...\Run` |
 | `sensors/PdhProvider` | CPU, clock, ACPI temperature, GPU, VRAM, disk, network and processes through PDH counters |
@@ -30,7 +30,7 @@ tests/        core tests
 | `ui/TaskbarBand` | Strip: position next to the tray, measuring, drawing and hiding in full screen |
 | `ui/TrayIcon` | Notification area icon |
 | `ui/SettingsWindow` | WebView2 window, title bar theme and message channel |
-| `ui/settings.html` | Settings interface, with its own strings in five languages |
+| `ui/settings.html` | Settings interface, with its own strings in six languages |
 | `app/App` | Creates the pieces, wires events and owns the timer |
 
 ## Principles

@@ -41,6 +41,11 @@ constexpr std::array<std::array<const wchar_t*, kStrCount>, kLangCount> kText{{
       L"无法启动 WebView2。请安装或修复 \"Microsoft Edge WebView2 Runtime\"。",
       L"无法创建设置窗口。",
       L"可执行文件已损坏：缺少设置界面。"}},
+    {{L"設定", L"WRAM を終了",
+      L"\"Microsoft Edge WebView2 Runtime\" がありません。設定ウィンドウの表示に必要です。",
+      L"WebView2 を起動できませんでした。\"Microsoft Edge WebView2 Runtime\" をインストールまたは修復してください。",
+      L"設定ウィンドウを作成できませんでした。",
+      L"実行ファイルが破損しています。設定画面がありません。"}},
 }};
 
 }  // namespace
@@ -52,6 +57,7 @@ Lang ResolveLang(int setting) {
         case 3: return Lang::Pt;
         case 4: return Lang::Fr;
         case 5: return Lang::Zh;
+        case 6: return Lang::Ja;
         default: break;
     }
     switch (PRIMARYLANGID(GetUserDefaultUILanguage())) {
@@ -59,6 +65,7 @@ Lang ResolveLang(int setting) {
         case LANG_PORTUGUESE: return Lang::Pt;
         case LANG_FRENCH: return Lang::Fr;
         case LANG_CHINESE: return Lang::Zh;
+        case LANG_JAPANESE: return Lang::Ja;
         default: return Lang::En;
     }
 }
@@ -67,7 +74,7 @@ void SetLang(Lang lang) { g_lang = lang; }
 Lang CurrentLang() { return g_lang; }
 
 const char* LangCode(Lang lang) {
-    static constexpr const char* kCodes[] = {"es", "en", "pt", "fr", "zh"};
+    static constexpr const char* kCodes[] = {"es", "en", "pt", "fr", "zh", "ja"};
     return kCodes[static_cast<size_t>(lang)];
 }
 

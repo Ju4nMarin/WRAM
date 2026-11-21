@@ -20,7 +20,7 @@ tests/        pruebas del núcleo
 | `core/MetricCatalog` | Catálogo de las 14 métricas: clave, nombre, fuente y etiqueta en cada idioma, unidad, umbral por defecto y si avisa por encima o por debajo |
 | `core/Format` | Texto de cada valor y texto más ancho posible por unidad, con el separador decimal del usuario |
 | `core/Config` | Modelo de configuración y `ConfigCodec` (INI a `Config` y de vuelta), sin E/S |
-| `core/I18n` | Idioma activo (español, inglés, portugués, francés y chino simplificado) y textos de la parte nativa |
+| `core/I18n` | Idioma activo (español, inglés, portugués, francés, chino simplificado y japonés) y textos de la parte nativa |
 | `platform/ConfigStore` | Lectura y escritura atómica de `%APPDATA%\WRAM\config.ini` |
 | `platform/Autostart` | Inicio con Windows en `HKCU\...\Run` |
 | `sensors/PdhProvider` | CPU, frecuencia, temperatura ACPI, GPU, VRAM, disco, red y procesos con contadores PDH |
