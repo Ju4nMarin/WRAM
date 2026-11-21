@@ -60,8 +60,8 @@ bool IsShellOrOwnWindow(HWND hwnd) {
 }
 
 // Una ventana en primer plano que cubre todo el monitor de la barra (video, juego, F11 del navegador).
-// Se calcula sin esperar al temporizador para ocultar la franja en el mismo instante.
-bool ForegroundIsFullscreen() {
+// Se calcula sin esperar al temporizador para reaccionar en el mismo instante.
+bool ForegroundIsFullscreen(RECT& monitorRect) {
     HWND fg = GetForegroundWindow();
     if (!fg || IsShellOrOwnWindow(fg)) return false;
     HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
@@ -72,8 +72,16 @@ bool ForegroundIsFullscreen() {
     RECT wr{};
     MONITORINFO mi{sizeof mi};
     if (!GetWindowRect(fg, &wr) || !GetMonitorInfoW(monitor, &mi)) return false;
+    monitorRect = mi.rcMonitor;
     return wr.left <= mi.rcMonitor.left && wr.top <= mi.rcMonitor.top && wr.right >= mi.rcMonitor.right &&
            wr.bottom >= mi.rcMonitor.bottom;
+}
+
+// Juegos Direct3D exclusivos y presentaciones: ninguna ventana puede dibujarse encima.
+bool ExclusiveFullscreen() {
+    QUERY_USER_NOTIFICATION_STATE state{};
+    if (FAILED(SHQueryUserNotificationState(&state))) return false;
+    return state == QUNS_RUNNING_D3D_FULL_SCREEN || state == QUNS_PRESENTATION_MODE;
 }
 
 }  // namespace
@@ -107,11 +115,22 @@ bool TaskbarBand::Create(HINSTANCE instance) {
     constexpr DWORD kFlags = WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS;
     hook_ = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, nullptr, &TaskbarBand::OnWinEvent, 0, 0,
                             kFlags);
-    // Entrar o salir de pantalla completa (F11, doble clic en un video) cambia el tamaño sin cambiar el foco.
-    locationHook_ = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
-                                    &TaskbarBand::OnWinEvent, 0, 0, kFlags);
+    WatchForeground(GetForegroundWindow());
     ReadTheme();
     return true;
+}
+
+void TaskbarBand::WatchForeground(HWND fg) {
+    // Entrar o salir de pantalla completa (F11, doble clic en un video) cambia el tamaño sin cambiar el foco.
+    // El gancho se limita al hilo de la ventana activa: escuchar a todo el sistema despertaría el proceso
+    // con cada parpadeo de cursor de cualquier aplicación.
+    if (locationHook_) UnhookWinEvent(locationHook_);
+    locationHook_ = nullptr;
+    DWORD pid = 0;
+    const DWORD tid = fg ? GetWindowThreadProcessId(fg, &pid) : 0;
+    if (!tid || pid == GetCurrentProcessId()) return;
+    locationHook_ = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
+                                    &TaskbarBand::OnWinEvent, pid, tid, WINEVENT_OUTOFCONTEXT);
 }
 
 bool TaskbarBand::EnsureFactories() {
@@ -199,7 +218,7 @@ void TaskbarBand::Layout() {
     if (!labelFormat_ || !valueFormat_) return;
     const float gap = 5.0f * scale_;
     const float columnGap = 14.0f * scale_;
-    const float pad = 6.0f * scale_;
+    const float pad = (overlay_ ? 12.0f : 6.0f) * scale_;
     const size_t rows = static_cast<size_t>(std::max(1, config_.rows));
 
     for (Cell& c : cells_) {
@@ -257,49 +276,78 @@ void TaskbarBand::Update(const MetricFrame& frame) {
     }
 }
 
-bool TaskbarBand::ShouldHide() const {
-    if (!config_.hideOnFullscreen) return false;
-    if (ForegroundIsFullscreen()) return true;
-    QUERY_USER_NOTIFICATION_STATE state{};
-    if (FAILED(SHQueryUserNotificationState(&state))) return false;
-    return state == QUNS_RUNNING_D3D_FULL_SCREEN || state == QUNS_PRESENTATION_MODE;
+TaskbarBand::Fullscreen TaskbarBand::DetectFullscreen(RECT& monitor) const {
+    if (ForegroundIsFullscreen(monitor)) return Fullscreen::Window;
+    if (ExclusiveFullscreen()) return Fullscreen::Exclusive;
+    return Fullscreen::None;
 }
 
 void TaskbarBand::OnLocationChanged() {
     // Solo importa si cambia el estado de pantalla completa: así un arrastre de ventana no hace trabajo extra.
-    const bool hide = ShouldHide();
-    if (hide == hiddenForFullscreen_) return;
-    hiddenForFullscreen_ = hide;
+    RECT monitor{};
+    if (DetectFullscreen(monitor) == fullscreen_) return;
     Reposition();
 }
 
 void TaskbarBand::Reposition() {
     if (!hwnd_) return;
     const TaskbarGeometry g = ReadTaskbar();
-    hiddenForFullscreen_ = ShouldHide();
-    if (!g.visible || cells_.empty() || hiddenForFullscreen_) {
+    RECT monitor{};
+    fullscreen_ = DetectFullscreen(monitor);
+    const auto mode = static_cast<FullscreenMode>(config_.fullscreenMode);
+
+    // Con una ventana en pantalla completa la franja puede ocultarse, flotar en una esquina o quedarse en su sitio.
+    // Sobre un juego Direct3D exclusivo nada puede dibujarse encima, así que solo se oculta.
+    const bool overlay = fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Move;
+    const bool hide = cells_.empty() || (fullscreen_ == Fullscreen::Window && mode == FullscreenMode::Hide) ||
+                      (fullscreen_ == Fullscreen::Exclusive && mode != FullscreenMode::Keep) || (!overlay && !g.visible);
+    if (hide) {
         if (visible_) ShowWindow(hwnd_, SW_HIDE);
         visible_ = false;
         return;
     }
+
     const int barH = g.bar.bottom - g.bar.top;
     const int barW = g.bar.right - g.bar.left;
     const bool horizontal = barW >= barH;
-    const int height = horizontal ? barH : static_cast<int>(std::ceil(lineHeight_ * config_.rows + 8 * g.scale));
-    if (std::fabs(g.scale - scale_) > 0.01f || height != bandH_) {
+    const bool overlayChanged = overlay != overlay_;
+    overlay_ = overlay;
+    if (std::fabs(g.scale - scale_) > 0.01f) {
         scale_ = g.scale;
-        bandH_ = height;
         RebuildFormats();
-        Layout();
     }
-    const int offset = static_cast<int>(config_.offset * scale_);
+    const float rows = static_cast<float>(std::min<size_t>(static_cast<size_t>(std::max(1, config_.rows)), cells_.size()));
+    int height;
+    if (overlay_) height = static_cast<int>(std::ceil(lineHeight_ * rows + 16.0f * scale_));
+    else if (horizontal) height = barH;
+    else height = static_cast<int>(std::ceil(lineHeight_ * config_.rows + 8 * g.scale));
+    if (height != bandH_ || overlayChanged) {
+        bandH_ = height;
+        Layout();
+        lastRect_ = {};
+    }
+
     RECT rc;
-    if (horizontal) {
-        rc.left = std::max(g.bar.left, g.tray.left - offset - bandW_);
-        rc.top = g.bar.top;
+    if (overlay_) {
+        // Posiciones: 0 arriba izq., 1 arriba centro, 2 arriba der., 3 centro izq., 4 centro der.,
+        // 5 abajo izq., 6 abajo centro, 7 abajo der.
+        const int margin = static_cast<int>(24 * scale_);
+        const int pos = std::clamp(config_.overlayPosition, 0, 7);
+        const int col = (pos == 0 || pos == 3 || pos == 5) ? 0 : (pos == 1 || pos == 6) ? 1 : 2;
+        const int row = pos <= 2 ? 0 : (pos <= 4 ? 1 : 2);
+        const LONG w = monitor.right - monitor.left;
+        const LONG h = monitor.bottom - monitor.top;
+        rc.left = col == 0 ? monitor.left + margin : col == 1 ? monitor.left + (w - bandW_) / 2 : monitor.right - margin - bandW_;
+        rc.top = row == 0 ? monitor.top + margin : row == 1 ? monitor.top + (h - bandH_) / 2 : monitor.bottom - margin - bandH_;
     } else {
-        rc.left = g.bar.left;
-        rc.top = std::max(g.bar.top, g.tray.top - offset - bandH_);
+        const int offset = static_cast<int>(config_.offset * scale_);
+        if (horizontal) {
+            rc.left = std::max(g.bar.left, g.tray.left - offset - bandW_);
+            rc.top = g.bar.top;
+        } else {
+            rc.left = g.bar.left;
+            rc.top = std::max(g.bar.top, g.tray.top - offset - bandH_);
+        }
     }
     rc.right = rc.left + bandW_;
     rc.bottom = rc.top + bandH_;
@@ -356,16 +404,25 @@ void TaskbarBand::Render() {
     const RECT bounds{0, 0, bandW_, bandH_};
     if (FAILED(target_->BindDC(memDc_, &bounds))) return;
 
+    // Flotando sobre pantalla completa no hay barra detrás: fondo oscuro translúcido y texto claro.
+    const bool light = lightTheme_ && !overlay_;
     const uint32_t valueRgb =
-        config_.valueColor != Config::kAutoColor ? config_.valueColor : (lightTheme_ ? 0x1A1A1Au : 0xFFFFFFu);
-    ComPtr<ID2D1SolidColorBrush> valueBrush, labelBrush, alertBrush;
+        config_.valueColor != Config::kAutoColor ? config_.valueColor : (light ? 0x1A1A1Au : 0xFFFFFFu);
+    ComPtr<ID2D1SolidColorBrush> valueBrush, labelBrush, alertBrush, backBrush;
     target_->CreateSolidColorBrush(Rgb(valueRgb), valueBrush.put());
-    target_->CreateSolidColorBrush(lightTheme_ ? Rgb(0x000000, 0.62f) : Rgb(0xFFFFFF, 0.64f), labelBrush.put());
+    target_->CreateSolidColorBrush(light ? Rgb(0x000000, 0.62f) : Rgb(0xFFFFFF, 0.68f), labelBrush.put());
     target_->CreateSolidColorBrush(Rgb(config_.alertColor), alertBrush.put());
 
     target_->BeginDraw();
     // Alfa mínimo en todo el rectángulo: invisible, pero la franja recibe los clics.
-    target_->Clear(D2D1::ColorF(0, 0, 0, 1.0f / 255.0f));
+    target_->Clear(D2D1::ColorF(0, 0, 0, overlay_ ? 0.0f : 1.0f / 255.0f));
+    if (overlay_) {
+        target_->CreateSolidColorBrush(Rgb(0x141414, 0.72f), backBrush.put());
+        const float r = 8.0f * scale_;
+        target_->FillRoundedRectangle(
+            D2D1::RoundedRect(D2D1::RectF(0, 0, static_cast<float>(bandW_), static_cast<float>(bandH_)), r, r),
+            backBrush.get());
+    }
     for (const Cell& c : cells_) {
         if (config_.showLabels && c.labelWidth > 0) {
             const float y = c.y + valueBaseline_ - labelBaseline_;
@@ -394,6 +451,7 @@ void CALLBACK TaskbarBand::OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LON
     if (!g_band) return;
     if (event == EVENT_SYSTEM_FOREGROUND) {
         // Al hacer clic en la barra, Windows la sube en el orden Z; la franja vuelve encima.
+        g_band->WatchForeground(hwnd);
         g_band->Reposition();
     } else if (idObject == OBJID_WINDOW && idChild == CHILDID_SELF && hwnd == GetForegroundWindow()) {
         g_band->OnLocationChanged();
