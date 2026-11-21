@@ -230,6 +230,10 @@ h1 { font: 600 28px/1.2 var(--f-display); }
 .tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: var(--r-sm); background: var(--subtle-2); color: var(--text-2); font-size: 11px; font-weight: 400; vertical-align: 1px; }
 .slot-label { grid-area: label; }
 .slot-value { grid-area: value; }
+/* "Aproximada" se apoya sobre el borde superior del valor: no ocupa espacio ni mueve el resto de la fila. */
+.val-box { position: relative; display: block; min-width: 0; }
+.val-box .tag { position: absolute; top: -9px; right: 6px; margin: 0; padding: 0 5px; font-size: 10px; line-height: 16px; border-radius: 4px; background: var(--card); border: 1px solid var(--line); color: var(--text-2); white-space: nowrap; pointer-events: none; }
+.val.none span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .slot-alert { grid-area: alert; display: flex; align-items: center; gap: var(--s-2); }
 .slot-actions { grid-area: actions; display: flex; justify-content: flex-end; gap: 2px; }
 .muted { color: var(--text-3); font-size: 12px; }
@@ -380,7 +384,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
 }
 .cat-item strong { font-weight: 600; display: block; }
 .cat-item small { color: var(--text-3); font-size: 12px; display: block; }
-.cat-item .val { grid-row: 1; grid-column: 2; align-self: start; }
+.cat-item .val-box { grid-row: 1; grid-column: 2; align-self: start; }
 .cat-item .btn { grid-column: 1 / -1; justify-self: start; }
 .full-note { display: flex; gap: var(--s-2); align-items: center; padding: var(--s-3) var(--s-4); margin-bottom: var(--s-3); border-radius: var(--r-md); background: var(--accent-soft); border: 1px solid var(--line); }
 .full-note svg { color: var(--accent-text); }
@@ -447,7 +451,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.0.0</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.1.0</span></div>
 </nav>
 
 <main>
@@ -605,7 +609,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.0.0</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.1.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -664,7 +668,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Color de los valores", "look.vcolorD": "Predeterminado usa blanco o negro según el tema de la barra de tareas. Personalizado usa el color que elijas.",
       "look.auto": "Predeterminado", "look.blue": "Azul", "look.other": "Personalizado",
       "look.acolor": "Color de aviso", "look.acolorD": "Un valor cambia a este color cuando cruza su umbral.",
-      "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala si tapa íconos de la barra o si prefieres más aire.",
+      "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala de la bandeja si tapa íconos o quieres más aire. Se detiene antes de los íconos de las apps.",
       "color.red": "Rojo", "color.yellow": "Amarillo", "color.magenta": "Magenta",
       "set.title": "Configuración", "set.desc": "Idioma, tema de esta ventana, inicio con Windows y comportamiento de la franja.",
       "set.lang": "Idioma", "set.langD": "Sistema usa el idioma de Windows. Cambia esta ventana, el menú y las etiquetas por defecto.",
@@ -707,7 +711,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Value color", "look.vcolorD": "Default uses white or black to match the taskbar theme. Custom uses the color you pick.",
       "look.auto": "Default", "look.blue": "Blue", "look.other": "Custom",
       "look.acolor": "Alert color", "look.acolorD": "A value turns this color when it crosses its threshold.",
-      "look.offset": "Distance from the tray", "look.offsetD": "Move it away if it covers taskbar icons or if you want more room.",
+      "look.offset": "Distance from the tray", "look.offsetD": "Move it away from the tray if it covers icons or you want more room. It stops before the app icons.",
       "color.red": "Red", "color.yellow": "Yellow", "color.magenta": "Magenta",
       "set.title": "Settings", "set.desc": "Language, theme of this window, startup and strip behavior.",
       "set.lang": "Language", "set.langD": "System uses the Windows language. Changes this window, the menu and the default labels.",
@@ -750,7 +754,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Cor dos valores", "look.vcolorD": "Padrão usa branco ou preto conforme o tema da barra de tarefas. Personalizada usa a cor que você escolher.",
       "look.auto": "Padrão", "look.blue": "Azul", "look.other": "Personalizada",
       "look.acolor": "Cor de alerta", "look.acolorD": "Um valor muda para esta cor quando passa do limite.",
-      "look.offset": "Distância da bandeja", "look.offsetD": "Afaste se cobrir ícones da barra ou se quiser mais espaço.",
+      "look.offset": "Distância da bandeja", "look.offsetD": "Afaste da bandeja se cobrir ícones ou se quiser mais espaço. Para antes dos ícones dos aplicativos.",
       "color.red": "Vermelho", "color.yellow": "Amarelo", "color.magenta": "Magenta",
       "set.title": "Configurações", "set.desc": "Idioma, tema desta janela, inicialização com o Windows e comportamento da faixa.",
       "set.lang": "Idioma", "set.langD": "Sistema usa o idioma do Windows. Muda esta janela, o menu e os rótulos padrão.",
@@ -784,7 +788,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "slot.below": "sous", "slot.above": "au-dessus", "slot.alertBelow": "Alerter quand la valeur passe sous le seuil", "slot.alertAbove": "Alerter quand la valeur dépasse le seuil",
       "slot.noAlert": "Pas d’alerte pour cette mesure", "slot.up": "Monter {name}", "slot.down": "Descendre {name}", "slot.remove": "Retirer {name} de la barre",
       "slot.free": "Libre", "slot.addFrom": "Ajouter depuis le catalogue", "slot.emptyT": "La bande est vide", "slot.emptyD": "Ajoutez une mesure du catalogue pour l’afficher à côté de la zone de notification.",
-      "val.none": "pas de capteur", "band.empty": "Aucune mesure",
+      "val.none": "sans capteur", "band.empty": "Aucune mesure",
       "look.title": "Apparence", "look.desc": "L’aspect de la bande dans la barre des tâches. Les changements s’appliquent immédiatement.",
       "look.rows": "Lignes", "look.rowsD": "Avec deux lignes, plus de mesures tiennent dans moins de largeur.", "look.rows1": "1 ligne", "look.rows2": "2 lignes",
       "look.font": "Police", "look.fontD": "Segoe UI Variable est la police de Windows 11. Bahnschrift est plus étroite et prend moins de place.",
@@ -793,7 +797,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Couleur des valeurs", "look.vcolorD": "Par défaut utilise le blanc ou le noir selon le thème de la barre des tâches. Personnalisée utilise la couleur choisie.",
       "look.auto": "Par défaut", "look.blue": "Bleu", "look.other": "Personnalisée",
       "look.acolor": "Couleur d’alerte", "look.acolorD": "Une valeur prend cette couleur quand elle franchit son seuil.",
-      "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la si elle masque des icônes ou si vous voulez plus d’espace.",
+      "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la de la zone de notification si elle masque des icônes. Elle s’arrête avant les icônes des applications.",
       "color.red": "Rouge", "color.yellow": "Jaune", "color.magenta": "Magenta",
       "set.title": "Paramètres", "set.desc": "Langue, thème de cette fenêtre, démarrage avec Windows et comportement de la bande.",
       "set.lang": "Langue", "set.langD": "Système utilise la langue de Windows. Change cette fenêtre, le menu et les étiquettes par défaut.",
@@ -811,7 +815,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "about.desc": "Moniteur système pour la barre des tâches Windows. Affiche jusqu’à 10 mesures à côté de la zone de notification, sans droits d’administrateur ni pilotes.",
       "about.dev": "Développé par", "about.version": "Version", "about.license": "Licence", "about.source": "Code source", "about.compat": "Compatibilité",
       "about.compatV": "Windows 10 (version 1903 ou ultérieure) et Windows 11, 64 bits",
-      "about.sources": "D’où vient chaque valeur", "about.sourcesD": "Lectures fournies par Windows. Quand un PC n’expose pas un capteur, la mesure affiche « pas de capteur ».",
+      "about.sources": "D’où vient chaque valeur", "about.sourcesD": "Lectures fournies par Windows. Quand un PC n’expose pas un capteur, la mesure affiche « sans capteur ».",
       "about.approx": "Dépend de la carte mère : peut être approximative ou absente."
     },
     ja: {
@@ -827,7 +831,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "slot.below": "未満", "slot.above": "超過", "slot.alertBelow": "しきい値を下回ったら警告", "slot.alertAbove": "しきい値を上回ったら警告",
       "slot.noAlert": "このメトリクスには警告がありません", "slot.up": "{name} を上へ", "slot.down": "{name} を下へ", "slot.remove": "{name} をタスクバーから削除",
       "slot.free": "空き", "slot.addFrom": "カタログから追加", "slot.emptyT": "ストリップは空です", "slot.emptyD": "カタログからメトリクスを追加すると、通知領域の横に表示されます。",
-      "val.none": "センサーなし", "band.empty": "メトリクスなし",
+      "val.none": "未検出", "band.empty": "メトリクスなし",
       "look.title": "外観", "look.desc": "タスクバー上のストリップの見た目です。変更はすぐに反映されます。",
       "look.rows": "行数", "look.rowsD": "2 行にすると、狭い幅により多くのメトリクスを表示できます。", "look.rows1": "1 行", "look.rows2": "2 行",
       "look.font": "フォント", "look.fontD": "Segoe UI Variable は Windows 11 のフォントです。Bahnschrift は幅が狭く、スペースを節約できます。",
@@ -836,7 +840,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "値の色", "look.vcolorD": "既定ではタスクバーのテーマに合わせて白または黒を使います。カスタムでは選んだ色を使います。",
       "look.auto": "既定", "look.blue": "青", "look.other": "カスタム",
       "look.acolor": "警告の色", "look.acolorD": "値がしきい値を超えると、この色に変わります。",
-      "look.offset": "通知領域からの距離", "look.offsetD": "タスクバーのアイコンに重なる場合や、余白を広げたい場合に離します。",
+      "look.offset": "通知領域からの距離", "look.offsetD": "アイコンに重なる場合や余白を広げたい場合に離します。アプリのアイコンの手前で止まります。",
       "color.red": "赤", "color.yellow": "黄", "color.magenta": "マゼンタ",
       "set.title": "設定", "set.desc": "言語、このウィンドウのテーマ、Windows 起動時の実行、ストリップの動作。",
       "set.lang": "言語", "set.langD": "システムは Windows の言語を使います。このウィンドウ、メニュー、既定のラベルが変わります。",
@@ -854,7 +858,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "about.desc": "Windows タスクバー用のシステムモニターです。通知領域の横に最大 10 個のメトリクスを表示します。管理者権限やドライバーは不要です。",
       "about.dev": "開発者", "about.version": "バージョン", "about.license": "ライセンス", "about.source": "ソースコード", "about.compat": "互換性",
       "about.compatV": "Windows 10（バージョン 1903 以降）および Windows 11、64 ビット",
-      "about.sources": "各データの取得元", "about.sourcesD": "Windows 自体からの値です。PC がセンサーを提供していない場合、メトリクスには「センサーなし」と表示されます。",
+      "about.sources": "各データの取得元", "about.sourcesD": "Windows 自体からの値です。PC がセンサーを提供していない場合、メトリクスには「未検出」と表示されます。",
       "about.approx": "マザーボードによって異なります。概算値の場合や、存在しない場合があります。"
     },
     zh: {
@@ -879,7 +883,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "数值颜色", "look.vcolorD": "默认会根据任务栏主题使用白色或黑色。自定义使用你选择的颜色。",
       "look.auto": "默认", "look.blue": "蓝色", "look.other": "自定义",
       "look.acolor": "警报颜色", "look.acolorD": "数值越过阈值时变为此颜色。",
-      "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了任务栏图标或想留出更多空间，可以拉开距离。",
+      "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了图标或想留出更多空间，可以拉开距离。会停在应用图标之前。",
       "color.red": "红色", "color.yellow": "黄色", "color.magenta": "品红",
       "set.title": "设置", "set.desc": "语言、此窗口的主题、开机启动和显示条的行为。",
       "set.lang": "语言", "set.langD": "系统表示使用 Windows 的语言。会更改此窗口、菜单和默认标签。",
@@ -1036,6 +1040,16 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     paintValue(v, S.values[key]);
     return v;
   }
+  function valueBox(key, meta) {
+    const box = el("span", "val-box");
+    box.appendChild(liveValue(key));
+    if (meta.approx) {
+      const tag = el("span", "tag", t("slot.approx"));
+      tag.dataset.approx = key;
+      box.appendChild(tag);
+    }
+    return box;
+  }
   function paintValue(n, val) {
     if (val) {
       n.textContent = val[1];
@@ -1044,6 +1058,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       n.textContent = "";
       n.append(icon("nosensor"), el("span", null, t("val.none")));
     }
+    n.title = val ? "" : t("val.none");
     n.classList.toggle("none", !val);
     n.classList.toggle("alert", !!val && S.alerts.has(n.dataset.val));
   }
@@ -1104,7 +1119,6 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
 
       const name = el("div", "slot-name");
       const strong = el("strong", null, meta.name);
-      if (meta.approx) strong.appendChild(el("span", "tag", t("slot.approx")));
       name.append(strong, el("small", null, meta.source));
 
       const label = el("input", "field label-in");
@@ -1123,7 +1137,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       labelWrap.appendChild(label);
 
       const value = el("div", "slot-value");
-      value.appendChild(liveValue(s.key));
+      value.appendChild(valueBox(s.key, meta));
 
       const alertBox = el("div", "slot-alert");
       if (meta.thrMax > 0) {
@@ -1239,7 +1253,6 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       const card = el("div", "cat-item");
       const txt = el("div");
       const strong = el("strong", null, m.name);
-      if (m.approx) strong.appendChild(el("span", "tag", t("slot.approx")));
       txt.append(strong, el("small", null, m.source));
       const add = el("button", "btn");
       add.type = "button";
@@ -1251,7 +1264,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
         renderAll();
         commit(true);
       });
-      card.append(txt, liveValue(m.key), add);
+      card.append(txt, valueBox(m.key, m), add);
       box.appendChild(card);
     });
   }
@@ -1449,6 +1462,15 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   function onValues(m) {
     S.values = m.v;
     S.alerts = new Set(m.a);
+    // El máximo de "Distancia a la bandeja" llega hasta el último ícono de apps, nunca encima.
+    if (typeof m.omax === "number") {
+      const slider = $("#offset");
+      const max = String(Math.max(0, Math.min(600, m.omax)));
+      if (slider.max !== max) {
+        slider.max = max;
+        if (S.cfg.offset > m.omax) $("#offset-out").textContent = slider.value + " px";
+      }
+    }
     $$("[data-val]").forEach((n) => paintValue(n, S.values[n.dataset.val]));
     $$("#screen .chip b").forEach((b) => {
       const val = S.values[b.dataset.key];
@@ -1492,7 +1514,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.0.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.1.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
