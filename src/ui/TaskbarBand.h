@@ -37,6 +37,7 @@ public:
     void OnSystemChange();  // tema, DPI o explorer reiniciado
     void RefreshTaskbarApps();  // dónde terminan los íconos de las apps en la barra
     int MaxOffsetDip() const { return maxOffsetDip_; }
+    int AppsGapDip() const { return appsGapDip_; }  // espacio libre entre los íconos de las apps y la bandeja, -1 si no se sabe
 
 private:
     struct Cell {
@@ -101,6 +102,7 @@ private:
     static constexpr LONG kNoAppsEdge = -2147483647 - 1;
     LONG appsRight_ = kNoAppsEdge;
     int maxOffsetDip_ = Config::kMaxOffset;
+    int appsGapDip_ = -1;
     ULONGLONG lastAppsScan_ = 0;
     ComPtr<IUIAutomation> uia_;
 };
