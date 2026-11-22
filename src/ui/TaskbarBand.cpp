@@ -13,7 +13,13 @@ namespace wram {
 namespace {
 
 constexpr wchar_t kClassName[] = L"WRAM.Band";
-TaskbarBand* g_band = nullptr;  // destino del hook de foco (una sola franja por proceso)
+
+// Todas las franjas vivas (una por barra de tareas). Los ganchos de eventos son únicos por proceso
+// y reparten cada evento entre ellas.
+std::vector<TaskbarBand*> g_bands;
+HWINEVENTHOOK g_foregroundHook = nullptr;
+HWINEVENTHOOK g_foregroundMoveHook = nullptr;
+HWINEVENTHOOK g_taskbarMoveHook = nullptr;
 
 D2D1_COLOR_F Rgb(uint32_t rgb, float alpha = 1.0f) {
     return D2D1::ColorF(((rgb >> 16) & 0xFF) / 255.0f, ((rgb >> 8) & 0xFF) / 255.0f, (rgb & 0xFF) / 255.0f, alpha);
@@ -22,18 +28,21 @@ D2D1_COLOR_F Rgb(uint32_t rgb, float alpha = 1.0f) {
 struct TaskbarGeometry {
     RECT bar{};
     RECT tray{};
+    RECT monitor{};
     float scale = 1.0f;
     bool visible = false;
     bool vertical = false;  // barra a la izquierda o a la derecha
 };
 
-TaskbarGeometry ReadTaskbar() {
+// Geometría de una barra. La principal tiene la bandeja como ventana propia (TrayNotifyWnd); en las
+// barras de otras pantallas la zona del reloj se mide con UI Automation y llega en `secondaryTray`.
+TaskbarGeometry ReadTaskbar(HWND bar, bool primary, const RECT& secondaryTray) {
     TaskbarGeometry g;
-    HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
-    if (!bar || !GetWindowRect(bar, &g.bar)) return g;
+    if (!bar || !IsWindow(bar) || !GetWindowRect(bar, &g.bar)) return g;
 
     MONITORINFO mi{sizeof mi};
     GetMonitorInfoW(MonitorFromWindow(bar, MONITOR_DEFAULTTOPRIMARY), &mi);
+    g.monitor = mi.rcMonitor;
     RECT visible{};
     IntersectRect(&visible, &g.bar, &mi.rcMonitor);
     // Con ocultar automáticamente, la barra queda casi fuera de pantalla.
@@ -42,8 +51,15 @@ TaskbarGeometry ReadTaskbar() {
     g.vertical = (g.bar.bottom - g.bar.top) > (g.bar.right - g.bar.left);
     g.bar = visible;
 
-    HWND tray = FindWindowExW(bar, nullptr, L"TrayNotifyWnd", nullptr);
-    if (!tray || !GetWindowRect(tray, &g.tray) || g.tray.right <= g.tray.left) {
+    bool hasTray = false;
+    if (primary) {
+        HWND tray = FindWindowExW(bar, nullptr, L"TrayNotifyWnd", nullptr);
+        hasTray = tray && GetWindowRect(tray, &g.tray) && g.tray.right > g.tray.left;
+    } else if (secondaryTray.right > secondaryTray.left) {
+        g.tray = secondaryTray;
+        hasTray = true;
+    }
+    if (!hasTray) {
         g.tray = g.vertical ? RECT{g.bar.left, g.bar.bottom, g.bar.right, g.bar.bottom}
                             : RECT{g.bar.right, g.bar.top, g.bar.right, g.bar.bottom};
     }
@@ -63,12 +79,11 @@ bool IsShellOrOwnWindow(HWND hwnd) {
     return false;
 }
 
-// Una ventana en primer plano que cubre todo el monitor de la barra (video, juego, F11 del navegador).
+// Una ventana en primer plano que cubre todo el monitor de esta barra (video, juego, F11 del navegador).
 // Se calcula sin esperar al temporizador para reaccionar en el mismo instante.
-bool ForegroundIsFullscreen(RECT& monitorRect) {
+bool ForegroundIsFullscreen(HWND bar, RECT& monitorRect) {
     HWND fg = GetForegroundWindow();
     if (!fg || IsShellOrOwnWindow(fg)) return false;
-    HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
     HMONITOR monitor = MonitorFromWindow(bar ? bar : fg, MONITOR_DEFAULTTOPRIMARY);
     if (MonitorFromWindow(fg, MONITOR_DEFAULTTONULL) != monitor) return false;
     const LONG style = GetWindowLongW(fg, GWL_STYLE);
@@ -91,67 +106,73 @@ bool ExclusiveFullscreen() {
 }  // namespace
 
 TaskbarBand::~TaskbarBand() {
-    if (hook_) UnhookWinEvent(hook_);
-    if (locationHook_) UnhookWinEvent(locationHook_);
-    if (barHook_) UnhookWinEvent(barHook_);
+    g_bands.erase(std::remove(g_bands.begin(), g_bands.end(), this), g_bands.end());
+    if (g_bands.empty()) {
+        if (g_foregroundHook) UnhookWinEvent(g_foregroundHook);
+        if (g_foregroundMoveHook) UnhookWinEvent(g_foregroundMoveHook);
+        if (g_taskbarMoveHook) UnhookWinEvent(g_taskbarMoveHook);
+        g_foregroundHook = g_foregroundMoveHook = g_taskbarMoveHook = nullptr;
+    }
     if (memDc_) {
         if (oldBitmap_) SelectObject(memDc_, oldBitmap_);
         DeleteDC(memDc_);
     }
     if (bitmap_) DeleteObject(bitmap_);
     if (hwnd_) DestroyWindow(hwnd_);
-    if (g_band == this) g_band = nullptr;
 }
 
-bool TaskbarBand::Create(HINSTANCE instance) {
+bool TaskbarBand::Create(HINSTANCE instance, HWND taskbar, bool primary) {
+    taskbar_ = taskbar;
+    primary_ = primary;
     WNDCLASSEXW wc{sizeof wc};
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = &TaskbarBand::WndProc;
     wc.hInstance = instance;
     wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     wc.lpszClassName = kClassName;
-    RegisterClassExW(&wc);
+    RegisterClassExW(&wc);  // falla sin consecuencias si ya existe
 
     hwnd_ = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE, kClassName, L"WRAM",
                             WS_POPUP, 0, 0, 1, 1, nullptr, nullptr, instance, this);
     if (!hwnd_ || !EnsureFactories()) return false;
 
-    g_band = this;
-    constexpr DWORD kFlags = WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS;
-    hook_ = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, nullptr, &TaskbarBand::OnWinEvent, 0, 0,
-                            kFlags);
-    WatchForeground(GetForegroundWindow());
-    WatchTaskbar();
+    g_bands.push_back(this);
+    if (!g_foregroundHook) {
+        g_foregroundHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, nullptr,
+                                           &TaskbarBand::OnWinEvent, 0, 0, WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+        WatchForeground(GetForegroundWindow());
+        WatchTaskbar();
+    }
     ReadTheme();
     return true;
 }
 
 void TaskbarBand::WatchTaskbar() {
-    if (barHook_) UnhookWinEvent(barHook_);
-    barHook_ = nullptr;
-    barHwnd_ = FindWindowW(L"Shell_TrayWnd", nullptr);
+    if (g_taskbarMoveHook) UnhookWinEvent(g_taskbarMoveHook);
+    g_taskbarMoveHook = nullptr;
     // Solo con "Ocultar automáticamente la barra de tareas" la barra entra y sale de la pantalla; sin esa opción
     // escuchar sus movimientos internos solo gastaría CPU.
     APPBARDATA abd{sizeof abd};
     const bool autoHide = (SHAppBarMessage(ABM_GETSTATE, &abd) & ABS_AUTOHIDE) != 0;
+    HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
     DWORD pid = 0;
-    const DWORD tid = barHwnd_ ? GetWindowThreadProcessId(barHwnd_, &pid) : 0;
+    const DWORD tid = bar ? GetWindowThreadProcessId(bar, &pid) : 0;
     if (!tid || !autoHide) return;
-    barHook_ = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
-                               &TaskbarBand::OnWinEvent, pid, tid, WINEVENT_OUTOFCONTEXT);
+    g_taskbarMoveHook = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
+                                        &TaskbarBand::OnWinEvent, pid, 0, WINEVENT_OUTOFCONTEXT);
 }
 
 void TaskbarBand::WatchForeground(HWND fg) {
     // Entrar o salir de pantalla completa (F11, doble clic en un video) cambia el tamaño sin cambiar el foco.
     // El gancho se limita al hilo de la ventana activa: escuchar a todo el sistema despertaría el proceso
     // con cada parpadeo de cursor de cualquier aplicación.
-    if (locationHook_) UnhookWinEvent(locationHook_);
-    locationHook_ = nullptr;
+    if (g_foregroundMoveHook) UnhookWinEvent(g_foregroundMoveHook);
+    g_foregroundMoveHook = nullptr;
     DWORD pid = 0;
     const DWORD tid = fg ? GetWindowThreadProcessId(fg, &pid) : 0;
     if (!tid || pid == GetCurrentProcessId()) return;
-    locationHook_ = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
-                                    &TaskbarBand::OnWinEvent, pid, tid, WINEVENT_OUTOFCONTEXT);
+    g_foregroundMoveHook = SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
+                                           &TaskbarBand::OnWinEvent, pid, tid, WINEVENT_OUTOFCONTEXT);
 }
 
 bool TaskbarBand::EnsureFactories() {
@@ -344,7 +365,7 @@ void TaskbarBand::Update(const MetricFrame& frame) {
 }
 
 TaskbarBand::Fullscreen TaskbarBand::DetectFullscreen(RECT& monitor) const {
-    if (ForegroundIsFullscreen(monitor)) return Fullscreen::Window;
+    if (ForegroundIsFullscreen(taskbar_, monitor)) return Fullscreen::Window;
     if (ExclusiveFullscreen()) return Fullscreen::Exclusive;
     return Fullscreen::None;
 }
@@ -358,7 +379,7 @@ void TaskbarBand::OnLocationChanged() {
 
 void TaskbarBand::Reposition() {
     if (!hwnd_) return;
-    const TaskbarGeometry g = ReadTaskbar();
+    const TaskbarGeometry g = ReadTaskbar(taskbar_, primary_, secondaryTray_);
     RECT monitor{};
     fullscreen_ = DetectFullscreen(monitor);
     const auto mode = static_cast<FullscreenMode>(config_.fullscreenMode);
@@ -453,10 +474,10 @@ void TaskbarBand::RefreshTaskbarApps() {
     // UI Automation entrega los botones de la barra (inicio, búsqueda y apps). Se toma el borde derecho del
     // último botón que queda a la izquierda de la bandeja. Es una consulta entre procesos: se hace pocas veces.
     lastAppsScan_ = GetTickCount64();
-    const TaskbarGeometry g = ReadTaskbar();
-    HWND bar = FindWindowW(L"Shell_TrayWnd", nullptr);
+    TaskbarGeometry g = ReadTaskbar(taskbar_, primary_, secondaryTray_);
     LONG right = kNoAppsEdge;
-    if (bar && g.visible) {
+    std::vector<RECT> rects;
+    if (taskbar_ && g.visible) {
         if (!uia_) CoCreateInstance(__uuidof(CUIAutomation), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uia_.put()));
         ComPtr<IUIAutomationElement> root;
         ComPtr<IUIAutomationCondition> isButton;
@@ -464,7 +485,7 @@ void TaskbarBand::RefreshTaskbarApps() {
         VARIANT type{};
         type.vt = VT_I4;
         type.lVal = UIA_ButtonControlTypeId;
-        if (uia_ && SUCCEEDED(uia_->ElementFromHandle(bar, root.put())) && root &&
+        if (uia_ && SUCCEEDED(uia_->ElementFromHandle(taskbar_, root.put())) && root &&
             SUCCEEDED(uia_->CreatePropertyCondition(UIA_ControlTypePropertyId, type, isButton.put())) &&
             SUCCEEDED(root->FindAll(TreeScope_Descendants, isButton.get(), buttons.put())) && buttons) {
             int count = 0;
@@ -476,14 +497,38 @@ void TaskbarBand::RefreshTaskbarApps() {
                     FAILED(button->get_CurrentBoundingRectangle(&r))) {
                     continue;
                 }
-                if (r.right <= r.left || r.bottom <= r.top) continue;
-                if (g.vertical) {
-                    // Barra vertical: los íconos van de arriba hacia abajo hasta la bandeja.
-                    if (r.bottom <= g.tray.top && r.left < g.bar.right && r.right > g.bar.left) right = std::max(right, r.bottom);
-                } else if (r.right <= g.tray.left && r.top < g.bar.bottom && r.bottom > g.bar.top) {
-                    right = std::max(right, r.right);
-                }
+                RECT inside{};
+                if (r.right > r.left && r.bottom > r.top && IntersectRect(&inside, &r, &g.bar)) rects.push_back(r);
             }
+        }
+    }
+
+    // Barras de otras pantallas: no tienen bandeja propia, pero sí un grupo de botones pegado al extremo
+    // (reloj y notificaciones). Ese grupo marca hasta dónde puede llegar la franja.
+    if (!primary_ && !rects.empty()) {
+        auto start = [&](const RECT& r) { return g.vertical ? r.top : r.left; };
+        auto end = [&](const RECT& r) { return g.vertical ? r.bottom : r.right; };
+        std::sort(rects.begin(), rects.end(), [&](const RECT& a, const RECT& b) { return start(a) < start(b); });
+        const LONG barEnd = g.vertical ? g.bar.bottom : g.bar.right;
+        const LONG joinGap = static_cast<LONG>(24 * g.scale);
+        secondaryTray_ = {};
+        if (barEnd - end(rects.back()) <= static_cast<LONG>(48 * g.scale)) {
+            size_t first = rects.size() - 1;
+            while (first > 0 && start(rects[first]) - end(rects[first - 1]) <= joinGap) --first;
+            if (first > 0) {
+                secondaryTray_ = g.bar;
+                (g.vertical ? secondaryTray_.top : secondaryTray_.left) = start(rects[first]);
+            }
+        }
+        g = ReadTaskbar(taskbar_, primary_, secondaryTray_);
+    }
+
+    for (const RECT& r : rects) {
+        if (g.vertical) {
+            // Barra vertical: los íconos van de arriba hacia abajo hasta la bandeja.
+            if (r.bottom <= g.tray.top) right = std::max(right, r.bottom);
+        } else if (r.right <= g.tray.left) {
+            right = std::max(right, r.right);
         }
     }
     const int extraBand = static_cast<int>(8 * scale_);
@@ -500,6 +545,7 @@ void TaskbarBand::RefreshTaskbarApps() {
 }
 
 void TaskbarBand::OnSystemChange() {
+    if (primary_) taskbar_ = FindWindowW(L"Shell_TrayWnd", nullptr);  // explorer.exe pudo crear una barra nueva
     WatchTaskbar();  // explorer.exe pudo reiniciarse
     ReadTheme();
     scale_ = 0;  // fuerza a recalcular DPI y medidas
@@ -581,18 +627,29 @@ void TaskbarBand::Render() {
 
 void CALLBACK TaskbarBand::OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD,
                                       DWORD) {
-    if (!g_band) return;
+    if (g_bands.empty()) return;
+    // Copia: una franja puede desaparecer mientras se reparte el evento (pantalla desconectada).
+    const std::vector<TaskbarBand*> bands = g_bands;
     if (event == EVENT_SYSTEM_FOREGROUND) {
         // Al hacer clic en la barra, Windows la sube en el orden Z; la franja vuelve encima.
-        g_band->WatchForeground(hwnd);
-        // Abrir o cerrar programas cambia los íconos de la barra; se vuelve a medir como mucho cada 2 s.
-        if (GetTickCount64() - g_band->lastAppsScan_ > 2000) g_band->RefreshTaskbarApps();
-        g_band->Reposition();
-    } else if (idObject == OBJID_WINDOW && idChild == CHILDID_SELF && hwnd == g_band->barHwnd_) {
-        // La barra se movió o apareció (ocultar automáticamente): la franja la sigue en el acto.
-        g_band->Reposition();
-    } else if (idObject == OBJID_WINDOW && idChild == CHILDID_SELF && hwnd == GetForegroundWindow()) {
-        g_band->OnLocationChanged();
+        WatchForeground(hwnd);
+        for (TaskbarBand* band : bands) {
+            // Abrir o cerrar programas cambia los íconos de la barra; se vuelve a medir como mucho cada 2 s.
+            if (GetTickCount64() - band->lastAppsScan_ > 2000) band->RefreshTaskbarApps();
+            band->Reposition();
+        }
+        return;
+    }
+    if (idObject != OBJID_WINDOW || idChild != CHILDID_SELF) return;
+    for (TaskbarBand* band : bands) {
+        if (hwnd == band->taskbar_) {
+            // La barra se movió o apareció (ocultar automáticamente): la franja la sigue en el acto.
+            band->Reposition();
+            return;
+        }
+    }
+    if (hwnd == GetForegroundWindow()) {
+        for (TaskbarBand* band : bands) band->OnLocationChanged();
     }
 }
 
