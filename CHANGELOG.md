@@ -2,6 +2,16 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.3.0
+
+### Added
+
+- "Show on all displays" option: every taskbar gets its own strip, next to its clock on secondary displays.
+
+### Changed
+
+- After changing the icon alignment, position or size of the taskbar, the strip settles in place within a fraction of a second instead of waiting for the periodic scan.
+
 ## 1.2.0
 
 ### Added
