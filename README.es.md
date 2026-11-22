@@ -58,13 +58,13 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
 - En reposo usa cerca de 9 MB de memoria y 0,2 % de un núcleo de CPU.
 
-![Métricas en tema oscuro](docs/img/metricas-oscuro.png)
+![Métricas en tema oscuro](docs/img/app/metricas-oscuro.png)
 
-![Métricas en tema claro](docs/img/metricas-claro.png)
+![Métricas en tema claro](docs/img/app/metricas-claro.png)
 
 | Pantalla completa | Configuración |
 |---|---|
-| ![Pantalla completa](docs/img/pantalla-completa-oscuro.png) | ![Configuración](docs/img/configuracion-claro.png) |
+| ![Pantalla completa](docs/img/app/pantalla-completa-oscuro.png) | ![Configuración](docs/img/app/configuracion-claro.png) |
 
 ## Métricas
 
