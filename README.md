@@ -19,11 +19,6 @@
   <a href="README.es.md">Español</a>
 </p>
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
-  <img src="docs/img/taskbar-dark.png" alt="WRAM strip on the Windows 11 taskbar, next to the system tray">
-</picture>
-
 <p align="center">
   <img alt="C++17" src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
   <img alt="Windows" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?style=for-the-badge">
@@ -50,6 +45,11 @@
 ## What it does
 
 WRAM draws a text strip to the left of the system tray with the metrics you choose: CPU, RAM and GPU usage, temperatures, network, disk, battery and more. It is configured from its own window, in light or dark theme, and every change shows up on the taskbar instantly.
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
+  <img src="docs/img/taskbar-dark.png" alt="WRAM strip on the Windows 11 taskbar, next to the system tray">
+</picture>
 
 - 14 metrics available, up to 10 at a time, in one or two rows.
 - Per-metric alert threshold: the value changes color when it crosses it.
