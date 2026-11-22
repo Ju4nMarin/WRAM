@@ -19,7 +19,7 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 
 ### Métricas
 
-![Métricas](../img/metricas-oscuro.png)
+![Métricas](../img/app/metricas-oscuro.png)
 
 - La lista muestra las 10 posiciones de la franja. Las ocupadas tienen la métrica, su etiqueta, la lectura actual, el umbral y los controles de orden.
 - El orden se cambia arrastrando el número de la posición o con las flechas.
@@ -29,7 +29,7 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 
 ### Apariencia
 
-![Apariencia](../img/apariencia-oscuro.png)
+![Apariencia](../img/app/apariencia-oscuro.png)
 
 | Ajuste | Valores |
 |---|---|
@@ -44,7 +44,7 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 
 ### Pantalla completa
 
-![Pantalla completa](../img/pantalla-completa-oscuro.png)
+![Pantalla completa](../img/app/pantalla-completa-oscuro.png)
 
 Qué hace la franja cuando un juego, un video o una presentación ocupa toda la pantalla. Reacciona en el acto al entrar y al salir, también con F11 en el navegador.
 
@@ -57,7 +57,7 @@ Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los b
 
 ### Configuración
 
-![Configuración](../img/configuracion-claro.png)
+![Configuración](../img/app/configuracion-claro.png)
 
 | Ajuste | Descripción |
 |---|---|
