@@ -451,7 +451,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.2.0</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.3.0</span></div>
 </nav>
 
 <main>
@@ -540,6 +540,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="row-text"><strong><label for="offset" data-i18n="look.offset"></label></strong><small data-i18n="look.offsetD"></small></div>
           <div class="row-ctl range"><input type="range" id="offset" data-bind="offset" data-type="int" min="0" max="600" step="2"><output id="offset-out">8 px</output></div>
         </div>
+        <div class="row">
+          <div class="row-text"><strong><label for="allDisplays" data-i18n="look.allDisplays"></label></strong><small data-i18n="look.allDisplaysD"></small></div>
+          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="allDisplays" data-bind="allDisplays"><span></span></label></div>
+        </div>
       </div>
     </section>
 
@@ -611,7 +615,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.2.0</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.3.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -670,7 +674,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Color de los valores", "look.vcolorD": "Predeterminado usa blanco o negro según el tema de la barra de tareas. Personalizado usa el color que elijas.",
       "look.auto": "Predeterminado", "look.blue": "Azul", "look.other": "Personalizado",
       "look.acolor": "Color de aviso", "look.acolorD": "Un valor cambia a este color cuando cruza su umbral.",
-      "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala de la bandeja si tapa íconos o quieres más aire. Se detiene antes de los íconos de las apps.",
+      "look.offset": "Distancia a la bandeja", "look.offsetD": "Sepárala de la bandeja si tapa íconos o quieres más aire. Se detiene antes de los íconos de las apps.", "look.allDisplays": "Mostrar en todas las pantallas", "look.allDisplaysD": "Agrega la franja a la barra de tareas de cada monitor, junto a su reloj.",
       "color.red": "Rojo", "color.yellow": "Amarillo", "color.magenta": "Magenta",
       "set.title": "Configuración", "set.desc": "Idioma, tema de esta ventana, inicio con Windows y comportamiento de la franja.",
       "set.lang": "Idioma", "set.langD": "Sistema usa el idioma de Windows. Cambia esta ventana, el menú y las etiquetas por defecto.",
@@ -713,7 +717,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Value color", "look.vcolorD": "Default uses white or black to match the taskbar theme. Custom uses the color you pick.",
       "look.auto": "Default", "look.blue": "Blue", "look.other": "Custom",
       "look.acolor": "Alert color", "look.acolorD": "A value turns this color when it crosses its threshold.",
-      "look.offset": "Distance from the tray", "look.offsetD": "Move it away from the tray if it covers icons or you want more room. It stops before the app icons.",
+      "look.offset": "Distance from the tray", "look.offsetD": "Move it away from the tray if it covers icons or you want more room. It stops before the app icons.", "look.allDisplays": "Show on all displays", "look.allDisplaysD": "Adds the strip to the taskbar of every monitor, next to its clock.",
       "color.red": "Red", "color.yellow": "Yellow", "color.magenta": "Magenta",
       "set.title": "Settings", "set.desc": "Language, theme of this window, startup and strip behavior.",
       "set.lang": "Language", "set.langD": "System uses the Windows language. Changes this window, the menu and the default labels.",
@@ -756,7 +760,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Cor dos valores", "look.vcolorD": "Padrão usa branco ou preto conforme o tema da barra de tarefas. Personalizada usa a cor que você escolher.",
       "look.auto": "Padrão", "look.blue": "Azul", "look.other": "Personalizada",
       "look.acolor": "Cor de alerta", "look.acolorD": "Um valor muda para esta cor quando passa do limite.",
-      "look.offset": "Distância da bandeja", "look.offsetD": "Afaste da bandeja se cobrir ícones ou se quiser mais espaço. Para antes dos ícones dos aplicativos.",
+      "look.offset": "Distância da bandeja", "look.offsetD": "Afaste da bandeja se cobrir ícones ou se quiser mais espaço. Para antes dos ícones dos aplicativos.", "look.allDisplays": "Mostrar em todas as telas", "look.allDisplaysD": "Adiciona a faixa à barra de tarefas de cada monitor, ao lado do relógio.",
       "color.red": "Vermelho", "color.yellow": "Amarelo", "color.magenta": "Magenta",
       "set.title": "Configurações", "set.desc": "Idioma, tema desta janela, inicialização com o Windows e comportamento da faixa.",
       "set.lang": "Idioma", "set.langD": "Sistema usa o idioma do Windows. Muda esta janela, o menu e os rótulos padrão.",
@@ -799,7 +803,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "Couleur des valeurs", "look.vcolorD": "Par défaut utilise le blanc ou le noir selon le thème de la barre des tâches. Personnalisée utilise la couleur choisie.",
       "look.auto": "Par défaut", "look.blue": "Bleu", "look.other": "Personnalisée",
       "look.acolor": "Couleur d’alerte", "look.acolorD": "Une valeur prend cette couleur quand elle franchit son seuil.",
-      "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la de la zone de notification si elle masque des icônes. Elle s’arrête avant les icônes des applications.",
+      "look.offset": "Distance de la zone de notification", "look.offsetD": "Éloignez-la de la zone de notification si elle masque des icônes. Elle s’arrête avant les icônes des applications.", "look.allDisplays": "Afficher sur tous les écrans", "look.allDisplaysD": "Ajoute la bande à la barre des tâches de chaque écran, à côté de son horloge.",
       "color.red": "Rouge", "color.yellow": "Jaune", "color.magenta": "Magenta",
       "set.title": "Paramètres", "set.desc": "Langue, thème de cette fenêtre, démarrage avec Windows et comportement de la bande.",
       "set.lang": "Langue", "set.langD": "Système utilise la langue de Windows. Change cette fenêtre, le menu et les étiquettes par défaut.",
@@ -842,7 +846,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "値の色", "look.vcolorD": "既定ではタスクバーのテーマに合わせて白または黒を使います。カスタムでは選んだ色を使います。",
       "look.auto": "既定", "look.blue": "青", "look.other": "カスタム",
       "look.acolor": "警告の色", "look.acolorD": "値がしきい値を超えると、この色に変わります。",
-      "look.offset": "通知領域からの距離", "look.offsetD": "アイコンに重なる場合や余白を広げたい場合に離します。アプリのアイコンの手前で止まります。",
+      "look.offset": "通知領域からの距離", "look.offsetD": "アイコンに重なる場合や余白を広げたい場合に離します。アプリのアイコンの手前で止まります。", "look.allDisplays": "すべてのディスプレイに表示", "look.allDisplaysD": "各モニターのタスクバーの時計の横にストリップを表示します。",
       "color.red": "赤", "color.yellow": "黄", "color.magenta": "マゼンタ",
       "set.title": "設定", "set.desc": "言語、このウィンドウのテーマ、Windows 起動時の実行、ストリップの動作。",
       "set.lang": "言語", "set.langD": "システムは Windows の言語を使います。このウィンドウ、メニュー、既定のラベルが変わります。",
@@ -885,7 +889,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "look.vcolor": "数值颜色", "look.vcolorD": "默认会根据任务栏主题使用白色或黑色。自定义使用你选择的颜色。",
       "look.auto": "默认", "look.blue": "蓝色", "look.other": "自定义",
       "look.acolor": "警报颜色", "look.acolorD": "数值越过阈值时变为此颜色。",
-      "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了图标或想留出更多空间，可以拉开距离。会停在应用图标之前。",
+      "look.offset": "与通知区域的距离", "look.offsetD": "如果遮住了图标或想留出更多空间，可以拉开距离。会停在应用图标之前。", "look.allDisplays": "在所有显示器上显示", "look.allDisplaysD": "在每个显示器的任务栏上、时钟旁边显示指示条。",
       "color.red": "红色", "color.yellow": "黄色", "color.magenta": "品红",
       "set.title": "设置", "set.desc": "语言、此窗口的主题、开机启动和显示条的行为。",
       "set.lang": "语言", "set.langD": "系统表示使用 Windows 的语言。会更改此窗口、菜单和默认标签。",
@@ -942,7 +946,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "interval=" + c.interval, "rows=" + c.rows, "font=" + c.font, "fontSize=" + c.fontSize,
       "valueColor=" + c.valueColor, "alertColor=" + c.alertColor, "labels=" + (c.labels ? 1 : 0),
       "autostart=" + (c.autostart ? 1 : 0), "fullscreen=" + c.fullscreen, "overlayPos=" + c.overlayPos, "offset=" + c.offset,
-      "theme=" + c.theme, "lang=" + c.language, "", "[slots]"];
+      "theme=" + c.theme, "lang=" + c.language, "allDisplays=" + (c.allDisplays ? 1 : 0), "", "[slots]"];
     c.slots.forEach((s, i) => lines.push((i + 1) + "=" + [s.key, cleanLabel(s.label), Number(s.thr) || 0, s.alert ? 1 : 0].join("|")));
     return lines.join("\n") + "\n";
   }
@@ -1555,11 +1559,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.2.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.3.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
-      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, allDisplays: true, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
         slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
           { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
     });
