@@ -132,9 +132,8 @@ bool TaskbarBand::Create(HINSTANCE instance, HWND taskbar, bool primary) {
     wc.lpszClassName = kClassName;
     RegisterClassExW(&wc);  // falla sin consecuencias si ya existe
 
-    hwnd_ = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE, kClassName, L"WRAM",
-                            WS_POPUP, 0, 0, 1, 1, nullptr, nullptr, instance, this);
-    if (!hwnd_ || !EnsureFactories()) return false;
+    instance_ = instance;
+    if (!CreateBandWindow() || !EnsureFactories()) return false;
 
     g_bands.push_back(this);
     if (!g_foregroundHook) {
@@ -470,6 +469,23 @@ void TaskbarBand::RaiseAboveTaskbar() {
     }
 }
 
+bool TaskbarBand::CreateBandWindow() {
+    hwnd_ = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE, kClassName, L"WRAM",
+                            WS_POPUP, 0, 0, 1, 1, nullptr, nullptr, instance_, this);
+    visible_ = false;
+    lastRect_ = {};
+    AttachToTaskbar();
+    return hwnd_ != nullptr;
+}
+
+void TaskbarBand::AttachToTaskbar() {
+    // La barra de tareas es la dueña de la franja: Windows mantiene una ventana con dueña siempre encima de
+    // su dueña, también cuando el shell sube la barra de capa al abrir Inicio o la búsqueda.
+    if (hwnd_ && taskbar_ && IsWindow(taskbar_)) {
+        SetWindowLongPtrW(hwnd_, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(taskbar_));
+    }
+}
+
 void TaskbarBand::RefreshTaskbarApps() {
     // UI Automation entrega los botones de la barra (inicio, búsqueda y apps). Se toma el borde derecho del
     // último botón que queda a la izquierda de la bandeja. Es una consulta entre procesos: se hace pocas veces.
@@ -546,6 +562,9 @@ void TaskbarBand::RefreshTaskbarApps() {
 
 void TaskbarBand::OnSystemChange() {
     if (primary_) taskbar_ = FindWindowW(L"Shell_TrayWnd", nullptr);  // explorer.exe pudo crear una barra nueva
+    // Si explorer.exe se reinició, la franja pudo desaparecer junto con su barra dueña: se vuelve a crear.
+    if (!hwnd_ || !IsWindow(hwnd_)) CreateBandWindow();
+    else AttachToTaskbar();
     WatchTaskbar();  // explorer.exe pudo reiniciarse
     ReadTheme();
     scale_ = 0;  // fuerza a recalcular DPI y medidas

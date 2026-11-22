@@ -36,6 +36,8 @@ public:
     void Update(const MetricFrame& frame);
     void Reposition();
     void RaiseAboveTaskbar();
+    bool CreateBandWindow();
+    void AttachToTaskbar();
     void OnSystemChange();  // tema, DPI o explorer reiniciado
     void RefreshTaskbarApps();  // dónde terminan los íconos de las apps en la barra
     int MaxOffsetDip() const { return maxOffsetDip_; }
@@ -75,6 +77,7 @@ private:
 
 
     IBandEvents& events_;
+    HINSTANCE instance_ = nullptr;
     HWND hwnd_ = nullptr;
     Fullscreen fullscreen_ = Fullscreen::None;
     bool overlay_ = false;
