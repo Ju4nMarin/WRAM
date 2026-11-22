@@ -127,7 +127,7 @@ WRAM is free and open source. If it is useful to you, you can support its develo
 
 ## Code signing policy
 
-Windows releases are built from source by GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) from a version tag on `main`, and each signing request is approved manually before the signed `WRAM.exe` is published. Only the executable built from this repository is signed.
+Code signing for Windows releases is handled through the [SignPath Foundation](https://signpath.org) program for open source projects, using [SignPath.io](https://about.signpath.io). Windows releases are built from source by GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) from a version tag on `main`, and each signing request is approved manually before the signed `WRAM.exe` is published. Only the executable built from this repository is signed.
 
 Team roles:
 

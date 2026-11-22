@@ -125,7 +125,7 @@ WRAM es gratuito y de código abierto. Si te resulta útil, puedes apoyar su des
 
 ## Política de firma de código
 
-Las versiones para Windows se compilan desde el código fuente en GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) a partir de una etiqueta de versión en `main`, y cada solicitud de firma se aprueba a mano antes de publicar el `WRAM.exe` firmado. Solo se firma el ejecutable compilado desde este repositorio.
+La firma de código de las versiones para Windows se gestiona con el programa de [SignPath Foundation](https://signpath.org) para proyectos de código abierto, mediante [SignPath.io](https://about.signpath.io). Las versiones para Windows se compilan desde el código fuente en GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) a partir de una etiqueta de versión en `main`, y cada solicitud de firma se aprueba a mano antes de publicar el `WRAM.exe` firmado. Solo se firma el ejecutable compilado desde este repositorio.
 
 Roles del equipo:
 
