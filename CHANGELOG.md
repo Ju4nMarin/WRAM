@@ -2,6 +2,16 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.5.0
+
+### Added
+
+- Sidebar card to support the project with a donation; in a narrow window it becomes a smiley button.
+
+### Changed
+
+- README and documentation screenshots updated.
+
 ## 1.4.0
 
 ### Added
