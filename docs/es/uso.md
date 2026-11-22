@@ -55,7 +55,9 @@ Qué hace la franja cuando un juego, un video o una presentación ocupa toda la 
 
 Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los bordes superior e inferior y centros laterales); se elige con un clic. Los juegos en pantalla completa exclusiva no permiten otras ventanas encima, así que ahí la franja siempre se oculta.
 
-"Opacidad del fondo" define qué tan opaco es el recuadro oscuro detrás de los valores, de 0 % (solo los números) a 100 %. El valor inicial es 72 %.
+"Opacidad general" define la transparencia de todo el indicador (números, etiquetas y fondo), de 10 % a 100 %. El valor inicial es 100 %.
+
+&
 
 ### Configuración
 

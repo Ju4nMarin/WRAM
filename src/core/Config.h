@@ -40,6 +40,7 @@ struct Config {
     int fullscreenMode = 0;            // FullscreenMode
     int overlayPosition = 2;           // 0..7, ver TaskbarBand: por defecto arriba a la derecha
     int overlayOpacity = 72;           // opacidad del fondo del indicador en pantalla completa, 0..100
+    int overlayAlpha = 100;            // opacidad general del indicador en pantalla completa (texto y fondo), 10..100
     int offset = 8;                    // DIP entre la franja y la bandeja
     int theme = 0;                     // ventana de configuración: 0 sistema, 1 claro, 2 oscuro
     int language = 0;                  // ver I18n.h: 0 sistema, 1 es, 2 en, 3 pt, 4 fr, 5 zh, 6 ja

@@ -37,7 +37,6 @@ public:
     void Reposition();
     void RaiseAboveTaskbar();
     bool CreateBandWindow();
-    void AttachToTaskbar();
     void OnSystemChange();  // tema, DPI o explorer reiniciado
     void RefreshTaskbarApps();  // dónde terminan los íconos de las apps en la barra
     int MaxOffsetDip() const { return maxOffsetDip_; }
