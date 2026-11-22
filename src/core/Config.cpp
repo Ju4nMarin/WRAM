@@ -135,6 +135,7 @@ std::string Serialize(const Config& c) {
     line("offset", std::to_string(c.offset));
     line("theme", std::to_string(c.theme));
     line("lang", std::to_string(c.language));
+    line("allDisplays", c.allDisplays ? "1" : "0");
     out += "\n[slots]\n";
     for (size_t i = 0; i < c.slots.size(); ++i) {
         const SlotConfig& s = c.slots[i];
@@ -194,6 +195,7 @@ Config Parse(std::string_view ini) {
                 if (ParseColor(value, col) && col != Config::kAutoColor) c.alertColor = col;
             } else if (key == "labels") ParseBool(value, c.showLabels);
             else if (key == "autostart") ParseBool(value, c.autostart);
+            else if (key == "allDisplays") ParseBool(value, c.allDisplays);
             else if (key == "fullscreen" && text::ParseInt(value, n)) c.fullscreenMode = n > 0 ? 1 : 0;
             else if (key == "overlayPos" && text::ParseInt(value, n)) c.overlayPosition = Clamp<int>(n, 0, 7);
             else if (key == "hideFullscreen") {  // formato anterior: 1 ocultar, 0 visible
