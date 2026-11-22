@@ -7,7 +7,7 @@
 
 <p align="center">
   Monitor del sistema para la barra de tareas de Windows.<br>
-  Hasta 10 métricas en vivo junto a la bandeja, en un solo ejecutable de unos 400 KB.
+  Hasta 10 métricas en vivo junto a la bandeja, en un solo ejecutable de unos 455 KB.
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@
   <a href="https://github.com/Ju4nMarin/WRAM/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Ju4nMarin/WRAM?style=flat-square"></a>
   <a href="https://github.com/Ju4nMarin/WRAM/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Ju4nMarin/WRAM/ci.yml?branch=main&style=flat-square&label=CI"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
-  <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20450%20KB-blue?style=flat-square">
+  <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20500%20KB-blue?style=flat-square">
   <a href="https://www.paypal.com/paypalme/evopl"><img alt="Donar con PayPal" src="https://img.shields.io/badge/donar-PayPal-00457C?style=flat-square&logo=paypal&logoColor=white"></a>
 </p>
 
@@ -57,7 +57,7 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 - En pantalla completa puede quedar oculta o visible en el recuadro de pantalla que elijas, y reacciona en el acto al entrar y al salir.
 - Interfaz en español, inglés, portugués, francés, chino simplificado y japonés.
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
-- En reposo usa cerca de 9 MB de memoria y 0,2 % de un núcleo de CPU.
+- En reposo usa entre 12 y 17 MB de memoria y menos del 1 % de un núcleo de CPU.
 
 ![Métricas en tema oscuro](docs/img/app/metricas-oscuro.png)
 

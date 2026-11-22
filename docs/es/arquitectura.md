@@ -87,11 +87,13 @@ Equipo de desarrollo, 6 métricas, intervalo de 1 s:
 
 | Estado | Memoria (working set) | CPU |
 |---|---|---|
-| En reposo | 9,4 MB | 47 ms cada 20 s (0,23 % de un núcleo) |
-| Configuración abierta | 26 MB más los procesos de WebView2 | |
-| Tras cerrar la configuración | 9,0 MB, sin procesos de WebView2 | 47 ms cada 20 s |
+| En reposo | 12 a 17 MB | 0,3 % a 0,6 % de un núcleo |
+| Configuración abierta | 23 a 27 MB más 6 procesos de WebView2 | |
+| Tras cerrar la configuración | 12 a 13 MB, sin procesos de WebView2 | |
+
+Ejecutable: 465 408 bytes (unos 455 KB), sin runtime ni archivos adicionales.
 
 ## Pendiente
 
-- Barra de tareas vertical y barras de monitores secundarios.
 - Temperatura de CPU por núcleo, que requiere un driver de kernel.
+- La franja queda debajo de la barra de tareas mientras el menú Inicio o la búsqueda están abiertos, porque Windows sube la barra por encima de todas las ventanas durante ese tiempo.

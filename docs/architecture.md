@@ -87,11 +87,13 @@ Development PC, 6 metrics, 1 s interval:
 
 | State | Memory (working set) | CPU |
 |---|---|---|
-| Idle | 9.4 MB | 47 ms every 20 s (0.23% of one core) |
-| Settings window open | 26 MB plus WebView2 processes | |
-| After closing the settings window | 9.0 MB, no WebView2 processes | 47 ms every 20 s |
+| Idle | 12 to 17 MB | 0.3% to 0.6% of one core |
+| Settings window open | 23 to 27 MB plus 6 WebView2 processes | |
+| After closing the settings window | 12 to 13 MB, no WebView2 processes | |
+
+Executable: 465,408 bytes (about 455 KB), with no runtime or extra files.
 
 ## Pending
 
-- Vertical taskbar and taskbars on secondary monitors.
 - Per-core CPU temperature, which requires a kernel driver.
+- The strip stays below the taskbar while the Start menu or search is open, because Windows raises the taskbar above every other window during that time.
