@@ -474,16 +474,7 @@ bool TaskbarBand::CreateBandWindow() {
                             WS_POPUP, 0, 0, 1, 1, nullptr, nullptr, instance_, this);
     visible_ = false;
     lastRect_ = {};
-    AttachToTaskbar();
     return hwnd_ != nullptr;
-}
-
-void TaskbarBand::AttachToTaskbar() {
-    // La barra de tareas es la dueña de la franja: Windows mantiene una ventana con dueña siempre encima de
-    // su dueña, también cuando el shell sube la barra de capa al abrir Inicio o la búsqueda.
-    if (hwnd_ && taskbar_ && IsWindow(taskbar_)) {
-        SetWindowLongPtrW(hwnd_, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(taskbar_));
-    }
 }
 
 void TaskbarBand::RefreshTaskbarApps() {
@@ -562,9 +553,8 @@ void TaskbarBand::RefreshTaskbarApps() {
 
 void TaskbarBand::OnSystemChange() {
     if (primary_) taskbar_ = FindWindowW(L"Shell_TrayWnd", nullptr);  // explorer.exe pudo crear una barra nueva
-    // Si explorer.exe se reinició, la franja pudo desaparecer junto con su barra dueña: se vuelve a crear.
+    // Si la ventana de la franja ya no existe, se vuelve a crear.
     if (!hwnd_ || !IsWindow(hwnd_)) CreateBandWindow();
-    else AttachToTaskbar();
     WatchTaskbar();  // explorer.exe pudo reiniciarse
     ReadTheme();
     scale_ = 0;  // fuerza a recalcular DPI y medidas
@@ -640,7 +630,9 @@ void TaskbarBand::Render() {
     POINT dst{lastRect_.left, lastRect_.top};
     SIZE size{bandW_, bandH_};
     POINT src{0, 0};
-    BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    // En pantalla completa la opacidad general atenúa todo el indicador; sobre la barra va siempre opaca.
+    const BYTE alpha = overlay_ ? static_cast<BYTE>(config_.overlayAlpha * 255 / 100) : 255;
+    BLENDFUNCTION blend{AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA};
     UpdateLayeredWindow(hwnd_, nullptr, &dst, &size, memDc_, &src, 0, &blend, ULW_ALPHA);
 }
 
