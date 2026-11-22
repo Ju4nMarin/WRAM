@@ -58,13 +58,13 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 - No administrator rights, no drivers, no runtime: a single `WRAM.exe`.
 - At idle it uses about 9 MB of memory and 0.2% of one CPU core.
 
-![Metrics, dark theme](docs/img/metrics-dark.png)
+![Metrics, dark theme](docs/img/app/metrics-dark.png)
 
-![Metrics, light theme](docs/img/metrics-light.png)
+![Metrics, light theme](docs/img/app/metrics-light.png)
 
 | Full screen | Settings |
 |---|---|
-| ![Full screen](docs/img/fullscreen-dark.png) | ![Settings](docs/img/settings-light.png) |
+| ![Full screen](docs/img/app/fullscreen-dark.png) | ![Settings](docs/img/app/settings-light.png) |
 
 ## Metrics
 

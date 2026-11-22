@@ -19,7 +19,7 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 
 ### Metrics
 
-![Metrics](img/metrics-dark.png)
+![Metrics](img/app/metrics-dark.png)
 
 - The list shows the 10 positions of the strip. Used positions show the metric, its label, the current reading, the threshold and the order controls. Free positions link to the catalog.
 - Reorder by dragging the position number or with the arrows.
@@ -29,7 +29,7 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 
 ### Appearance
 
-![Appearance](img/appearance-dark.png)
+![Appearance](img/app/appearance-dark.png)
 
 | Setting | Values |
 |---|---|
@@ -44,7 +44,7 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 
 ### Full screen
 
-![Full screen](img/fullscreen-dark.png)
+![Full screen](img/app/fullscreen-dark.png)
 
 What the strip does when a game, video or presentation takes the whole screen. It reacts instantly when entering and leaving full screen, including F11 in browsers.
 
@@ -57,7 +57,7 @@ With Visible, the screen diagram has 8 spots (corners, edge centers and side cen
 
 ### Settings
 
-![Settings](img/settings-light.png)
+![Settings](img/app/settings-light.png)
 
 | Setting | Description |
 |---|---|
