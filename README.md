@@ -40,6 +40,7 @@
   <a href="https://github.com/Ju4nMarin/WRAM/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Ju4nMarin/WRAM/ci.yml?branch=main&style=flat-square&label=CI"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
   <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20450%20KB-blue?style=flat-square">
+  <a href="https://www.paypal.com/paypalme/evopl"><img alt="Donate with PayPal" src="https://img.shields.io/badge/donate-PayPal-00457C?style=flat-square&logo=paypal&logoColor=white"></a>
 </p>
 
 ## What it does
@@ -119,6 +120,27 @@ It produces `build\WRAM.exe` and runs the tests. Details in [docs/development.md
 - [Changelog](CHANGELOG.md)
 
 Spanish documentation: [README.es.md](README.es.md) and [docs/es](docs/es).
+
+## Support
+
+WRAM is free and open source. If it is useful to you, you can support its development with a donation on [PayPal](https://www.paypal.com/paypalme/evopl). The same link is in the app, in the sidebar and under About.
+
+## Code signing policy
+
+Windows releases are built from source by GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) from a version tag on `main`, and each signing request is approved manually before the signed `WRAM.exe` is published. Only the executable built from this repository is signed.
+
+Team roles:
+
+| Role | Members |
+|---|---|
+| Committers and reviewers | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+| Approvers | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+
+Changes from other contributors go through a pull request reviewed by a committer before they are merged.
+
+Privacy: this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. The links in the app (source code, license and donation) open in the default browser only when clicked. The settings window uses the Microsoft Edge WebView2 Runtime included in Windows, and its interface is loaded from inside the executable, without remote content.
+
+Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Author
 

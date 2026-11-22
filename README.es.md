@@ -40,6 +40,7 @@
   <a href="https://github.com/Ju4nMarin/WRAM/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Ju4nMarin/WRAM/ci.yml?branch=main&style=flat-square&label=CI"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
   <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20450%20KB-blue?style=flat-square">
+  <a href="https://www.paypal.com/paypalme/evopl"><img alt="Donar con PayPal" src="https://img.shields.io/badge/donar-PayPal-00457C?style=flat-square&logo=paypal&logoColor=white"></a>
 </p>
 
 ## Qué hace
@@ -117,6 +118,27 @@ Deja `build\WRAM.exe` y ejecuta las pruebas. Detalles en [docs/es/desarrollo.md]
 - [Desarrollo, ramas y commits](docs/es/desarrollo.md)
 - [Cómo contribuir](CONTRIBUTING.es.md)
 - [Cambios por versión](CHANGELOG.md)
+
+## Apoyo
+
+WRAM es gratuito y de código abierto. Si te resulta útil, puedes apoyar su desarrollo con una donación en [PayPal](https://www.paypal.com/paypalme/evopl). El mismo enlace está en la app, en la barra lateral y en Acerca de.
+
+## Política de firma de código
+
+Las versiones para Windows se compilan desde el código fuente en GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) a partir de una etiqueta de versión en `main`, y cada solicitud de firma se aprueba a mano antes de publicar el `WRAM.exe` firmado. Solo se firma el ejecutable compilado desde este repositorio.
+
+Roles del equipo:
+
+| Rol | Miembros |
+|---|---|
+| Autores y revisores | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+| Aprobadores | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+
+Los cambios de otras personas entran por un pull request revisado por un autor antes de integrarse.
+
+Privacidad: este programa no transfiere información a otros sistemas en red salvo que lo pida expresamente el usuario o la persona que lo instala o lo usa. Los enlaces de la app (código fuente, licencia y donación) se abren en el navegador predeterminado solo al hacer clic. La ventana de configuración usa Microsoft Edge WebView2 Runtime, incluido en Windows, y su interfaz se carga desde dentro del ejecutable, sin contenido remoto.
+
+Componentes de terceros: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Autor
 
