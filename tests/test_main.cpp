@@ -113,6 +113,15 @@ TEST(fullscreen_mode_and_legacy_key) {
     CHECK(ConfigCodec::Parse("[general]\nfullscreen=9\noverlayPos=40\n").overlayPosition == 7);
 }
 
+TEST(overlay_opacity_roundtrip_and_clamp) {
+    Config c = Config::Defaults();
+    CHECK(c.overlayOpacity == 72);
+    c.overlayOpacity = 35;
+    CHECK(ConfigCodec::Parse(ConfigCodec::Serialize(c)).overlayOpacity == 35);
+    CHECK(ConfigCodec::Parse("[general]\noverlayOpacity=250\n").overlayOpacity == 100);
+    CHECK(ConfigCodec::Parse("[general]\noverlayOpacity=-4\n").overlayOpacity == 0);
+}
+
 TEST(all_displays_roundtrip) {
     Config c = Config::Defaults();
     CHECK(!c.allDisplays);

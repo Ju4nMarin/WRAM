@@ -132,6 +132,7 @@ std::string Serialize(const Config& c) {
     line("autostart", c.autostart ? "1" : "0");
     line("fullscreen", std::to_string(c.fullscreenMode));
     line("overlayPos", std::to_string(c.overlayPosition));
+    line("overlayOpacity", std::to_string(c.overlayOpacity));
     line("offset", std::to_string(c.offset));
     line("theme", std::to_string(c.theme));
     line("lang", std::to_string(c.language));
@@ -198,6 +199,7 @@ Config Parse(std::string_view ini) {
             else if (key == "allDisplays") ParseBool(value, c.allDisplays);
             else if (key == "fullscreen" && text::ParseInt(value, n)) c.fullscreenMode = n > 0 ? 1 : 0;
             else if (key == "overlayPos" && text::ParseInt(value, n)) c.overlayPosition = Clamp<int>(n, 0, 7);
+            else if (key == "overlayOpacity" && text::ParseInt(value, n)) c.overlayOpacity = Clamp<int>(n, 0, 100);
             else if (key == "hideFullscreen") {  // formato anterior: 1 ocultar, 0 visible
                 bool hideOld = true;
                 if (ParseBool(value, hideOld)) c.fullscreenMode = hideOld ? 0 : 1;
