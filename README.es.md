@@ -19,11 +19,6 @@
   <a href="README.md">English</a>
 </p>
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
-  <img src="docs/img/taskbar-dark.png" alt="Franja de WRAM en la barra de tareas de Windows 11, junto a la bandeja">
-</picture>
-
 <p align="center">
   <img alt="C++17" src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
   <img alt="Windows" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?style=for-the-badge">
@@ -50,6 +45,11 @@
 ## Qué hace
 
 WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las métricas que elijas: uso de CPU, RAM y GPU, temperaturas, red, disco, batería y más. Se configura desde una ventana propia en tema claro u oscuro, y los cambios se ven al instante en la barra.
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
+  <img src="docs/img/taskbar-dark.png" alt="Franja de WRAM en la barra de tareas de Windows 11, junto a la bandeja">
+</picture>
 
 - 14 métricas disponibles, hasta 10 a la vez, en una o dos filas.
 - Umbral de aviso por métrica: el valor cambia de color al cruzarlo.
