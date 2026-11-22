@@ -27,7 +27,7 @@ constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT_PTR kTimerSettle = 3;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.5.1";
+constexpr char kVersion[] = "1.5.2";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -342,6 +342,7 @@ std::string App::BuildInitMessage() {
     out += ",\"fullscreen\":" + std::to_string(config_.fullscreenMode);
     out += ",\"overlayPos\":" + std::to_string(config_.overlayPosition);
     out += ",\"overlayOpacity\":" + std::to_string(config_.overlayOpacity);
+    out += ",\"overlayAlpha\":" + std::to_string(config_.overlayAlpha);
     out += ",\"allDisplays\":";
     out += config_.allDisplays ? "true" : "false";
     out += ",\"offset\":" + std::to_string(config_.offset);
