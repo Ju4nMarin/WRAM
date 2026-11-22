@@ -29,7 +29,9 @@ public:
     TaskbarBand(const TaskbarBand&) = delete;
     TaskbarBand& operator=(const TaskbarBand&) = delete;
 
-    bool Create(HINSTANCE instance);
+    bool Create(HINSTANCE instance, HWND taskbar, bool primary);
+    HWND Taskbar() const { return taskbar_; }
+    bool IsPrimary() const { return primary_; }
     void ApplyConfig(const Config& config);
     void Update(const MetricFrame& frame);
     void Reposition();
@@ -56,8 +58,8 @@ private:
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
     static void CALLBACK OnWinEvent(HWINEVENTHOOK, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD, DWORD);
     void OnLocationChanged();
-    void WatchForeground(HWND fg);
-    void WatchTaskbar();
+    static void WatchForeground(HWND fg);
+    static void WatchTaskbar();
     enum class Fullscreen { None, Window, Exclusive };
     Fullscreen DetectFullscreen(RECT& monitor) const;
     LRESULT Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -74,8 +76,6 @@ private:
 
     IBandEvents& events_;
     HWND hwnd_ = nullptr;
-    HWINEVENTHOOK hook_ = nullptr;
-    HWINEVENTHOOK locationHook_ = nullptr;
     Fullscreen fullscreen_ = Fullscreen::None;
     bool overlay_ = false;
     Config config_;
@@ -103,8 +103,9 @@ private:
     float fontScale_ = 1.0f;
     bool vertical_ = false;
     int barThickness_ = 0;
-    HWINEVENTHOOK barHook_ = nullptr;
-    HWND barHwnd_ = nullptr;
+    HWND taskbar_ = nullptr;   // barra que acompaña esta franja
+    bool primary_ = true;
+    RECT secondaryTray_{};     // zona del reloj en barras de otras pantallas, medida con UI Automation
     bool lightTheme_ = false;
     bool visible_ = false;
     RECT lastRect_{};

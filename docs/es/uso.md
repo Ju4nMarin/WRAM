@@ -39,7 +39,8 @@ La vista previa de la ventana de configuración reproduce la barra con el tema d
 | Mostrar etiquetas | Sí o no |
 | Color de los valores | Predeterminado (blanco o negro según la barra) o personalizado |
 | Color de aviso | Rojo, amarillo, magenta, azul u otro color |
-| Distancia a la bandeja | 0 a 600 px |
+| Distancia a la bandeja | 0 a 600 px, nunca sobre los íconos de las apps |
+| Mostrar en todas las pantallas | Agrega la franja a la barra de tareas de cada monitor |
 
 ### Pantalla completa
 
@@ -79,10 +80,10 @@ Cómo se comporta la franja con cada opción de Configuración de Windows, Perso
 |---|---|
 | Posición de la barra: abajo o arriba | Junto a la bandeja, en la misma fila |
 | Posición de la barra: izquierda o derecha | Una métrica debajo de otra, etiqueta arriba y valor abajo, del ancho de la barra y encima de la bandeja. El texto se reduce si no cabe |
-| Alineación de los íconos: centro o izquierda | Nunca tapa los íconos de las apps; la distancia máxima a la bandeja llega hasta donde terminan |
+| Alineación de los íconos: centro o izquierda | Nunca tapa los íconos de las apps; la distancia máxima a la bandeja llega hasta donde terminan. Tras un cambio, la franja se reacomoda en una fracción de segundo |
 | Tamaño de la barra: pequeño | El texto se reduce lo justo para caber en la barra más delgada (hasta 60 %) |
 | Ocultar automáticamente la barra de tareas | Se oculta con la barra y vuelve en cuanto la barra aparece |
-| Mostrar la barra de tareas en todas las pantallas | La franja se muestra solo en la barra principal |
+| Mostrar la barra de tareas en todas las pantallas | Con Apariencia, "Mostrar en todas las pantallas", cada barra tiene su propia franja junto a su reloj |
 | Distintivos, parpadeo, compartir ventana, esquina para mostrar el escritorio, combinar botones, íconos más pequeños | Sin efecto sobre la franja; los cambios en los íconos de las apps se detectan en segundos |
 
 ## Archivo de configuración
