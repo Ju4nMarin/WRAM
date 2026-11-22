@@ -596,7 +596,7 @@ void TaskbarBand::Render() {
     // Alfa mínimo en todo el rectángulo: invisible, pero la franja recibe los clics.
     target_->Clear(D2D1::ColorF(0, 0, 0, overlay_ ? 0.0f : 1.0f / 255.0f));
     if (overlay_) {
-        target_->CreateSolidColorBrush(Rgb(0x141414, 0.72f), backBrush.put());
+        target_->CreateSolidColorBrush(Rgb(0x141414, config_.overlayOpacity / 100.0f), backBrush.put());
         const float r = 8.0f * scale_;
         target_->FillRoundedRectangle(
             D2D1::RoundedRect(D2D1::RectF(0, 0, static_cast<float>(bandW_), static_cast<float>(bandH_)), r, r),
