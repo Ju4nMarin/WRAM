@@ -1,6 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "../core/Config.h"
 #include "../platform/ConfigStore.h"
@@ -46,16 +48,25 @@ private:
     void OnSettingsClosed() override;
     void OnSettingsOpen(std::string_view target) override;
     bool SettingsUseDarkTheme() const;
+    void SyncBands();
+    void ScanTaskbars();
+    void StartSettle();
+    void OnSystemChange();
+    TaskbarBand& Primary() const { return *bands_.front(); }
 
     HINSTANCE instance_;
     HWND host_ = nullptr;
     HICON icon_ = nullptr;
     UINT taskbarCreatedMsg_ = 0;
     ULONGLONG lastAppsScan_ = 0;
+    ULONGLONG settleUntil_ = 0;
+    RECT lastBarRect_{};
+    static constexpr DWORD kUnknownLayout = 0xFFFFFFFF;
+    DWORD lastTaskbarLayout_ = kUnknownLayout;  // alineación y tamaño de la barra, para detectar cambios
     ConfigStore store_;
     Config config_;
     Sampler sampler_;
-    TaskbarBand band_;
+    std::vector<std::unique_ptr<TaskbarBand>> bands_;  // la primera es la barra principal
     TrayIcon tray_;
     SettingsWindow settings_;
 };
