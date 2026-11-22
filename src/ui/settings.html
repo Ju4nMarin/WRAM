@@ -153,6 +153,8 @@ main { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
 .spot[aria-checked="true"] { border: 2px solid var(--accent); background: rgba(96, 205, 255, 0.08); }
 .spot:disabled { cursor: default; }
 .screen.off .spot { opacity: 0.35; }
+.opacity-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); width: 100%; margin-top: var(--s-4); }
+.opacity-row.off { opacity: 0.5; }
 :root[data-theme="light"] .screen { background: #e9ecef; border-color: #c9cdd2; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
 :root[data-theme="light"] .screen-label { color: rgba(0, 0, 0, 0.45); }
 :root[data-theme="light"] .spot { border-color: rgba(0, 0, 0, 0.22); }
@@ -183,11 +185,6 @@ h1 { font: 600 28px/1.2 var(--f-display); }
   background: #1c1c1c; color: #ffffff;
 }
 .taskbar.light { background: #eeeeee; color: #1a1a1a; }
-.gap-mark { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: 6px; font-size: 10px; color: rgba(255,255,255,0.55); }
-.gap-mark::before, .gap-mark::after { content: ""; flex: 1; border-top: 1px dashed rgba(255,255,255,0.3); }
-.taskbar.light .gap-mark { color: rgba(0,0,0,0.55); }
-.taskbar.light .gap-mark::before, .taskbar.light .gap-mark::after { border-top-color: rgba(0,0,0,0.3); }
-.gap-mark[hidden] { display: none; }
 /* Contenido de la barra a escala 1:1 desde la bandeja; si no cabe en la ventana se reduce entero en vez de recortarse. */
 .tb-inner { position: absolute; top: 0; right: 0; bottom: 0; width: 100%; display: flex; align-items: stretch; justify-content: flex-end; padding-right: var(--s-2); transform-origin: right center; }
 .tb-apps { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; }
@@ -456,7 +453,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.3.1</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.4.0</span></div>
 </nav>
 
 <main>
@@ -469,7 +466,6 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       <div class="tb-inner" id="tb-inner">
       <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="band" id="band"></div>
-      <div class="gap-mark" id="gap-mark" aria-hidden="true" hidden><span></span></div>
       <div class="tray" aria-hidden="true">
         <svg class="i"><use href="#i-chev"/></svg>
         <svg class="i"><use href="#i-wifi"/></svg>
@@ -608,6 +604,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="screen" id="screen" role="radiogroup" aria-labelledby="l-pos">
             <span class="screen-label" data-i18n="fs.screen"></span>
           </div>
+          <div class="opacity-row">
+            <div class="row-text"><strong><label for="overlayOpacity" data-i18n="fs.opacity"></label></strong><small data-i18n="fs.opacityD"></small></div>
+            <div class="row-ctl range"><input type="range" id="overlayOpacity" data-bind="overlayOpacity" data-type="int" min="0" max="100" step="5"><output id="overlayOpacity-out">72 %</output></div>
+          </div>
           <p class="muted fs-note"><svg class="i"><use href="#i-info"/></svg><span data-i18n="fs.exclusive"></span></p>
         </div>
       </div>
@@ -621,9 +621,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.3.1</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.4.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
+        <dt data-i18n="about.support"></dt><dd><button class="link-btn" type="button" data-open="donate" data-i18n="about.donate"></button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
       </dl>
       <h2 class="sub" data-i18n="about.sources"></h2>
@@ -688,7 +689,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Oscuro",
       "set.autostart": "Iniciar con Windows", "set.autostartD": "Se registra solo para tu usuario, sin permisos de administrador.",
       "set.fs": "Ocultar en pantalla completa", "set.fsD": "La franja desaparece en el acto al entrar en un juego, un video o una presentación, y vuelve al salir.",
-      "nav.fs": "Pantalla completa", "fs.desc": "Qué hace el indicador cuando un juego, un video o una presentación ocupa toda la pantalla.", "fs.mode": "Comportamiento", "fs.modeD": "Se aplica en el acto al entrar y al salir de pantalla completa.", "fs.hide": "Oculto", "fs.move": "Visible", "fs.keep": "Dejar igual", "fs.hideD": "El indicador se oculta mientras haya algo en pantalla completa y vuelve al salir.", "fs.moveD": "El indicador se muestra en el recuadro que elijas abajo, con un fondo oscuro para leerse sobre cualquier imagen.", "fs.keepD": "El indicador se queda en su lugar de la barra, encima de la imagen.", "fs.pos": "Posición en pantalla", "fs.posD": "Haz clic en el recuadro donde quieres ver el indicador en pantalla completa.", "fs.posOff": "Elige Visible para escoger la posición.", "fs.exclusive": "Los juegos en pantalla completa exclusiva no permiten dibujar encima; ahí el indicador se oculta.",
+      "fs.opacity": "Opacidad del fondo", "fs.opacityD": "Qué tan opaco es el recuadro oscuro detrás de los valores. Con 0 % solo se ven los números.", "nav.fs": "Pantalla completa", "fs.desc": "Qué hace el indicador cuando un juego, un video o una presentación ocupa toda la pantalla.", "fs.mode": "Comportamiento", "fs.modeD": "Se aplica en el acto al entrar y al salir de pantalla completa.", "fs.hide": "Oculto", "fs.move": "Visible", "fs.keep": "Dejar igual", "fs.hideD": "El indicador se oculta mientras haya algo en pantalla completa y vuelve al salir.", "fs.moveD": "El indicador se muestra en el recuadro que elijas abajo, con un fondo oscuro para leerse sobre cualquier imagen.", "fs.keepD": "El indicador se queda en su lugar de la barra, encima de la imagen.", "fs.pos": "Posición en pantalla", "fs.posD": "Haz clic en el recuadro donde quieres ver el indicador en pantalla completa.", "fs.posOff": "Elige Visible para escoger la posición.", "fs.exclusive": "Los juegos en pantalla completa exclusiva no permiten dibujar encima; ahí el indicador se oculta.",
       "fs.p0": "Arriba a la izquierda", "fs.p1": "Arriba al centro", "fs.p2": "Arriba a la derecha", "fs.p3": "Centro a la izquierda", "fs.p4": "Centro a la derecha", "fs.p5": "Abajo a la izquierda", "fs.p6": "Abajo al centro", "fs.p7": "Abajo a la derecha", "fs.screen": "Tu pantalla",
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Oscura", "stage.noteForced": "Vista previa con la barra en tema {mode}. Tu barra de Windows usa tema {win}.", "word.light": "claro", "word.dark": "oscuro",
       "set.interval": "Frecuencia de actualización", "set.intervalD": "Intervalos más largos gastan menos CPU y batería.",
@@ -696,7 +697,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "Restablecer", "set.resetD": "Vuelve a las seis métricas iniciales y borra etiquetas, umbrales y apariencia. El inicio con Windows no cambia.",
       "set.resetQ": "Se perderán las métricas elegidas, sus etiquetas y umbrales. ¿Restablecer?", "set.resetBtn": "Restablecer valores", "set.cancel": "Cancelar", "set.resetOk": "Restablecer",
       "about.desc": "Monitor del sistema para la barra de tareas de Windows. Muestra hasta 10 métricas junto a la bandeja, sin permisos de administrador ni drivers.",
-      "about.dev": "Desarrollado por", "about.version": "Versión", "about.license": "Licencia", "about.source": "Código fuente", "about.compat": "Compatibilidad",
+      "about.support": "Apoyar el proyecto", "about.donate": "Donar con PayPal", "about.dev": "Desarrollado por", "about.version": "Versión", "about.license": "Licencia", "about.source": "Código fuente", "about.compat": "Compatibilidad",
       "about.compatV": "Windows 10 (versión 1903 o posterior) y Windows 11, 64 bits",
       "about.sources": "De dónde sale cada dato", "about.sourcesD": "Lecturas del propio Windows. Cuando un equipo no expone un sensor, la métrica muestra \"sin sensor\".",
       "about.approx": "Depende de la placa: puede ser aproximada o no existir."
@@ -731,7 +732,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "System", "set.light": "Light", "set.dark": "Dark",
       "set.autostart": "Start with Windows", "set.autostartD": "Registered for your user only, without administrator rights.",
       "set.fs": "Hide in full screen", "set.fsD": "The strip disappears instantly when a game, video or presentation goes full screen, and comes back when it exits.",
-      "nav.fs": "Full screen", "fs.desc": "What the indicator does when a game, video or presentation takes the whole screen.", "fs.mode": "Behavior", "fs.modeD": "Applies instantly when entering and leaving full screen.", "fs.hide": "Hidden", "fs.move": "Visible", "fs.keep": "Keep", "fs.hideD": "The indicator hides while something is full screen and comes back when it ends.", "fs.moveD": "The indicator shows in the spot you pick below, on a dark backdrop that reads over any image.", "fs.keepD": "The indicator stays in its taskbar spot, on top of the image.", "fs.pos": "Position on screen", "fs.posD": "Click the spot where you want the indicator in full screen.", "fs.posOff": "Choose Visible to pick the position.", "fs.exclusive": "Games in exclusive full screen do not allow drawing on top; there the indicator is hidden.",
+      "fs.opacity": "Background opacity", "fs.opacityD": "How opaque the dark box behind the values is. At 0% only the numbers show.", "nav.fs": "Full screen", "fs.desc": "What the indicator does when a game, video or presentation takes the whole screen.", "fs.mode": "Behavior", "fs.modeD": "Applies instantly when entering and leaving full screen.", "fs.hide": "Hidden", "fs.move": "Visible", "fs.keep": "Keep", "fs.hideD": "The indicator hides while something is full screen and comes back when it ends.", "fs.moveD": "The indicator shows in the spot you pick below, on a dark backdrop that reads over any image.", "fs.keepD": "The indicator stays in its taskbar spot, on top of the image.", "fs.pos": "Position on screen", "fs.posD": "Click the spot where you want the indicator in full screen.", "fs.posOff": "Choose Visible to pick the position.", "fs.exclusive": "Games in exclusive full screen do not allow drawing on top; there the indicator is hidden.",
       "fs.p0": "Top left", "fs.p1": "Top center", "fs.p2": "Top right", "fs.p3": "Middle left", "fs.p4": "Middle right", "fs.p5": "Bottom left", "fs.p6": "Bottom center", "fs.p7": "Bottom right", "fs.screen": "Your screen",
       "stage.bar": "Taskbar", "stage.barWin": "Windows", "stage.barLight": "Light", "stage.barDark": "Dark", "stage.noteForced": "Preview with a {mode} taskbar. Your Windows taskbar uses the {win} theme.", "word.light": "light", "word.dark": "dark",
       "set.interval": "Refresh rate", "set.intervalD": "Longer intervals use less CPU and battery.",
@@ -739,7 +740,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "Reset", "set.resetD": "Goes back to the six default metrics and clears labels, thresholds and appearance. Startup with Windows is kept.",
       "set.resetQ": "Your metrics, labels and thresholds will be lost. Reset?", "set.resetBtn": "Reset settings", "set.cancel": "Cancel", "set.resetOk": "Reset",
       "about.desc": "System monitor for the Windows taskbar. Shows up to 10 metrics next to the tray, without administrator rights or drivers.",
-      "about.dev": "Developed by", "about.version": "Version", "about.license": "License", "about.source": "Source code", "about.compat": "Compatibility",
+      "about.support": "Support the project", "about.donate": "Donate with PayPal", "about.dev": "Developed by", "about.version": "Version", "about.license": "License", "about.source": "Source code", "about.compat": "Compatibility",
       "about.compatV": "Windows 10 (version 1903 or later) and Windows 11, 64-bit",
       "about.sources": "Where each value comes from", "about.sourcesD": "Readings from Windows itself. When a PC does not expose a sensor, the metric shows \"no sensor\".",
       "about.approx": "Depends on the motherboard: it can be approximate or missing."
@@ -774,7 +775,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Escuro",
       "set.autostart": "Iniciar com o Windows", "set.autostartD": "Registrado só para o seu usuário, sem permissões de administrador.",
       "set.fs": "Ocultar em tela cheia", "set.fsD": "A faixa some na hora quando um jogo, vídeo ou apresentação entra em tela cheia, e volta ao sair.",
-      "nav.fs": "Tela cheia", "fs.desc": "O que o indicador faz quando um jogo, vídeo ou apresentação ocupa a tela inteira.", "fs.mode": "Comportamento", "fs.modeD": "Aplicado na hora ao entrar e sair da tela cheia.", "fs.hide": "Oculto", "fs.move": "Visível", "fs.keep": "Manter", "fs.hideD": "O indicador some e volta ao sair da tela cheia.", "fs.moveD": "O indicador aparece no quadro que você escolher abaixo, com fundo escuro para ser lido sobre qualquer imagem.", "fs.keepD": "O indicador fica no seu lugar na barra, por cima da imagem.", "fs.pos": "Posição na tela", "fs.posD": "Clique no quadro onde quer ver o indicador em tela cheia.", "fs.posOff": "Escolha Visível para escolher a posição.", "fs.exclusive": "Jogos em tela cheia exclusiva não permitem desenhar por cima; nesse caso o indicador fica oculto.",
+      "fs.opacity": "Opacidade do fundo", "fs.opacityD": "Quão opaca é a caixa escura atrás dos valores. Com 0% só aparecem os números.", "nav.fs": "Tela cheia", "fs.desc": "O que o indicador faz quando um jogo, vídeo ou apresentação ocupa a tela inteira.", "fs.mode": "Comportamento", "fs.modeD": "Aplicado na hora ao entrar e sair da tela cheia.", "fs.hide": "Oculto", "fs.move": "Visível", "fs.keep": "Manter", "fs.hideD": "O indicador some e volta ao sair da tela cheia.", "fs.moveD": "O indicador aparece no quadro que você escolher abaixo, com fundo escuro para ser lido sobre qualquer imagem.", "fs.keepD": "O indicador fica no seu lugar na barra, por cima da imagem.", "fs.pos": "Posição na tela", "fs.posD": "Clique no quadro onde quer ver o indicador em tela cheia.", "fs.posOff": "Escolha Visível para escolher a posição.", "fs.exclusive": "Jogos em tela cheia exclusiva não permitem desenhar por cima; nesse caso o indicador fica oculto.",
       "fs.p0": "Superior esquerdo", "fs.p1": "Superior central", "fs.p2": "Superior direito", "fs.p3": "Centro esquerdo", "fs.p4": "Centro direito", "fs.p5": "Inferior esquerdo", "fs.p6": "Inferior central", "fs.p7": "Inferior direito", "fs.screen": "Sua tela",
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Escura", "stage.noteForced": "Prévia com a barra no tema {mode}. Sua barra do Windows usa o tema {win}.", "word.light": "claro", "word.dark": "escuro",
       "set.interval": "Frequência de atualização", "set.intervalD": "Intervalos maiores gastam menos CPU e bateria.",
@@ -782,7 +783,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "Redefinir", "set.resetD": "Volta às seis métricas iniciais e apaga rótulos, limites e aparência. A inicialização com o Windows não muda.",
       "set.resetQ": "As métricas, rótulos e limites escolhidos serão perdidos. Redefinir?", "set.resetBtn": "Redefinir valores", "set.cancel": "Cancelar", "set.resetOk": "Redefinir",
       "about.desc": "Monitor do sistema para a barra de tarefas do Windows. Mostra até 10 métricas ao lado da bandeja, sem permissões de administrador nem drivers.",
-      "about.dev": "Desenvolvido por", "about.version": "Versão", "about.license": "Licença", "about.source": "Código-fonte", "about.compat": "Compatibilidade",
+      "about.support": "Apoiar o projeto", "about.donate": "Doar com PayPal", "about.dev": "Desenvolvido por", "about.version": "Versão", "about.license": "Licença", "about.source": "Código-fonte", "about.compat": "Compatibilidade",
       "about.compatV": "Windows 10 (versão 1903 ou posterior) e Windows 11, 64 bits",
       "about.sources": "De onde vem cada dado", "about.sourcesD": "Leituras do próprio Windows. Quando um computador não expõe um sensor, a métrica mostra \"sem sensor\".",
       "about.approx": "Depende da placa-mãe: pode ser aproximada ou não existir."
@@ -817,7 +818,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Système", "set.light": "Clair", "set.dark": "Sombre",
       "set.autostart": "Démarrer avec Windows", "set.autostartD": "Enregistré pour votre utilisateur seulement, sans droits d’administrateur.",
       "set.fs": "Masquer en plein écran", "set.fsD": "La bande disparaît aussitôt quand un jeu, une vidéo ou une présentation passe en plein écran, et revient à la sortie.",
-      "nav.fs": "Plein écran", "fs.desc": "Ce que fait l’indicateur quand un jeu, une vidéo ou une présentation occupe tout l’écran.", "fs.mode": "Comportement", "fs.modeD": "S’applique aussitôt à l’entrée et à la sortie du plein écran.", "fs.hide": "Masqué", "fs.move": "Visible", "fs.keep": "Laisser", "fs.hideD": "L’indicateur disparaît et revient à la sortie du plein écran.", "fs.moveD": "L’indicateur s’affiche dans l’emplacement choisi ci-dessous, sur un fond sombre lisible sur n’importe quelle image.", "fs.keepD": "L’indicateur reste à sa place dans la barre, par-dessus l’image.", "fs.pos": "Position à l’écran", "fs.posD": "Cliquez sur l’emplacement où afficher l’indicateur en plein écran.", "fs.posOff": "Choisissez Visible pour choisir la position.", "fs.exclusive": "Les jeux en plein écran exclusif ne permettent pas de dessiner par-dessus ; l’indicateur y est masqué.",
+      "fs.opacity": "Opacité du fond", "fs.opacityD": "Opacité du cadre sombre derrière les valeurs. À 0 %, seuls les chiffres restent visibles.", "nav.fs": "Plein écran", "fs.desc": "Ce que fait l’indicateur quand un jeu, une vidéo ou une présentation occupe tout l’écran.", "fs.mode": "Comportement", "fs.modeD": "S’applique aussitôt à l’entrée et à la sortie du plein écran.", "fs.hide": "Masqué", "fs.move": "Visible", "fs.keep": "Laisser", "fs.hideD": "L’indicateur disparaît et revient à la sortie du plein écran.", "fs.moveD": "L’indicateur s’affiche dans l’emplacement choisi ci-dessous, sur un fond sombre lisible sur n’importe quelle image.", "fs.keepD": "L’indicateur reste à sa place dans la barre, par-dessus l’image.", "fs.pos": "Position à l’écran", "fs.posD": "Cliquez sur l’emplacement où afficher l’indicateur en plein écran.", "fs.posOff": "Choisissez Visible pour choisir la position.", "fs.exclusive": "Les jeux en plein écran exclusif ne permettent pas de dessiner par-dessus ; l’indicateur y est masqué.",
       "fs.p0": "En haut à gauche", "fs.p1": "En haut au centre", "fs.p2": "En haut à droite", "fs.p3": "Au milieu à gauche", "fs.p4": "Au milieu à droite", "fs.p5": "En bas à gauche", "fs.p6": "En bas au centre", "fs.p7": "En bas à droite", "fs.screen": "Votre écran",
       "stage.bar": "Barre", "stage.barWin": "Windows", "stage.barLight": "Claire", "stage.barDark": "Sombre", "stage.noteForced": "Aperçu avec une barre en thème {mode}. Votre barre Windows utilise le thème {win}.", "word.light": "clair", "word.dark": "sombre",
       "set.interval": "Fréquence d’actualisation", "set.intervalD": "Des intervalles plus longs consomment moins de CPU et de batterie.",
@@ -825,7 +826,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "Réinitialiser", "set.resetD": "Revient aux six mesures initiales et efface étiquettes, seuils et apparence. Le démarrage avec Windows ne change pas.",
       "set.resetQ": "Les mesures choisies, leurs étiquettes et seuils seront perdus. Réinitialiser ?", "set.resetBtn": "Réinitialiser les valeurs", "set.cancel": "Annuler", "set.resetOk": "Réinitialiser",
       "about.desc": "Moniteur système pour la barre des tâches Windows. Affiche jusqu’à 10 mesures à côté de la zone de notification, sans droits d’administrateur ni pilotes.",
-      "about.dev": "Développé par", "about.version": "Version", "about.license": "Licence", "about.source": "Code source", "about.compat": "Compatibilité",
+      "about.support": "Soutenir le projet", "about.donate": "Faire un don avec PayPal", "about.dev": "Développé par", "about.version": "Version", "about.license": "Licence", "about.source": "Code source", "about.compat": "Compatibilité",
       "about.compatV": "Windows 10 (version 1903 ou ultérieure) et Windows 11, 64 bits",
       "about.sources": "D’où vient chaque valeur", "about.sourcesD": "Lectures fournies par Windows. Quand un PC n’expose pas un capteur, la mesure affiche « sans capteur ».",
       "about.approx": "Dépend de la carte mère : peut être approximative ou absente."
@@ -860,7 +861,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "システム", "set.light": "ライト", "set.dark": "ダーク",
       "set.autostart": "Windows の起動時に実行", "set.autostartD": "現在のユーザーにのみ登録され、管理者権限は不要です。",
       "set.fs": "全画面で非表示", "set.fsD": "ゲーム、動画、プレゼンテーションが全画面になるとすぐに非表示になり、終了すると戻ります。",
-      "nav.fs": "全画面", "fs.desc": "ゲーム、動画、プレゼンテーションが画面全体を使うときのインジケーターの動作です。", "fs.mode": "動作", "fs.modeD": "全画面の開始時と終了時にすぐ適用されます。", "fs.hide": "非表示", "fs.move": "表示", "fs.keep": "そのまま", "fs.hideD": "インジケーターは非表示になり、全画面が終わると戻ります。", "fs.moveD": "インジケーターは下で選んだ位置に、どの映像の上でも読める暗い背景で表示されます。", "fs.keepD": "インジケーターはタスクバー上の位置のまま、映像の上に表示されます。", "fs.pos": "画面上の位置", "fs.posD": "全画面でインジケーターを表示したい位置をクリックします。", "fs.posOff": "位置を選ぶには「表示」を選びます。", "fs.exclusive": "排他的全画面のゲームでは上に描画できないため、インジケーターは非表示になります。",
+      "fs.opacity": "背景の不透明度", "fs.opacityD": "値の背後にある暗い背景の不透明度です。0% では数値だけが表示されます。", "nav.fs": "全画面", "fs.desc": "ゲーム、動画、プレゼンテーションが画面全体を使うときのインジケーターの動作です。", "fs.mode": "動作", "fs.modeD": "全画面の開始時と終了時にすぐ適用されます。", "fs.hide": "非表示", "fs.move": "表示", "fs.keep": "そのまま", "fs.hideD": "インジケーターは非表示になり、全画面が終わると戻ります。", "fs.moveD": "インジケーターは下で選んだ位置に、どの映像の上でも読める暗い背景で表示されます。", "fs.keepD": "インジケーターはタスクバー上の位置のまま、映像の上に表示されます。", "fs.pos": "画面上の位置", "fs.posD": "全画面でインジケーターを表示したい位置をクリックします。", "fs.posOff": "位置を選ぶには「表示」を選びます。", "fs.exclusive": "排他的全画面のゲームでは上に描画できないため、インジケーターは非表示になります。",
       "fs.p0": "左上", "fs.p1": "上中央", "fs.p2": "右上", "fs.p3": "左中央", "fs.p4": "右中央", "fs.p5": "左下", "fs.p6": "下中央", "fs.p7": "右下", "fs.screen": "あなたの画面",
       "stage.bar": "タスクバー", "stage.barWin": "Windows", "stage.barLight": "ライト", "stage.barDark": "ダーク", "stage.noteForced": "{mode}のタスクバーでプレビューしています。Windows のタスクバーは{win}テーマです。", "word.light": "ライト", "word.dark": "ダーク",
       "set.interval": "更新間隔", "set.intervalD": "間隔を長くすると CPU とバッテリーの消費が減ります。",
@@ -868,7 +869,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "リセット", "set.resetD": "最初の 6 つのメトリクスに戻し、ラベル、しきい値、外観を消去します。Windows 起動時の設定は変わりません。",
       "set.resetQ": "選んだメトリクス、ラベル、しきい値が失われます。リセットしますか？", "set.resetBtn": "設定をリセット", "set.cancel": "キャンセル", "set.resetOk": "リセット",
       "about.desc": "Windows タスクバー用のシステムモニターです。通知領域の横に最大 10 個のメトリクスを表示します。管理者権限やドライバーは不要です。",
-      "about.dev": "開発者", "about.version": "バージョン", "about.license": "ライセンス", "about.source": "ソースコード", "about.compat": "互換性",
+      "about.support": "プロジェクトを支援", "about.donate": "PayPal で寄付", "about.dev": "開発者", "about.version": "バージョン", "about.license": "ライセンス", "about.source": "ソースコード", "about.compat": "互換性",
       "about.compatV": "Windows 10（バージョン 1903 以降）および Windows 11、64 ビット",
       "about.sources": "各データの取得元", "about.sourcesD": "Windows 自体からの値です。PC がセンサーを提供していない場合、メトリクスには「未検出」と表示されます。",
       "about.approx": "マザーボードによって異なります。概算値の場合や、存在しない場合があります。"
@@ -903,7 +904,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "系统", "set.light": "浅色", "set.dark": "深色",
       "set.autostart": "开机时启动", "set.autostartD": "仅为当前用户注册，无需管理员权限。",
       "set.fs": "全屏时隐藏", "set.fsD": "游戏、视频或演示进入全屏时显示条立即隐藏，退出后恢复。",
-      "nav.fs": "全屏", "fs.desc": "游戏、视频或演示占满整个屏幕时指示条的行为。", "fs.mode": "行为", "fs.modeD": "进入和退出全屏时立即生效。", "fs.hide": "隐藏", "fs.move": "显示", "fs.keep": "保持", "fs.hideD": "指示条隐藏，退出全屏后恢复。", "fs.moveD": "指示条显示在下方所选位置，带深色背景，在任何画面上都清晰可读。", "fs.keepD": "指示条留在任务栏上的位置，显示在画面上方。", "fs.pos": "屏幕位置", "fs.posD": "点击你希望全屏时显示指示条的位置。", "fs.posOff": "选择“显示”后可选择位置。", "fs.exclusive": "独占全屏的游戏不允许在其上方绘制，此时指示条会隐藏。",
+      "fs.opacity": "背景不透明度", "fs.opacityD": "数值后面深色背景框的不透明度。为 0% 时只显示数字。", "nav.fs": "全屏", "fs.desc": "游戏、视频或演示占满整个屏幕时指示条的行为。", "fs.mode": "行为", "fs.modeD": "进入和退出全屏时立即生效。", "fs.hide": "隐藏", "fs.move": "显示", "fs.keep": "保持", "fs.hideD": "指示条隐藏，退出全屏后恢复。", "fs.moveD": "指示条显示在下方所选位置，带深色背景，在任何画面上都清晰可读。", "fs.keepD": "指示条留在任务栏上的位置，显示在画面上方。", "fs.pos": "屏幕位置", "fs.posD": "点击你希望全屏时显示指示条的位置。", "fs.posOff": "选择“显示”后可选择位置。", "fs.exclusive": "独占全屏的游戏不允许在其上方绘制，此时指示条会隐藏。",
       "fs.p0": "左上", "fs.p1": "上方居中", "fs.p2": "右上", "fs.p3": "左侧居中", "fs.p4": "右侧居中", "fs.p5": "左下", "fs.p6": "下方居中", "fs.p7": "右下", "fs.screen": "你的屏幕",
       "stage.bar": "任务栏", "stage.barWin": "Windows", "stage.barLight": "浅色", "stage.barDark": "深色", "stage.noteForced": "预览使用{mode}任务栏。你的 Windows 任务栏使用{win}主题。", "word.light": "浅色", "word.dark": "深色",
       "set.interval": "刷新频率", "set.intervalD": "间隔越长，CPU 和电池消耗越少。",
@@ -911,7 +912,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.reset": "重置", "set.resetD": "恢复为初始的六个指标，并清除标签、阈值和外观。开机启动设置不变。",
       "set.resetQ": "已选择的指标、标签和阈值将会丢失。确定重置吗？", "set.resetBtn": "重置设置", "set.cancel": "取消", "set.resetOk": "重置",
       "about.desc": "用于 Windows 任务栏的系统监视器。在通知区域旁显示最多 10 个指标，无需管理员权限或驱动程序。",
-      "about.dev": "开发者", "about.version": "版本", "about.license": "许可证", "about.source": "源代码", "about.compat": "兼容性",
+      "about.support": "支持本项目", "about.donate": "通过 PayPal 捐赠", "about.dev": "开发者", "about.version": "版本", "about.license": "许可证", "about.source": "源代码", "about.compat": "兼容性",
       "about.compatV": "Windows 10（1903 或更高版本）和 Windows 11，64 位",
       "about.sources": "每项数据的来源", "about.sourcesD": "读数来自 Windows 本身。当电脑没有提供某个传感器时，该指标显示“无传感器”。",
       "about.approx": "取决于主板：可能是近似值，也可能不存在。"
@@ -951,7 +952,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const lines = ["[general]",
       "interval=" + c.interval, "rows=" + c.rows, "font=" + c.font, "fontSize=" + c.fontSize,
       "valueColor=" + c.valueColor, "alertColor=" + c.alertColor, "labels=" + (c.labels ? 1 : 0),
-      "autostart=" + (c.autostart ? 1 : 0), "fullscreen=" + c.fullscreen, "overlayPos=" + c.overlayPos, "offset=" + c.offset,
+      "autostart=" + (c.autostart ? 1 : 0), "fullscreen=" + c.fullscreen, "overlayPos=" + c.overlayPos, "overlayOpacity=" + c.overlayOpacity, "offset=" + c.offset,
       "theme=" + c.theme, "lang=" + c.language, "allDisplays=" + (c.allDisplays ? 1 : 0), "", "[slots]"];
     c.slots.forEach((s, i) => lines.push((i + 1) + "=" + [s.key, cleanLabel(s.label), Number(s.thr) || 0, s.alert ? 1 : 0].join("|")));
     return lines.join("\n") + "\n";
@@ -1021,6 +1022,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     // Escala 1:1 con la barra real, medida desde la bandeja: la misma distancia en px y los íconos de las apps
     // donde realmente terminan, para que la vista previa muestre el mismo límite.
     band.style.marginRight = effectiveOffset() + "px";
+    band.dataset.margin = effectiveOffset();
     const apps = $("#taskbar .tb-apps");
     if (S.agap >= 0) {
       apps.style.left = "auto";
@@ -1054,38 +1056,26 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     if (S.agap >= 0) {
       const limit = Math.max(0, S.agap - 8 - band.offsetWidth);
       band.style.marginRight = Math.min(effectiveOffset(), limit) + "px";
+      band.dataset.margin = Math.min(effectiveOffset(), limit);
     }
     fitPreview();
   }
-  // Ventana angosta: la franja se mantiene a tamaño real y legible. Si la distancia a la bandeja no cabe,
-  // se acorta solo el espacio vacío y se marca con su valor real. Solo si ni la franja cabe, se reduce todo.
+  // Vista previa fiel en cualquier tamaño de ventana: la misma proporción que la barra real entre los íconos
+  // de las apps, la distancia, la franja y la bandeja. Si no cabe a escala 1:1, se reduce todo junto.
+  // Se calcula siempre desde la configuración, así que al agrandar la ventana vuelve al tamaño real.
   function fitPreview() {
     const inner = $("#tb-inner");
     const band = $("#band");
-    const gap = $("#gap-mark");
-    const apps = $("#taskbar .tb-apps");
     inner.style.transform = "";
     inner.style.width = "100%";
-    gap.hidden = true;
-    apps.style.visibility = "";
     const available = $("#taskbar").clientWidth;
     const trayWidth = $("#taskbar .tray").offsetWidth;
-    const margin = parseFloat(band.style.marginRight) || 0;
-    const base = trayWidth + 8 + band.offsetWidth + 16;
-    const room = available - base;
-    if (margin > room) {
-      const shown = Math.max(0, room);
-      band.style.marginRight = shown + "px";
-      apps.style.visibility = "hidden";  // a esta escala los íconos de ejemplo quedarían en un lugar engañoso
-      if (shown >= 48) {
-        gap.hidden = false;
-        gap.style.right = (trayWidth + 8) + "px";
-        gap.style.width = shown + "px";
-        $("span", gap).textContent = Math.round(margin) + " px";
-      }
-    }
-    if (base > available) {
-      const scale = available / base;
+    const margin = parseFloat(band.dataset.margin) || 0;
+    band.style.marginRight = margin + "px";
+    let needed = trayWidth + 8 + margin + band.offsetWidth + 16;
+    if (S.agap >= 0) needed = Math.max(needed, trayWidth + 8 + S.agap + 96);  // y un par de íconos de apps
+    if (needed > available) {
+      const scale = available / needed;
       inner.style.width = (100 / scale) + "%";
       inner.style.transform = "scale(" + scale.toFixed(3) + ")";
     }
@@ -1360,10 +1350,12 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       } else if (n.type === "range") {
         n.value = c[key];
         const out = $("#" + n.id + "-out");
-        if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + " px";
+        const unit = key === "overlayOpacity" ? " %" : " px";
+        if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + unit;
         n.oninput = () => {
           c[key] = asInt ? parseInt(n.value, 10) : n.value;
-          if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + " px";
+          if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + unit;
+          if (key === "overlayOpacity") paintChipOpacity();
           commit(false);
         };
       }
@@ -1485,6 +1477,16 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       });
       screen.appendChild(b);
     });
+    paintChipOpacity();
+    const op = $("#overlayOpacity");
+    op.disabled = mode !== 1;
+    op.closest(".opacity-row").classList.toggle("off", mode !== 1);
+  }
+
+  // El recuadro de ejemplo usa la misma opacidad de fondo que el indicador real.
+  function paintChipOpacity() {
+    const chip = $("#screen .chip");
+    if (chip) chip.style.backgroundColor = "rgba(20, 20, 20, " + (S.cfg.overlayOpacity / 100).toFixed(2) + ")";
   }
 
   function renderAll() {
@@ -1584,11 +1586,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.3.1", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.4.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
-      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, allDisplays: true, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, allDisplays: true, overlayOpacity: 72, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
         slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
           { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
     });
