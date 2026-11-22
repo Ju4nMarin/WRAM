@@ -2,6 +2,17 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.5.1
+
+### Fixed
+
+- The strip no longer disappears behind the taskbar while the Start menu or search is open: the taskbar is now the owner window of the strip.
+- If explorer.exe restarts and the strip window is lost along with its taskbar, it is created again.
+
+### Changed
+
+- App screenshots moved to `docs/img/app/` so the README shows the current ones.
+
 ## 1.5.0
 
 ### Added
