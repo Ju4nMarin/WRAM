@@ -39,7 +39,8 @@ The preview at the top of the settings window reproduces the taskbar with the Wi
 | Show labels | Yes or no |
 | Value color | Default (white or black to match the taskbar) or custom |
 | Alert color | Red, yellow, magenta, blue or a custom color |
-| Distance from the tray | 0 to 600 px |
+| Distance from the tray | 0 to 600 px, never over the app icons |
+| Show on all displays | Adds the strip to the taskbar of every monitor |
 
 ### Full screen
 
@@ -79,10 +80,10 @@ How the strip behaves with each option in Windows Settings, Personalization, Tas
 |---|---|
 | Taskbar position: Bottom or Top | Next to the system tray, on the same row |
 | Taskbar position: Left or Right | One metric below the other, label above value, as wide as the taskbar and above the tray. The text shrinks if it does not fit |
-| Taskbar icon alignment: Center or Left | Never covers the app icons; the maximum distance from the tray follows where they end |
+| Taskbar icon alignment: Center or Left | Never covers the app icons; the maximum distance from the tray follows where they end. After a change the strip settles in place within a fraction of a second |
 | Taskbar size: small | The text shrinks just enough to fit the thinner taskbar (down to 60%) |
 | Automatically hide the taskbar | Hides with the taskbar and comes back as it slides in |
-| Show my taskbar on all displays | The strip shows on the main taskbar only |
+| Show my taskbar on all displays | With Appearance, "Show on all displays", every taskbar gets its own strip next to its clock |
 | Badges, flashing, share window, show desktop corner, combine buttons, smaller app icons | No effect on the strip; app icon changes are picked up within seconds |
 
 ## Settings file

@@ -1,5 +1,6 @@
 #include "App.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <memory>
@@ -23,9 +24,10 @@ namespace {
 constexpr UINT kMsgTray = WM_APP + 1;
 constexpr UINT_PTR kTimerSample = 1;
 constexpr UINT_PTR kTimerTrim = 2;
+constexpr UINT_PTR kTimerSettle = 3;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.2.0";
+constexpr char kVersion[] = "1.3.0";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -82,7 +84,7 @@ void TrimWorkingSet() {
 
 }  // namespace
 
-App::App(HINSTANCE instance) : instance_(instance), band_(*this), settings_(*this) {
+App::App(HINSTANCE instance) : instance_(instance), settings_(*this) {
     sampler_.Add(std::make_unique<PdhProvider>());
     sampler_.Add(std::make_unique<MemoryProvider>());
     sampler_.Add(std::make_unique<GpuThermalProvider>());
@@ -114,7 +116,9 @@ int App::Run() {
     Config config = store_.Load();
     config.autostart = autostart::IsEnabled();
 
-    if (!band_.Create(instance_)) return 1;
+    auto primary = std::make_unique<TaskbarBand>(*this);
+    if (!primary->Create(instance_, FindWindowW(L"Shell_TrayWnd", nullptr), true)) return 1;
+    bands_.push_back(std::move(primary));
     icon_ = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON,
                                           GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0));
     tray_.Add(host_, kMsgTray, icon_, L"WRAM");
@@ -135,16 +139,86 @@ int App::Run() {
 
 void App::Tick() {
     const MetricFrame& frame = sampler_.Sample();
-    band_.Update(frame);
-    band_.Reposition();
+    for (auto& band : bands_) {
+        band->Update(frame);
+        band->Reposition();
+    }
+    // Si la barra principal cambió de lugar o de tamaño (posición, tamaño o pantallas), se reajusta enseguida.
+    RECT bar{};
+    if (HWND tray = FindWindowW(L"Shell_TrayWnd", nullptr); tray && GetWindowRect(tray, &bar) &&
+                                                              !EqualRect(&bar, &lastBarRect_)) {
+        const bool first = IsRectEmpty(&lastBarRect_);
+        lastBarRect_ = bar;
+        if (!first) StartSettle();
+    }
+    // Alineación de los íconos y tamaño de la barra: no siempre llega un aviso del sistema al cambiarlos.
+    DWORD align = 1, size = 1, bytes = sizeof(DWORD);
+    RegGetValueW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", L"TaskbarAl",
+                 RRF_RT_REG_DWORD, nullptr, &align, &bytes);
+    bytes = sizeof(DWORD);
+    RegGetValueW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", L"TaskbarSi",
+                 RRF_RT_REG_DWORD, nullptr, &size, &bytes);
+    const DWORD layout = (align << 8) | size;
+    if (layout != lastTaskbarLayout_) {
+        const bool first = lastTaskbarLayout_ == kUnknownLayout;
+        lastTaskbarLayout_ = layout;
+        if (!first) StartSettle();
+    }
     // Los íconos de la barra cambian al abrir o cerrar programas. Con la configuración abierta se mide más
     // seguido para que el límite de "Distancia a la bandeja" esté al día.
     const ULONGLONG now = GetTickCount64();
-    if (now - lastAppsScan_ >= (settings_.IsOpen() ? 3000u : 20000u)) {
-        lastAppsScan_ = now;
-        band_.RefreshTaskbarApps();
-    }
+    if (now - lastAppsScan_ >= (settings_.IsOpen() ? 3000u : 20000u)) ScanTaskbars();
     if (settings_.IsOpen()) settings_.Post(ValuesMessage(frame));
+}
+
+void App::ScanTaskbars() {
+    lastAppsScan_ = GetTickCount64();
+    for (auto& band : bands_) band->RefreshTaskbarApps();
+}
+
+namespace {
+BOOL CALLBACK CollectSecondaryTaskbars(HWND hwnd, LPARAM lp) {
+    wchar_t cls[64]{};
+    GetClassNameW(hwnd, cls, 64);
+    if (wcscmp(cls, L"Shell_SecondaryTrayWnd") == 0 && IsWindowVisible(hwnd)) {
+        reinterpret_cast<std::vector<HWND>*>(lp)->push_back(hwnd);
+    }
+    return TRUE;
+}
+}  // namespace
+
+void App::SyncBands() {
+    // Una franja por cada barra de las demás pantallas cuando la opción está activa.
+    std::vector<HWND> wanted;
+    if (config_.allDisplays) EnumWindows(&CollectSecondaryTaskbars, reinterpret_cast<LPARAM>(&wanted));
+    bands_.erase(std::remove_if(bands_.begin() + 1, bands_.end(),
+                                [&](const std::unique_ptr<TaskbarBand>& b) {
+                                    return std::find(wanted.begin(), wanted.end(), b->Taskbar()) == wanted.end();
+                                }),
+                 bands_.end());
+    for (HWND bar : wanted) {
+        const bool exists = std::any_of(bands_.begin(), bands_.end(), [&](const auto& b) { return b->Taskbar() == bar; });
+        if (exists) continue;
+        auto band = std::make_unique<TaskbarBand>(*this);
+        if (!band->Create(instance_, bar, false)) continue;
+        band->ApplyConfig(config_);
+        band->RefreshTaskbarApps();
+        band->Update(sampler_.Last());
+        bands_.push_back(std::move(band));
+    }
+}
+
+void App::StartSettle() {
+    // Al cambiar alineación, posición o tamaño de la barra, Windows anima los íconos durante un momento:
+    // se vuelve a medir cada 150 ms por 3 s para que la franja quede en su lugar sin esperar al escaneo normal.
+    settleUntil_ = GetTickCount64() + 3000;
+    SetTimer(host_, kTimerSettle, 150, nullptr);
+}
+
+void App::OnSystemChange() {
+    SyncBands();
+    for (auto& band : bands_) band->OnSystemChange();
+    StartSettle();
 }
 
 void App::ApplyConfig(Config config, bool persist) {
@@ -158,15 +232,12 @@ void App::ApplyConfig(Config config, bool persist) {
     config_ = std::move(config);
     if (persist) store_.Save(config_);
     RefreshSamplerMask();
-    band_.ApplyConfig(config_);
+    SyncBands();
+    for (auto& band : bands_) band->ApplyConfig(config_);
     // Medir los íconos de la barra es una consulta entre procesos: al arrastrar un control llegan muchos
     // cambios seguidos y se reutiliza la última medición para que la franja responda al instante.
-    const ULONGLONG now = GetTickCount64();
-    if (now - lastAppsScan_ >= 3000) {
-        lastAppsScan_ = now;
-        band_.RefreshTaskbarApps();
-    }
-    band_.Update(sampler_.Last());
+    if (GetTickCount64() - lastAppsScan_ >= 3000) ScanTaskbars();
+    for (auto& band : bands_) band->Update(sampler_.Last());
     settings_.SetDarkTheme(SettingsUseDarkTheme());
     // Con otro idioma cambian los nombres del catálogo: la ventana los recibe de nuevo.
     if (langChanged && settings_.IsOpen()) settings_.Post(BuildInitMessage());
@@ -204,8 +275,8 @@ void App::RestartTimer() {
 }
 
 std::string App::ValuesMessage(const MetricFrame& frame) const {
-    std::string out = "{\"t\":\"v\",\"omax\":" + std::to_string(band_.MaxOffsetDip()) +
-                      ",\"agap\":" + std::to_string(band_.AppsGapDip()) + ",\"v\":{";
+    std::string out = "{\"t\":\"v\",\"omax\":" + std::to_string(Primary().MaxOffsetDip()) +
+                      ",\"agap\":" + std::to_string(Primary().AppsGapDip()) + ",\"v\":{";
     for (size_t i = 0; i < kMetricCount; ++i) {
         const auto id = static_cast<MetricId>(i);
         const MetricInfo& info = Info(id);
@@ -267,6 +338,8 @@ std::string App::BuildInitMessage() {
     out += config_.autostart ? "true" : "false";
     out += ",\"fullscreen\":" + std::to_string(config_.fullscreenMode);
     out += ",\"overlayPos\":" + std::to_string(config_.overlayPosition);
+    out += ",\"allDisplays\":";
+    out += config_.allDisplays ? "true" : "false";
     out += ",\"offset\":" + std::to_string(config_.offset);
     out += ",\"theme\":" + std::to_string(config_.theme);
     out += ",\"language\":" + std::to_string(config_.language);
@@ -376,13 +449,17 @@ LRESULT CALLBACK App::HostProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     if (msg == taskbarCreatedMsg_ && taskbarCreatedMsg_ != 0) {
         tray_.Readd();
-        band_.OnSystemChange();
+        OnSystemChange();
         return 0;
     }
     switch (msg) {
         case WM_TIMER:
             if (wp == kTimerSample) Tick();
-            else if (wp == kTimerTrim) {
+            else if (wp == kTimerSettle) {
+                ScanTaskbars();
+                for (auto& band : bands_) band->Reposition();
+                if (GetTickCount64() >= settleUntil_) KillTimer(hwnd, kTimerSettle);
+            } else if (wp == kTimerTrim) {
                 KillTimer(hwnd, kTimerTrim);
                 if (!settings_.IsOpen()) SettingsWindow::PurgeUserData();
                 TrimWorkingSet();
@@ -398,13 +475,13 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         case kMsgShowSettings: OnBandActivate(); return 0;
         case WM_SETTINGCHANGE:
             ApplyUserDecimalSeparator();
-            band_.OnSystemChange();
+            OnSystemChange();
             settings_.SetDarkTheme(SettingsUseDarkTheme());
             if (settings_.IsOpen()) settings_.Post(BuildInitMessage());  // tema de la barra o separador decimal
             return 0;
         case WM_THEMECHANGED:
         case WM_DISPLAYCHANGE:
-        case WM_DPICHANGED: band_.OnSystemChange(); return 0;
+        case WM_DPICHANGED: OnSystemChange(); return 0;
         case WM_ENDSESSION:
             if (wp) store_.Save(config_);
             return 0;

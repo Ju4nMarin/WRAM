@@ -41,7 +41,8 @@ struct Config {
     int overlayPosition = 2;           // 0..7, ver TaskbarBand: por defecto arriba a la derecha
     int offset = 8;                    // DIP entre la franja y la bandeja
     int theme = 0;                     // ventana de configuración: 0 sistema, 1 claro, 2 oscuro
-    int language = 0;                  // ver I18n.h: 0 sistema, 1 es, 2 en, 3 pt, 4 fr, 5 zh
+    int language = 0;                  // ver I18n.h: 0 sistema, 1 es, 2 en, 3 pt, 4 fr, 5 zh, 6 ja
+    bool allDisplays = false;          // también en las barras de las demás pantallas
 
     MetricMask ActiveMask() const;
     static Config Defaults();

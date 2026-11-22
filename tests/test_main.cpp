@@ -113,6 +113,14 @@ TEST(fullscreen_mode_and_legacy_key) {
     CHECK(ConfigCodec::Parse("[general]\nfullscreen=9\noverlayPos=40\n").overlayPosition == 7);
 }
 
+TEST(all_displays_roundtrip) {
+    Config c = Config::Defaults();
+    CHECK(!c.allDisplays);
+    c.allDisplays = true;
+    CHECK(ConfigCodec::Parse(ConfigCodec::Serialize(c)).allDisplays);
+    CHECK(!ConfigCodec::Parse("[general]\nallDisplays=0\n").allDisplays);
+}
+
 TEST(parse_empty_slots_section_means_no_metrics) {
     const Config c = ConfigCodec::Parse("[general]\nrows=1\n[slots]\n");
     CHECK(c.slots.empty());
