@@ -27,10 +27,11 @@ constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT_PTR kTimerSettle = 3;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.3.1";
+constexpr char kVersion[] = "1.4.0";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
+constexpr wchar_t kDonateUrlW[] = L"https://www.paypal.com/paypalme/evopl";
 
 const char* UnitKey(Unit unit) {
     switch (unit) {
@@ -261,6 +262,8 @@ void App::OnSettingsOpen(std::string_view target) {
         ShellExecuteW(nullptr, L"open", kRepoUrlW, nullptr, nullptr, SW_SHOWNORMAL);
     } else if (target == "license") {
         ShellExecuteW(nullptr, L"open", kLicenseUrlW, nullptr, nullptr, SW_SHOWNORMAL);
+    } else if (target == "donate") {
+        ShellExecuteW(nullptr, L"open", kDonateUrlW, nullptr, nullptr, SW_SHOWNORMAL);
     }
 }
 
@@ -338,6 +341,7 @@ std::string App::BuildInitMessage() {
     out += config_.autostart ? "true" : "false";
     out += ",\"fullscreen\":" + std::to_string(config_.fullscreenMode);
     out += ",\"overlayPos\":" + std::to_string(config_.overlayPosition);
+    out += ",\"overlayOpacity\":" + std::to_string(config_.overlayOpacity);
     out += ",\"allDisplays\":";
     out += config_.allDisplays ? "true" : "false";
     out += ",\"offset\":" + std::to_string(config_.offset);
