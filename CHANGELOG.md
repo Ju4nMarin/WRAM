@@ -2,6 +2,12 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.3.1
+
+### Fixed
+
+- Taskbar preview in a narrow window: the strip keeps its real size and the distance from the tray is shortened and marked with its real value, instead of shrinking the whole preview until it was unreadable.
+
 ## 1.3.0
 
 ### Added
