@@ -183,6 +183,11 @@ h1 { font: 600 28px/1.2 var(--f-display); }
   background: #1c1c1c; color: #ffffff;
 }
 .taskbar.light { background: #eeeeee; color: #1a1a1a; }
+.gap-mark { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: 6px; font-size: 10px; color: rgba(255,255,255,0.55); }
+.gap-mark::before, .gap-mark::after { content: ""; flex: 1; border-top: 1px dashed rgba(255,255,255,0.3); }
+.taskbar.light .gap-mark { color: rgba(0,0,0,0.55); }
+.taskbar.light .gap-mark::before, .taskbar.light .gap-mark::after { border-top-color: rgba(0,0,0,0.3); }
+.gap-mark[hidden] { display: none; }
 /* Contenido de la barra a escala 1:1 desde la bandeja; si no cabe en la ventana se reduce entero en vez de recortarse. */
 .tb-inner { position: absolute; top: 0; right: 0; bottom: 0; width: 100%; display: flex; align-items: stretch; justify-content: flex-end; padding-right: var(--s-2); transform-origin: right center; }
 .tb-apps { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; gap: 6px; }
@@ -451,7 +456,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.3.0</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.3.1</span></div>
 </nav>
 
 <main>
@@ -464,6 +469,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       <div class="tb-inner" id="tb-inner">
       <div class="tb-apps" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="band" id="band"></div>
+      <div class="gap-mark" id="gap-mark" aria-hidden="true" hidden><span></span></div>
       <div class="tray" aria-hidden="true">
         <svg class="i"><use href="#i-chev"/></svg>
         <svg class="i"><use href="#i-wifi"/></svg>
@@ -615,7 +621,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.3.0</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.3.1</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
@@ -1051,16 +1057,35 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     }
     fitPreview();
   }
-  // Si la franja, la distancia y la bandeja no caben en el ancho de la ventana, todo se reduce en proporción.
+  // Ventana angosta: la franja se mantiene a tamaño real y legible. Si la distancia a la bandeja no cabe,
+  // se acorta solo el espacio vacío y se marca con su valor real. Solo si ni la franja cabe, se reduce todo.
   function fitPreview() {
     const inner = $("#tb-inner");
     const band = $("#band");
+    const gap = $("#gap-mark");
+    const apps = $("#taskbar .tb-apps");
     inner.style.transform = "";
     inner.style.width = "100%";
+    gap.hidden = true;
+    apps.style.visibility = "";
     const available = $("#taskbar").clientWidth;
-    const needed = $("#taskbar .tray").offsetWidth + 8 + (parseFloat(band.style.marginRight) || 0) + band.offsetWidth + 16;
-    const scale = Math.min(1, available / needed);
-    if (scale < 1) {
+    const trayWidth = $("#taskbar .tray").offsetWidth;
+    const margin = parseFloat(band.style.marginRight) || 0;
+    const base = trayWidth + 8 + band.offsetWidth + 16;
+    const room = available - base;
+    if (margin > room) {
+      const shown = Math.max(0, room);
+      band.style.marginRight = shown + "px";
+      apps.style.visibility = "hidden";  // a esta escala los íconos de ejemplo quedarían en un lugar engañoso
+      if (shown >= 48) {
+        gap.hidden = false;
+        gap.style.right = (trayWidth + 8) + "px";
+        gap.style.width = shown + "px";
+        $("span", gap).textContent = Math.round(margin) + " px";
+      }
+    }
+    if (base > available) {
+      const scale = available / base;
       inner.style.width = (100 / scale) + "%";
       inner.style.transform = "scale(" + scale.toFixed(3) + ")";
     }
@@ -1559,7 +1584,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.3.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.3.1", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
