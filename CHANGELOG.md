@@ -2,6 +2,17 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.4.0
+
+### Added
+
+- Full screen: background opacity of the indicator, from 0% to 100%.
+- About: link to support the project with a donation on PayPal.
+
+### Changed
+
+- Taskbar preview in a narrow window: it keeps the real proportions between the app icons, the distance, the strip and the tray, scaled down together. After making the window larger again it returns to real size.
+
 ## 1.3.1
 
 ### Fixed
