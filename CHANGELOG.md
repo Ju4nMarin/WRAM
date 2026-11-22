@@ -2,6 +2,20 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.5.2
+
+### Added
+
+- Full screen: overall opacity of the indicator (numbers, labels and background), from 10% to 100%, separate from the background opacity.
+
+### Fixed
+
+- Removed the link between the strip and the taskbar window added in 1.5.1. It could leave WRAM and explorer.exe not responding. While the Start menu or search is open the strip stays below the taskbar again.
+
+### Changed
+
+- Executable size and measured usage updated in the README and the architecture guide.
+
 ## 1.5.1
 
 ### Fixed

@@ -122,6 +122,15 @@ TEST(overlay_opacity_roundtrip_and_clamp) {
     CHECK(ConfigCodec::Parse("[general]\noverlayOpacity=-4\n").overlayOpacity == 0);
 }
 
+TEST(overlay_alpha_roundtrip_and_minimum) {
+    Config c = Config::Defaults();
+    CHECK(c.overlayAlpha == 100);
+    c.overlayAlpha = 40;
+    CHECK(ConfigCodec::Parse(ConfigCodec::Serialize(c)).overlayAlpha == 40);
+    CHECK(ConfigCodec::Parse("[general]\noverlayAlpha=0\n").overlayAlpha == 10);  // nunca invisible
+    CHECK(ConfigCodec::Parse("[general]\noverlayAlpha=300\n").overlayAlpha == 100);
+}
+
 TEST(all_displays_roundtrip) {
     Config c = Config::Defaults();
     CHECK(!c.allDisplays);

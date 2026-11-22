@@ -55,7 +55,9 @@ What the strip does when a game, video or presentation takes the whole screen. I
 
 With Visible, the screen diagram has 8 spots (corners, edge centers and side centers); click one to choose it. Games in exclusive full screen do not allow other windows on top, so there the strip is always hidden.
 
-"Background opacity" sets how opaque the dark box behind the values is, from 0% (numbers only) to 100%. The default is 72%.
+"Overall opacity" sets the transparency of the whole indicator (numbers, labels and background), from 10% to 100%. The default is 100%.
+
+&
 
 ### Settings
 
