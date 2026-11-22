@@ -116,7 +116,38 @@ svg.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor;
   content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 16px; margin-top: -8px;
   border-radius: 2px; background: var(--accent);
 }
-.rail-foot { margin-top: auto; padding: 0 var(--s-3); color: var(--text-3); font-size: 12px; }
+/* Apoyo al proyecto: tarjeta al pie de la barra lateral; en ventana angosta queda solo la carita. */
+.donate {
+  margin: auto 0 var(--s-3);
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2px var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text); text-align: left;
+  transition: background-color 160ms var(--ease), border-color 160ms var(--ease);
+}
+.donate:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.donate:active { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.donate-face {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: #0b1a22;
+  transition: transform 260ms var(--ease);
+}
+.donate-face svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.donate-face .mouth { transform-origin: 12px 15px; transition: transform 260ms var(--ease); }
+.donate:hover .donate-face { transform: rotate(-8deg) scale(1.06); }
+.donate:hover .donate-face .mouth { transform: scaleY(1.35); }
+.donate-text { display: flex; flex-direction: column; min-width: 0; }
+.donate-text strong { font-size: 13px; font-weight: 600; }
+.donate-text small { font-size: 11.5px; color: var(--text-3); line-height: 1.35; }
+.donate-cta {
+  grid-column: 1 / -1; margin-top: var(--s-2);
+  display: block; padding: 5px 0; border-radius: var(--r-md);
+  background: var(--accent); color: #0b1a22; font-size: 12.5px; font-weight: 600; text-align: center;
+}
+:root[data-theme="light"] .donate-face, :root[data-theme="light"] .donate-cta { color: #ffffff; }
+.rail-foot { padding: 0 var(--s-3); color: var(--text-3); font-size: 12px; }
 
 /* Área principal */
 main { display: flex; flex-direction: column; min-width: 0; height: 100vh; }
@@ -407,7 +438,9 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
 }
 @media (max-width: 900px) {
   body { grid-template-columns: 60px minmax(0, 1fr); }
-  .nav-btn span, .rail-foot { display: none; }
+  .nav-btn span, .rail-foot, .donate-text, .donate-cta { display: none; }
+  .donate { display: flex; justify-content: center; padding: 0; margin-left: auto; margin-right: auto; width: 40px; height: 40px; border-radius: 50%; }
+  .donate-face { width: 30px; height: 30px; }
   .nav-btn { justify-content: center; padding: 0; }
   .brand { padding: var(--s-1) 0 var(--s-5); display: flex; justify-content: center; }
   .brand .logo { display: none; }
@@ -443,6 +476,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.8"/><path d="M8 1.8v1.4M8 12.8v1.4M14.2 8h-1.4M3.2 8H1.8M12.4 3.6l-1 1M4.6 11.4l-1 1M12.4 12.4l-1-1M4.6 4.6l-1-1"/></symbol>
   <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></symbol>
   <symbol id="i-screen" viewBox="0 0 16 16"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path class="eye" d="M8.8 9.6v.9M15.2 9.6v.9"/><path class="mouth" d="M7.8 14.2c1 1.7 2.5 2.6 4.2 2.6s3.2-.9 4.2-2.6"/></symbol>
   <symbol id="i-link" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5V13a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"/></symbol>
 </svg>
 
@@ -453,7 +487,12 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.4.0</span></div>
+  <button class="donate" type="button" data-open="donate" data-i18n-aria="rail.donateAria">
+    <span class="donate-face" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-smile"/></svg></span>
+    <span class="donate-text"><strong data-i18n="rail.donateT"></strong><small data-i18n="rail.donateD"></small></span>
+    <span class="donate-cta" data-i18n="rail.donateB"></span>
+  </button>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.5.0</span></div>
 </nav>
 
 <main>
@@ -621,7 +660,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.4.0</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.5.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.support"></dt><dd><button class="link-btn" type="button" data-open="donate" data-i18n="about.donate"></button></dd>
@@ -689,7 +728,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Oscuro",
       "set.autostart": "Iniciar con Windows", "set.autostartD": "Se registra solo para tu usuario, sin permisos de administrador.",
       "set.fs": "Ocultar en pantalla completa", "set.fsD": "La franja desaparece en el acto al entrar en un juego, un video o una presentación, y vuelve al salir.",
-      "fs.opacity": "Opacidad del fondo", "fs.opacityD": "Qué tan opaco es el recuadro oscuro detrás de los valores. Con 0 % solo se ven los números.", "nav.fs": "Pantalla completa", "fs.desc": "Qué hace el indicador cuando un juego, un video o una presentación ocupa toda la pantalla.", "fs.mode": "Comportamiento", "fs.modeD": "Se aplica en el acto al entrar y al salir de pantalla completa.", "fs.hide": "Oculto", "fs.move": "Visible", "fs.keep": "Dejar igual", "fs.hideD": "El indicador se oculta mientras haya algo en pantalla completa y vuelve al salir.", "fs.moveD": "El indicador se muestra en el recuadro que elijas abajo, con un fondo oscuro para leerse sobre cualquier imagen.", "fs.keepD": "El indicador se queda en su lugar de la barra, encima de la imagen.", "fs.pos": "Posición en pantalla", "fs.posD": "Haz clic en el recuadro donde quieres ver el indicador en pantalla completa.", "fs.posOff": "Elige Visible para escoger la posición.", "fs.exclusive": "Los juegos en pantalla completa exclusiva no permiten dibujar encima; ahí el indicador se oculta.",
+      "fs.opacity": "Opacidad del fondo", "fs.opacityD": "Qué tan opaco es el recuadro oscuro detrás de los valores. Con 0 % solo se ven los números.", "rail.donateT": "¿Te sirve WRAM?", "rail.donateD": "Es gratis. Si te ayuda, puedes apoyarlo.", "rail.donateB": "Donar", "rail.donateAria": "Apoyar WRAM con una donación en PayPal", "nav.fs": "Pantalla completa", "fs.desc": "Qué hace el indicador cuando un juego, un video o una presentación ocupa toda la pantalla.", "fs.mode": "Comportamiento", "fs.modeD": "Se aplica en el acto al entrar y al salir de pantalla completa.", "fs.hide": "Oculto", "fs.move": "Visible", "fs.keep": "Dejar igual", "fs.hideD": "El indicador se oculta mientras haya algo en pantalla completa y vuelve al salir.", "fs.moveD": "El indicador se muestra en el recuadro que elijas abajo, con un fondo oscuro para leerse sobre cualquier imagen.", "fs.keepD": "El indicador se queda en su lugar de la barra, encima de la imagen.", "fs.pos": "Posición en pantalla", "fs.posD": "Haz clic en el recuadro donde quieres ver el indicador en pantalla completa.", "fs.posOff": "Elige Visible para escoger la posición.", "fs.exclusive": "Los juegos en pantalla completa exclusiva no permiten dibujar encima; ahí el indicador se oculta.",
       "fs.p0": "Arriba a la izquierda", "fs.p1": "Arriba al centro", "fs.p2": "Arriba a la derecha", "fs.p3": "Centro a la izquierda", "fs.p4": "Centro a la derecha", "fs.p5": "Abajo a la izquierda", "fs.p6": "Abajo al centro", "fs.p7": "Abajo a la derecha", "fs.screen": "Tu pantalla",
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Oscura", "stage.noteForced": "Vista previa con la barra en tema {mode}. Tu barra de Windows usa tema {win}.", "word.light": "claro", "word.dark": "oscuro",
       "set.interval": "Frecuencia de actualización", "set.intervalD": "Intervalos más largos gastan menos CPU y batería.",
@@ -732,7 +771,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "System", "set.light": "Light", "set.dark": "Dark",
       "set.autostart": "Start with Windows", "set.autostartD": "Registered for your user only, without administrator rights.",
       "set.fs": "Hide in full screen", "set.fsD": "The strip disappears instantly when a game, video or presentation goes full screen, and comes back when it exits.",
-      "fs.opacity": "Background opacity", "fs.opacityD": "How opaque the dark box behind the values is. At 0% only the numbers show.", "nav.fs": "Full screen", "fs.desc": "What the indicator does when a game, video or presentation takes the whole screen.", "fs.mode": "Behavior", "fs.modeD": "Applies instantly when entering and leaving full screen.", "fs.hide": "Hidden", "fs.move": "Visible", "fs.keep": "Keep", "fs.hideD": "The indicator hides while something is full screen and comes back when it ends.", "fs.moveD": "The indicator shows in the spot you pick below, on a dark backdrop that reads over any image.", "fs.keepD": "The indicator stays in its taskbar spot, on top of the image.", "fs.pos": "Position on screen", "fs.posD": "Click the spot where you want the indicator in full screen.", "fs.posOff": "Choose Visible to pick the position.", "fs.exclusive": "Games in exclusive full screen do not allow drawing on top; there the indicator is hidden.",
+      "fs.opacity": "Background opacity", "fs.opacityD": "How opaque the dark box behind the values is. At 0% only the numbers show.", "rail.donateT": "Enjoying WRAM?", "rail.donateD": "It's free. If it helps you, you can support it.", "rail.donateB": "Donate", "rail.donateAria": "Support WRAM with a donation on PayPal", "nav.fs": "Full screen", "fs.desc": "What the indicator does when a game, video or presentation takes the whole screen.", "fs.mode": "Behavior", "fs.modeD": "Applies instantly when entering and leaving full screen.", "fs.hide": "Hidden", "fs.move": "Visible", "fs.keep": "Keep", "fs.hideD": "The indicator hides while something is full screen and comes back when it ends.", "fs.moveD": "The indicator shows in the spot you pick below, on a dark backdrop that reads over any image.", "fs.keepD": "The indicator stays in its taskbar spot, on top of the image.", "fs.pos": "Position on screen", "fs.posD": "Click the spot where you want the indicator in full screen.", "fs.posOff": "Choose Visible to pick the position.", "fs.exclusive": "Games in exclusive full screen do not allow drawing on top; there the indicator is hidden.",
       "fs.p0": "Top left", "fs.p1": "Top center", "fs.p2": "Top right", "fs.p3": "Middle left", "fs.p4": "Middle right", "fs.p5": "Bottom left", "fs.p6": "Bottom center", "fs.p7": "Bottom right", "fs.screen": "Your screen",
       "stage.bar": "Taskbar", "stage.barWin": "Windows", "stage.barLight": "Light", "stage.barDark": "Dark", "stage.noteForced": "Preview with a {mode} taskbar. Your Windows taskbar uses the {win} theme.", "word.light": "light", "word.dark": "dark",
       "set.interval": "Refresh rate", "set.intervalD": "Longer intervals use less CPU and battery.",
@@ -775,7 +814,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Sistema", "set.light": "Claro", "set.dark": "Escuro",
       "set.autostart": "Iniciar com o Windows", "set.autostartD": "Registrado só para o seu usuário, sem permissões de administrador.",
       "set.fs": "Ocultar em tela cheia", "set.fsD": "A faixa some na hora quando um jogo, vídeo ou apresentação entra em tela cheia, e volta ao sair.",
-      "fs.opacity": "Opacidade do fundo", "fs.opacityD": "Quão opaca é a caixa escura atrás dos valores. Com 0% só aparecem os números.", "nav.fs": "Tela cheia", "fs.desc": "O que o indicador faz quando um jogo, vídeo ou apresentação ocupa a tela inteira.", "fs.mode": "Comportamento", "fs.modeD": "Aplicado na hora ao entrar e sair da tela cheia.", "fs.hide": "Oculto", "fs.move": "Visível", "fs.keep": "Manter", "fs.hideD": "O indicador some e volta ao sair da tela cheia.", "fs.moveD": "O indicador aparece no quadro que você escolher abaixo, com fundo escuro para ser lido sobre qualquer imagem.", "fs.keepD": "O indicador fica no seu lugar na barra, por cima da imagem.", "fs.pos": "Posição na tela", "fs.posD": "Clique no quadro onde quer ver o indicador em tela cheia.", "fs.posOff": "Escolha Visível para escolher a posição.", "fs.exclusive": "Jogos em tela cheia exclusiva não permitem desenhar por cima; nesse caso o indicador fica oculto.",
+      "fs.opacity": "Opacidade do fundo", "fs.opacityD": "Quão opaca é a caixa escura atrás dos valores. Com 0% só aparecem os números.", "rail.donateT": "Gosta do WRAM?", "rail.donateD": "É grátis. Se ajuda você, pode apoiá-lo.", "rail.donateB": "Doar", "rail.donateAria": "Apoiar o WRAM com uma doação no PayPal", "nav.fs": "Tela cheia", "fs.desc": "O que o indicador faz quando um jogo, vídeo ou apresentação ocupa a tela inteira.", "fs.mode": "Comportamento", "fs.modeD": "Aplicado na hora ao entrar e sair da tela cheia.", "fs.hide": "Oculto", "fs.move": "Visível", "fs.keep": "Manter", "fs.hideD": "O indicador some e volta ao sair da tela cheia.", "fs.moveD": "O indicador aparece no quadro que você escolher abaixo, com fundo escuro para ser lido sobre qualquer imagem.", "fs.keepD": "O indicador fica no seu lugar na barra, por cima da imagem.", "fs.pos": "Posição na tela", "fs.posD": "Clique no quadro onde quer ver o indicador em tela cheia.", "fs.posOff": "Escolha Visível para escolher a posição.", "fs.exclusive": "Jogos em tela cheia exclusiva não permitem desenhar por cima; nesse caso o indicador fica oculto.",
       "fs.p0": "Superior esquerdo", "fs.p1": "Superior central", "fs.p2": "Superior direito", "fs.p3": "Centro esquerdo", "fs.p4": "Centro direito", "fs.p5": "Inferior esquerdo", "fs.p6": "Inferior central", "fs.p7": "Inferior direito", "fs.screen": "Sua tela",
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Escura", "stage.noteForced": "Prévia com a barra no tema {mode}. Sua barra do Windows usa o tema {win}.", "word.light": "claro", "word.dark": "escuro",
       "set.interval": "Frequência de atualização", "set.intervalD": "Intervalos maiores gastam menos CPU e bateria.",
@@ -818,7 +857,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "Système", "set.light": "Clair", "set.dark": "Sombre",
       "set.autostart": "Démarrer avec Windows", "set.autostartD": "Enregistré pour votre utilisateur seulement, sans droits d’administrateur.",
       "set.fs": "Masquer en plein écran", "set.fsD": "La bande disparaît aussitôt quand un jeu, une vidéo ou une présentation passe en plein écran, et revient à la sortie.",
-      "fs.opacity": "Opacité du fond", "fs.opacityD": "Opacité du cadre sombre derrière les valeurs. À 0 %, seuls les chiffres restent visibles.", "nav.fs": "Plein écran", "fs.desc": "Ce que fait l’indicateur quand un jeu, une vidéo ou une présentation occupe tout l’écran.", "fs.mode": "Comportement", "fs.modeD": "S’applique aussitôt à l’entrée et à la sortie du plein écran.", "fs.hide": "Masqué", "fs.move": "Visible", "fs.keep": "Laisser", "fs.hideD": "L’indicateur disparaît et revient à la sortie du plein écran.", "fs.moveD": "L’indicateur s’affiche dans l’emplacement choisi ci-dessous, sur un fond sombre lisible sur n’importe quelle image.", "fs.keepD": "L’indicateur reste à sa place dans la barre, par-dessus l’image.", "fs.pos": "Position à l’écran", "fs.posD": "Cliquez sur l’emplacement où afficher l’indicateur en plein écran.", "fs.posOff": "Choisissez Visible pour choisir la position.", "fs.exclusive": "Les jeux en plein écran exclusif ne permettent pas de dessiner par-dessus ; l’indicateur y est masqué.",
+      "fs.opacity": "Opacité du fond", "fs.opacityD": "Opacité du cadre sombre derrière les valeurs. À 0 %, seuls les chiffres restent visibles.", "rail.donateT": "WRAM vous plaît ?", "rail.donateD": "C'est gratuit. S'il vous aide, vous pouvez le soutenir.", "rail.donateB": "Faire un don", "rail.donateAria": "Soutenir WRAM avec un don sur PayPal", "nav.fs": "Plein écran", "fs.desc": "Ce que fait l’indicateur quand un jeu, une vidéo ou une présentation occupe tout l’écran.", "fs.mode": "Comportement", "fs.modeD": "S’applique aussitôt à l’entrée et à la sortie du plein écran.", "fs.hide": "Masqué", "fs.move": "Visible", "fs.keep": "Laisser", "fs.hideD": "L’indicateur disparaît et revient à la sortie du plein écran.", "fs.moveD": "L’indicateur s’affiche dans l’emplacement choisi ci-dessous, sur un fond sombre lisible sur n’importe quelle image.", "fs.keepD": "L’indicateur reste à sa place dans la barre, par-dessus l’image.", "fs.pos": "Position à l’écran", "fs.posD": "Cliquez sur l’emplacement où afficher l’indicateur en plein écran.", "fs.posOff": "Choisissez Visible pour choisir la position.", "fs.exclusive": "Les jeux en plein écran exclusif ne permettent pas de dessiner par-dessus ; l’indicateur y est masqué.",
       "fs.p0": "En haut à gauche", "fs.p1": "En haut au centre", "fs.p2": "En haut à droite", "fs.p3": "Au milieu à gauche", "fs.p4": "Au milieu à droite", "fs.p5": "En bas à gauche", "fs.p6": "En bas au centre", "fs.p7": "En bas à droite", "fs.screen": "Votre écran",
       "stage.bar": "Barre", "stage.barWin": "Windows", "stage.barLight": "Claire", "stage.barDark": "Sombre", "stage.noteForced": "Aperçu avec une barre en thème {mode}. Votre barre Windows utilise le thème {win}.", "word.light": "clair", "word.dark": "sombre",
       "set.interval": "Fréquence d’actualisation", "set.intervalD": "Des intervalles plus longs consomment moins de CPU et de batterie.",
@@ -861,7 +900,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "システム", "set.light": "ライト", "set.dark": "ダーク",
       "set.autostart": "Windows の起動時に実行", "set.autostartD": "現在のユーザーにのみ登録され、管理者権限は不要です。",
       "set.fs": "全画面で非表示", "set.fsD": "ゲーム、動画、プレゼンテーションが全画面になるとすぐに非表示になり、終了すると戻ります。",
-      "fs.opacity": "背景の不透明度", "fs.opacityD": "値の背後にある暗い背景の不透明度です。0% では数値だけが表示されます。", "nav.fs": "全画面", "fs.desc": "ゲーム、動画、プレゼンテーションが画面全体を使うときのインジケーターの動作です。", "fs.mode": "動作", "fs.modeD": "全画面の開始時と終了時にすぐ適用されます。", "fs.hide": "非表示", "fs.move": "表示", "fs.keep": "そのまま", "fs.hideD": "インジケーターは非表示になり、全画面が終わると戻ります。", "fs.moveD": "インジケーターは下で選んだ位置に、どの映像の上でも読める暗い背景で表示されます。", "fs.keepD": "インジケーターはタスクバー上の位置のまま、映像の上に表示されます。", "fs.pos": "画面上の位置", "fs.posD": "全画面でインジケーターを表示したい位置をクリックします。", "fs.posOff": "位置を選ぶには「表示」を選びます。", "fs.exclusive": "排他的全画面のゲームでは上に描画できないため、インジケーターは非表示になります。",
+      "fs.opacity": "背景の不透明度", "fs.opacityD": "値の背後にある暗い背景の不透明度です。0% では数値だけが表示されます。", "rail.donateT": "WRAM は役に立っていますか？", "rail.donateD": "無料です。気に入ったら支援できます。", "rail.donateB": "寄付する", "rail.donateAria": "PayPal で寄付して WRAM を支援", "nav.fs": "全画面", "fs.desc": "ゲーム、動画、プレゼンテーションが画面全体を使うときのインジケーターの動作です。", "fs.mode": "動作", "fs.modeD": "全画面の開始時と終了時にすぐ適用されます。", "fs.hide": "非表示", "fs.move": "表示", "fs.keep": "そのまま", "fs.hideD": "インジケーターは非表示になり、全画面が終わると戻ります。", "fs.moveD": "インジケーターは下で選んだ位置に、どの映像の上でも読める暗い背景で表示されます。", "fs.keepD": "インジケーターはタスクバー上の位置のまま、映像の上に表示されます。", "fs.pos": "画面上の位置", "fs.posD": "全画面でインジケーターを表示したい位置をクリックします。", "fs.posOff": "位置を選ぶには「表示」を選びます。", "fs.exclusive": "排他的全画面のゲームでは上に描画できないため、インジケーターは非表示になります。",
       "fs.p0": "左上", "fs.p1": "上中央", "fs.p2": "右上", "fs.p3": "左中央", "fs.p4": "右中央", "fs.p5": "左下", "fs.p6": "下中央", "fs.p7": "右下", "fs.screen": "あなたの画面",
       "stage.bar": "タスクバー", "stage.barWin": "Windows", "stage.barLight": "ライト", "stage.barDark": "ダーク", "stage.noteForced": "{mode}のタスクバーでプレビューしています。Windows のタスクバーは{win}テーマです。", "word.light": "ライト", "word.dark": "ダーク",
       "set.interval": "更新間隔", "set.intervalD": "間隔を長くすると CPU とバッテリーの消費が減ります。",
@@ -904,7 +943,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "set.system": "系统", "set.light": "浅色", "set.dark": "深色",
       "set.autostart": "开机时启动", "set.autostartD": "仅为当前用户注册，无需管理员权限。",
       "set.fs": "全屏时隐藏", "set.fsD": "游戏、视频或演示进入全屏时显示条立即隐藏，退出后恢复。",
-      "fs.opacity": "背景不透明度", "fs.opacityD": "数值后面深色背景框的不透明度。为 0% 时只显示数字。", "nav.fs": "全屏", "fs.desc": "游戏、视频或演示占满整个屏幕时指示条的行为。", "fs.mode": "行为", "fs.modeD": "进入和退出全屏时立即生效。", "fs.hide": "隐藏", "fs.move": "显示", "fs.keep": "保持", "fs.hideD": "指示条隐藏，退出全屏后恢复。", "fs.moveD": "指示条显示在下方所选位置，带深色背景，在任何画面上都清晰可读。", "fs.keepD": "指示条留在任务栏上的位置，显示在画面上方。", "fs.pos": "屏幕位置", "fs.posD": "点击你希望全屏时显示指示条的位置。", "fs.posOff": "选择“显示”后可选择位置。", "fs.exclusive": "独占全屏的游戏不允许在其上方绘制，此时指示条会隐藏。",
+      "fs.opacity": "背景不透明度", "fs.opacityD": "数值后面深色背景框的不透明度。为 0% 时只显示数字。", "rail.donateT": "喜欢 WRAM 吗？", "rail.donateD": "它是免费的。如果对你有帮助，可以支持它。", "rail.donateB": "捐赠", "rail.donateAria": "通过 PayPal 捐赠支持 WRAM", "nav.fs": "全屏", "fs.desc": "游戏、视频或演示占满整个屏幕时指示条的行为。", "fs.mode": "行为", "fs.modeD": "进入和退出全屏时立即生效。", "fs.hide": "隐藏", "fs.move": "显示", "fs.keep": "保持", "fs.hideD": "指示条隐藏，退出全屏后恢复。", "fs.moveD": "指示条显示在下方所选位置，带深色背景，在任何画面上都清晰可读。", "fs.keepD": "指示条留在任务栏上的位置，显示在画面上方。", "fs.pos": "屏幕位置", "fs.posD": "点击你希望全屏时显示指示条的位置。", "fs.posOff": "选择“显示”后可选择位置。", "fs.exclusive": "独占全屏的游戏不允许在其上方绘制，此时指示条会隐藏。",
       "fs.p0": "左上", "fs.p1": "上方居中", "fs.p2": "右上", "fs.p3": "左侧居中", "fs.p4": "右侧居中", "fs.p5": "左下", "fs.p6": "下方居中", "fs.p7": "右下", "fs.screen": "你的屏幕",
       "stage.bar": "任务栏", "stage.barWin": "Windows", "stage.barLight": "浅色", "stage.barDark": "深色", "stage.noteForced": "预览使用{mode}任务栏。你的 Windows 任务栏使用{win}主题。", "word.light": "浅色", "word.dark": "深色",
       "set.interval": "刷新频率", "set.intervalD": "间隔越长，CPU 和电池消耗越少。",
@@ -928,7 +967,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   function applyStaticTexts() {
     document.documentElement.lang = lang === "zh" ? "zh-CN" : lang === "ja" ? "ja-JP" : lang;
     $$("[data-i18n]").forEach((n) => { n.textContent = t(n.dataset.i18n); });
-    $$("[data-i18n-aria]").forEach((n) => { n.setAttribute("aria-label", t(n.dataset.i18nAria)); });
+    $$("[data-i18n-aria]").forEach((n) => { n.setAttribute("aria-label", t(n.dataset.i18nAria)); if (n.classList.contains("donate")) n.title = t(n.dataset.i18nAria); });
     $$("[data-i18n-title]").forEach((n) => { n.title = t(n.dataset.i18nTitle); });
     $("#iv-500").textContent = (S.dec === "," ? "0,5" : "0.5") + " s";
   }
@@ -1586,7 +1625,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.4.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.5.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
