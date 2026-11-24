@@ -4,7 +4,7 @@
 
 - Runs as the user (`requestedExecutionLevel asInvoker`). It does not ask for administrator rights and installs no drivers or services.
 - Writes only to `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM`, when enabled to `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, and during an update to the folder of `WRAM.exe`.
-- Opens network connections only when "Check for updates" is pressed (see [Updates from the app](#updates-from-the-app)). The settings window loads from the executable itself.
+- Opens network connections only to look for updates: when "Check for updates" is pressed and, with "Notify me about new versions" on, at most once a day (see [Updates from the app](#updates-from-the-app)). The settings window loads from the executable itself.
 
 ## Settings window (WebView2)
 
@@ -62,7 +62,7 @@ The file properties (Details tab) show the version metadata:
 | Field | Value |
 |---|---|
 | Product name | WRAM |
-| File description | WRAM - monitor del sistema en la barra de tareas |
+| File description | WRAM |
 | Company | Juan Guillermo Marín Córdoba |
 | Copyright | © 2026 Juan Guillermo Marín Córdoba. Licencia MIT. |
 | Comments | Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM |
@@ -70,7 +70,7 @@ The file properties (Details tab) show the version metadata:
 
 ## Updates from the app
 
-"Check for updates" in Settings is the only feature that uses the network, and it runs only when the button is pressed, on a background thread.
+Looking for updates is the only feature that uses the network. It runs on a background thread in two cases: when "Check for updates" is pressed, and with "Notify me about new versions" turned on (the default) at most once a day, never during full screen, games, presentations or Do not disturb. The time of the last check and the last version notified are kept in `%LOCALAPPDATA%\WRAM\update.ini`. The automatic check only notifies; installing always requires pressing "Update to".
 
 - It asks `https://api.github.com/repos/Ju4nMarin/WRAM/releases/latest` for the latest version. The tag must be `vX.Y.Z` with digits only; anything else is rejected.
 - It downloads `WRAM.exe` and `WRAM.exe.sha256` from that release on `github.com`, over HTTPS with TLS 1.2 or 1.3 and certificate validation by WinHTTP. Redirects to HTTP are refused, and the download is capped at 16 MB.

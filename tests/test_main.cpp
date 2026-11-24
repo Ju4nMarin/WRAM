@@ -140,6 +140,14 @@ TEST(all_displays_roundtrip) {
     CHECK(!ConfigCodec::Parse("[general]\nallDisplays=0\n").allDisplays);
 }
 
+TEST(update_notify_defaults_on_and_roundtrips) {
+    Config c = Config::Defaults();
+    CHECK(c.updateNotify);
+    c.updateNotify = false;
+    CHECK(!ConfigCodec::Parse(ConfigCodec::Serialize(c)).updateNotify);
+    CHECK(ConfigCodec::Parse("[general]\nrows=1\n").updateNotify);  // archivos anteriores: activado
+}
+
 TEST(version_parse_and_compare) {
     Version a, b;
     CHECK(ParseVersion("v1.5.2", a) && a.major == 1 && a.minor == 5 && a.patch == 2);

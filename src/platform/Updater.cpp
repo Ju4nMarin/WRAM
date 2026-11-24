@@ -2,7 +2,9 @@
 
 #include <bcrypt.h>
 #include <winhttp.h>
+#include <shlobj.h>
 
+#include <cstdlib>
 #include <cwchar>
 #include <string>
 #include <vector>
@@ -209,6 +211,54 @@ void RemoveLeftovers() {
     if (exe.empty()) return;
     DeleteFileW((exe + L".old").c_str());
     DeleteFileW((exe + L".new").c_str());
+}
+
+namespace {
+std::wstring NotifyStatePath() {
+    PWSTR local = nullptr;
+    std::wstring path;
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, KF_FLAG_CREATE, nullptr, &local))) {
+        path = std::wstring(local) + L"\\WRAM";
+        CoTaskMemFree(local);
+        CreateDirectoryW(path.c_str(), nullptr);
+        path += L"\\update.ini";
+    }
+    return path;
+}
+}  // namespace
+
+NotifyState LoadNotifyState() {
+    NotifyState state;
+    const std::wstring path = NotifyStatePath();
+    if (path.empty()) return state;
+    UniqueHandle file(CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr));
+    if (!file) return state;
+    char buffer[256]{};
+    DWORD read = 0;
+    if (!ReadFile(file.get(), buffer, sizeof buffer - 1, &read, nullptr)) return state;
+    const std::string text(buffer, read);
+    size_t pos = text.find("last=");
+    if (pos != std::string::npos) state.lastCheck = std::strtoll(text.c_str() + pos + 5, nullptr, 10);
+    pos = text.find("notified=");
+    if (pos != std::string::npos) {
+        std::string tag = text.substr(pos + 9, text.find_first_of("\r\n", pos) - pos - 9);
+        Version ignored;
+        if (ParseVersion(tag, ignored)) state.notifiedTag = tag;
+    }
+    return state;
+}
+
+void SaveNotifyState(const NotifyState& state) {
+    const std::wstring path = NotifyStatePath();
+    if (path.empty()) return;
+    WriteWholeFile(path, "last=" + std::to_string(state.lastCheck) + "\nnotified=" + state.notifiedTag + "\n");
+}
+
+long long UnixNow() {
+    FILETIME ft{};
+    GetSystemTimeAsFileTime(&ft);
+    const unsigned long long ticks = (static_cast<unsigned long long>(ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+    return static_cast<long long>(ticks / 10000000ULL) - 11644473600LL;
 }
 
 bool WaitForPreviousInstance(const wchar_t* commandLine) {

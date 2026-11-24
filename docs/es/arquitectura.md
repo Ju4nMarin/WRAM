@@ -93,7 +93,7 @@ Equipo de desarrollo, 6 métricas, intervalo de 1 s:
 | Configuración abierta | 23 a 27 MB más 6 procesos de WebView2 | |
 | Tras cerrar la configuración | 12 a 13 MB, sin procesos de WebView2 | |
 
-Ejecutable: 499 712 bytes (unos 490 KB), sin runtime ni archivos adicionales.
+Ejecutable: 516 096 bytes (unos 505 KB), sin runtime ni archivos adicionales.
 
 ## Pendiente
 
