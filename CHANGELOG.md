@@ -4,6 +4,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and sem
 
 ## 1.7.3
 
+### Changed
+
+- Smaller executable: 428 KB instead of 518 KB. The settings interface is embedded compressed with the Windows Compression API (LZMS, 160 KB to 64 KB) and decompressed when the window opens.
+
 ### Security
 
 - The Content Security Policy of the settings window no longer allows `unsafe-inline`: the only stylesheet and script are allowed by their SHA-256 hash, computed at build time.

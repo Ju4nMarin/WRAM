@@ -7,7 +7,7 @@
 
 <p align="center">
   System monitor for the Windows taskbar.<br>
-  Up to 10 live metrics next to the tray, in a single executable of about 505 KB.
+  Up to 10 live metrics next to the tray, in a single executable of about 430 KB.
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@
   <a href="https://github.com/Ju4nMarin/WRAM/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Ju4nMarin/WRAM?style=flat-square"></a>
   <a href="https://github.com/Ju4nMarin/WRAM/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Ju4nMarin/WRAM/ci.yml?branch=main&style=flat-square&label=CI"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square"></a>
-  <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20550%20KB-blue?style=flat-square">
+  <img alt="Size" src="https://img.shields.io/badge/WRAM.exe-%3C%20450%20KB-blue?style=flat-square">
   <a href="https://www.paypal.com/paypalme/evopl"><img alt="Donate with PayPal" src="https://img.shields.io/badge/donate-PayPal-00457C?style=flat-square&logo=paypal&logoColor=white"></a>
 </p>
 
