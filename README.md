@@ -141,7 +141,7 @@ Changes from other contributors go through a pull request reviewed by a committe
 
 Privacy: this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. WRAM contacts GitHub (`api.github.com` and `github.com`) only to look for updates: when "Check for updates" is pressed and, with "Notify me about new versions" turned on (the default), at most once a day. It sends no personal data, and the option can be turned off in Settings. The links in the app (source code, license and donation) open in the default browser only when clicked. The settings window uses the Microsoft Edge WebView2 Runtime included in Windows, and its interface is loaded from inside the executable, without remote content.
 
-Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The app logos in the settings preview are trademarks of their respective owners, shown only as sample apps.
 
 ## Author
 

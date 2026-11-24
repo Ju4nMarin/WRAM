@@ -2,6 +2,12 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.7.1
+
+### Changed
+
+- Taskbar preview: the gray squares are now four app logos picked at random each time the window opens (Spotify, Discord, Google Chrome, Steam, GitHub, Telegram, WhatsApp, YouTube, Netflix and VLC media player, from Simple Icons), in their brand colors. The first one shows the running-app line, and logos that do not fit are hidden instead of cut. The logos are trademarks of their owners; see THIRD_PARTY_NOTICES.md.
+
 ## 1.7.0
 
 ### Added
