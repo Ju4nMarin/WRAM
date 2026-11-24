@@ -2,6 +2,19 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.7.3
+
+### Security
+
+- The Content Security Policy of the settings window no longer allows `unsafe-inline`: the only stylesheet and script are allowed by their SHA-256 hash, computed at build time.
+
+### Fixed
+
+- The update threads catch any exception and always release their result, so a failure there cannot close WRAM.
+- Checks for failed GDI and resource calls (`CreateDIBSection`, `LoadResource`, `CoCreateInstance`) and correct rounding in the tray icon badge.
+- Headings, labels and color pickers of the settings window carry their English text and `aria-label` in the HTML, for screen readers before the translation loads.
+- The four alert color buttons and the icon sprite are styled from the stylesheet instead of inline `style` attributes, which the new policy blocks.
+
 ## 1.7.2
 
 ### Changed
