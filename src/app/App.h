@@ -53,6 +53,8 @@ private:
     void OnSettingsClosed() override;
     void OnSettingsOpen(std::string_view target) override;
     void OnSettingsUpdate(std::string_view action) override;
+    void MaybeCheckForUpdate();
+    void OpenSettingsAt(const char* section);
     void OnUpdateChecked(const updater::CheckResult& result);
     void OnUpdateInstalled(updater::Error error);
     void PostUpdateState(const char* state, const std::string& version, const char* code = nullptr);
@@ -70,6 +72,10 @@ private:
     ULONGLONG lastAppsScan_ = 0;
     bool justUpdated_ = false;
     bool restartAfterExit_ = false;
+    bool backgroundCheck_ = false;  // la consulta en curso es la automática
+    std::string openSection_;       // sección a mostrar al abrir la configuración
+    HICON badgeIcon_ = nullptr;     // ícono de la bandeja con el punto de versión nueva
+    HICON largeIcon_ = nullptr;     // ícono grande para la notificación
     std::atomic<bool> updateBusy_{false};
     std::string updateTag_;  // versión nueva encontrada, ya validada
     Version updateVersion_;
