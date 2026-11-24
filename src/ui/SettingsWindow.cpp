@@ -47,6 +47,7 @@ std::wstring LoadEmbeddedHtml(HINSTANCE instance) {
     HRSRC res = FindResourceW(instance, MAKEINTRESOURCEW(IDR_SETTINGS_HTML), RT_RCDATA);
     if (!res) return {};
     HGLOBAL handle = LoadResource(instance, res);
+    if (!handle) return {};
     const DWORD size = SizeofResource(instance, res);
     const auto* data = static_cast<const char*>(LockResource(handle));
     if (!data || size == 0) return {};
