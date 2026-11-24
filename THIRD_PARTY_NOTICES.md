@@ -1,6 +1,6 @@
 # Third-party notices
 
-WRAM.exe includes the following third-party component.
+WRAM.exe includes the following third-party components.
 
 ## Microsoft Edge WebView2 SDK (WebView2LoaderStatic.lib)
 
@@ -35,3 +35,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
+
+## Simple Icons 16.38.1
+
+The app logos in the taskbar preview of the settings window (Spotify, Discord, Google Chrome, Steam, GitHub, Telegram, WhatsApp, YouTube, Netflix and VLC media player) come from [Simple Icons](https://simpleicons.org), released under CC0 1.0. The logos are trademarks of their respective owners. They are shown only as sample apps in the preview and do not imply any endorsement of WRAM.
