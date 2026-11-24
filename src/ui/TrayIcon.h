@@ -18,6 +18,8 @@ public:
     bool Add(HWND owner, UINT callbackMessage, HICON icon, const wchar_t* tooltip);
     void Remove();
     bool Readd();  // tras reiniciarse explorer.exe
+    void SetIcon(HICON icon);
+    void Notify(const wchar_t* title, const wchar_t* text, HICON largeIcon);  // el clic llega como NIN_BALLOONUSERCLICK
 
 private:
     NOTIFYICONDATAW data_{};

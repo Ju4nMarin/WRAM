@@ -31,4 +31,14 @@ void RemoveLeftovers();
 // Línea de comandos de un arranque tras actualizar: espera a que el proceso anterior termine.
 bool WaitForPreviousInstance(const wchar_t* commandLine);
 
+// Estado del aviso automático, en %LOCALAPPDATA%\WRAM\update.ini: cuándo se consultó GitHub por última
+// vez (segundos Unix) y de qué versión ya se avisó, para notificar cada versión una sola vez.
+struct NotifyState {
+    long long lastCheck = 0;
+    std::string notifiedTag;
+};
+NotifyState LoadNotifyState();
+void SaveNotifyState(const NotifyState& state);
+long long UnixNow();
+
 }  // namespace wram::updater

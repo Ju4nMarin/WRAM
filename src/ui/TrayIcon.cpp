@@ -27,6 +27,25 @@ bool TrayIcon::Readd() {
     return added_;
 }
 
+void TrayIcon::SetIcon(HICON icon) {
+    data_.hIcon = icon;
+    if (!added_) return;
+    NOTIFYICONDATAW change = data_;
+    change.uFlags = NIF_ICON;
+    Shell_NotifyIconW(NIM_MODIFY, &change);
+}
+
+void TrayIcon::Notify(const wchar_t* title, const wchar_t* text, HICON largeIcon) {
+    if (!added_) return;
+    NOTIFYICONDATAW note = data_;
+    note.uFlags = NIF_INFO;
+    note.dwInfoFlags = largeIcon ? (NIIF_USER | NIIF_LARGE_ICON) : NIIF_INFO;
+    note.hBalloonIcon = largeIcon;
+    wcsncpy_s(note.szInfoTitle, title, _TRUNCATE);
+    wcsncpy_s(note.szInfo, text, _TRUNCATE);
+    Shell_NotifyIconW(NIM_MODIFY, &note);
+}
+
 void TrayIcon::Remove() {
     if (added_) Shell_NotifyIconW(NIM_DELETE, &data_);
     added_ = false;

@@ -16,7 +16,7 @@ Lang CurrentLang();
 const char* LangCode(Lang lang);  // "es", "en", "pt", "fr", "zh", "ja"
 
 // Textos de la parte nativa (menú y avisos). La interfaz web trae los suyos.
-enum class Str : uint8_t { MenuSettings, MenuExit, ErrWebViewMissing, ErrWebViewStart, ErrView, ErrCorrupt, Count };
+enum class Str : uint8_t { MenuSettings, MenuExit, ErrWebViewMissing, ErrWebViewStart, ErrView, ErrCorrupt, UpdateTitle, UpdateText, Count };
 const wchar_t* Text(Str id);
 
 }  // namespace wram

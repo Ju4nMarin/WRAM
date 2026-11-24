@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <memory>
 #include <thread>
+#include <utility>
 
 #include <shellapi.h>
 #include <windowsx.h>
@@ -26,9 +27,13 @@ constexpr UINT kMsgTray = WM_APP + 1;
 constexpr UINT_PTR kTimerSample = 1;
 constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT_PTR kTimerSettle = 3;
+constexpr UINT_PTR kTimerUpdate = 4;
+constexpr UINT kFirstUpdateCheckMs = 3 * 60 * 1000;  // a los 3 minutos de arrancar
+constexpr UINT kUpdateCheckEveryMs = 60 * 60 * 1000;  // luego cada hora se mira si ya pasó un día
+constexpr long long kUpdateCheckSpacing = 24 * 60 * 60;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.6.0";
+constexpr char kVersion[] = "1.7.0";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -84,6 +89,59 @@ void TrimWorkingSet() {
     SetProcessWorkingSetSizeEx(GetCurrentProcess(), static_cast<SIZE_T>(-1), static_cast<SIZE_T>(-1), 0);
 }
 
+// Ícono de la bandeja con un punto azul abajo a la derecha: hay una versión nueva.
+HICON MakeBadgeIcon(HICON base) {
+    ICONINFO info{};
+    if (!base || !GetIconInfo(base, &info)) return nullptr;
+    BITMAP bm{};
+    GetObjectW(info.hbmColor ? info.hbmColor : info.hbmMask, sizeof bm, &bm);
+    const int w = bm.bmWidth;
+    const int h = info.hbmColor ? bm.bmHeight : bm.bmHeight / 2;
+    HICON result = nullptr;
+    BITMAPINFO bi{};
+    bi.bmiHeader = {sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB};
+    void* bits = nullptr;
+    HDC screen = GetDC(nullptr);
+    HBITMAP color = CreateDIBSection(screen, &bi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    if (color && info.hbmColor && GetDIBits(screen, info.hbmColor, 0, h, bits, &bi, DIB_RGB_COLORS) == h) {
+        auto* px = static_cast<uint32_t*>(bits);
+        const float r = w * 0.22f;
+        const float cx = w - r - 0.5f;
+        const float cy = h - r - 0.5f;
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                const float d = std::sqrt((x + 0.5f - cx) * (x + 0.5f - cx) + (y + 0.5f - cy) * (y + 0.5f - cy));
+                const float ring = std::clamp(r + 1.0f - d, 0.0f, 1.0f);  // borde blanco de 1 px
+                const float dot = std::clamp(r - d, 0.0f, 1.0f);
+                if (ring <= 0) continue;
+                const uint32_t old = px[y * w + x];
+                const float oa = ((old >> 24) & 0xFF) / 255.0f;
+                // Mezcla sin premultiplicar: primero el borde blanco, encima el punto azul (#0078D4).
+                auto mix = [](float under, float over, float a) { return over * a + under * (1 - a); };
+                float rr = mix(((old >> 16) & 0xFF) / 255.0f, 1.0f, ring);
+                float gg = mix(((old >> 8) & 0xFF) / 255.0f, 1.0f, ring);
+                float bb = mix((old & 0xFF) / 255.0f, 1.0f, ring);
+                rr = mix(rr, 0x00 / 255.0f, dot);
+                gg = mix(gg, 0x78 / 255.0f, dot);
+                bb = mix(bb, 0xD4 / 255.0f, dot);
+                const float aa = std::max(oa, ring);
+                px[y * w + x] = (static_cast<uint32_t>(aa * 255 + 0.5f) << 24) | (static_cast<uint32_t>(rr * 255 + 0.5f) << 16) |
+                                (static_cast<uint32_t>(gg * 255 + 0.5f) << 8) | static_cast<uint32_t>(bb * 255 + 0.5f);
+            }
+        }
+        const std::vector<BYTE> zeros(static_cast<size_t>((w + 15) / 16) * 2 * h, 0);  // máscara vacía: manda el alfa
+        HBITMAP mask = CreateBitmap(w, h, 1, 1, zeros.data());
+        ICONINFO out{TRUE, 0, 0, mask, color};
+        result = CreateIconIndirect(&out);
+        if (mask) DeleteObject(mask);
+    }
+    ReleaseDC(nullptr, screen);
+    if (color) DeleteObject(color);
+    if (info.hbmColor) DeleteObject(info.hbmColor);
+    if (info.hbmMask) DeleteObject(info.hbmMask);
+    return result;
+}
+
 }  // namespace
 
 App::App(HINSTANCE instance, bool justUpdated) : instance_(instance), justUpdated_(justUpdated), settings_(*this) {
@@ -96,6 +154,8 @@ App::App(HINSTANCE instance, bool justUpdated) : instance_(instance), justUpdate
 
 App::~App() {
     tray_.Remove();
+    if (badgeIcon_) DestroyIcon(badgeIcon_);
+    if (largeIcon_) DestroyIcon(largeIcon_);
     if (host_) DestroyWindow(host_);
 }
 
@@ -124,6 +184,10 @@ int App::Run() {
     icon_ = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON,
                                           GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0));
     tray_.Add(host_, kMsgTray, icon_, L"WRAM");
+    badgeIcon_ = MakeBadgeIcon(icon_);
+    largeIcon_ = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON, GetSystemMetrics(SM_CXICON) * 2,
+                                               GetSystemMetrics(SM_CYICON) * 2, 0));
+    SetTimer(host_, kTimerUpdate, kFirstUpdateCheckMs, nullptr);
 
     ApplyConfig(std::move(config), firstRun);
     RestartTimer();
@@ -292,20 +356,61 @@ void App::OnSettingsUpdate(std::string_view action) {
     }
 }
 
+void App::MaybeCheckForUpdate() {
+    // Aviso automático: como mucho una consulta al día, nunca con pantalla completa, juegos,
+    // presentaciones ni "No molestar" activos (se reintenta en la próxima hora).
+    if (!config_.updateNotify || updateBusy_) return;
+    QUERY_USER_NOTIFICATION_STATE quns{};
+    if (FAILED(SHQueryUserNotificationState(&quns)) || quns != QUNS_ACCEPTS_NOTIFICATIONS) return;
+    if (updater::UnixNow() - updater::LoadNotifyState().lastCheck < kUpdateCheckSpacing) return;
+    if (updateBusy_.exchange(true)) return;
+    backgroundCheck_ = true;
+    const HWND host = host_;
+    std::thread([host] {
+        auto* result = new updater::CheckResult(updater::CheckLatest());
+        if (!PostMessageW(host, kMsgUpdateChecked, 0, reinterpret_cast<LPARAM>(result))) delete result;
+    }).detach();
+}
+
 void App::OnUpdateChecked(const updater::CheckResult& result) {
     updateBusy_ = false;
+    const bool background = std::exchange(backgroundCheck_, false);
+    if (!result.ok) {
+        if (!background) PostUpdateState("error", {}, "network");  // en segundo plano, se reintenta otro día
+        return;
+    }
+    updater::NotifyState state = updater::LoadNotifyState();
+    state.lastCheck = updater::UnixNow();
     Version current;
     ParseVersion(kVersion, current);
-    if (!result.ok) {
-        PostUpdateState("error", {}, "network");
-    } else if (CompareVersion(result.version, current) > 0) {
+    if (CompareVersion(result.version, current) > 0) {
         updateTag_ = result.tag;
         updateVersion_ = result.version;
+        if (badgeIcon_) tray_.SetIcon(badgeIcon_);
         PostUpdateState("available", VersionToString(result.version));
+        // Cada versión se notifica una sola vez; el punto en la bandeja y en la ventana queda hasta actualizar.
+        if (background && state.notifiedTag != result.tag) {
+            wchar_t title[64]{};
+            const std::string v = VersionToString(result.version);
+            swprintf_s(title, Text(Str::UpdateTitle), std::wstring(v.begin(), v.end()).c_str());
+            tray_.Notify(title, Text(Str::UpdateText), largeIcon_);
+            state.notifiedTag = result.tag;
+        }
     } else {
         updateTag_.clear();
+        tray_.SetIcon(icon_);
         PostUpdateState("latest", kVersion);
     }
+    updater::SaveNotifyState(state);
+}
+
+void App::OpenSettingsAt(const char* section) {
+    openSection_ = section;
+    if (settings_.IsOpen()) {
+        settings_.Post(std::string("{\"t\":\"go\",\"section\":\"") + section + "\"}");
+        openSection_.clear();
+    }
+    OnBandActivate();
 }
 
 void App::OnUpdateInstalled(updater::Error error) {
@@ -410,6 +515,8 @@ std::string App::BuildInitMessage() {
     out += ",\"overlayAlpha\":" + std::to_string(config_.overlayAlpha);
     out += ",\"allDisplays\":";
     out += config_.allDisplays ? "true" : "false";
+    out += ",\"updateNotify\":";
+    out += config_.updateNotify ? "true" : "false";
     out += ",\"offset\":" + std::to_string(config_.offset);
     out += ",\"theme\":" + std::to_string(config_.theme);
     out += ",\"language\":" + std::to_string(config_.language);
@@ -427,7 +534,11 @@ std::string App::BuildInitMessage() {
         out += s.alert ? "true" : "false";
         out += '}';
     }
-    out += "]},\"catalog\":[";
+    out += "]}";
+    // Versión nueva ya encontrada y sección a abrir (por ejemplo, desde la notificación).
+    if (!updateTag_.empty()) out += ",\"update\":{\"state\":\"available\",\"version\":\"" + VersionToString(updateVersion_) + "\"}";
+    if (!openSection_.empty()) out += ",\"section\":\"" + std::exchange(openSection_, std::string()) + "\"";
+    out += ",\"catalog\":[";
     for (size_t i = 0; i < kMetricCount; ++i) {
         const MetricInfo& info = Info(static_cast<MetricId>(i));
         if (i) out += ',';
@@ -529,6 +640,9 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 ScanTaskbars();
                 for (auto& band : bands_) band->Reposition();
                 if (GetTickCount64() >= settleUntil_) KillTimer(hwnd, kTimerSettle);
+            } else if (wp == kTimerUpdate) {
+                SetTimer(hwnd, kTimerUpdate, kUpdateCheckEveryMs, nullptr);
+                MaybeCheckForUpdate();
             } else if (wp == kTimerTrim) {
                 KillTimer(hwnd, kTimerTrim);
                 if (!settings_.IsOpen()) SettingsWindow::PurgeUserData();
@@ -539,6 +653,7 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             switch (LOWORD(lp)) {
                 case NIN_SELECT:
                 case NIN_KEYSELECT: OnBandActivate(); break;
+                case NIN_BALLOONUSERCLICK: OpenSettingsAt("settings"); break;
                 case WM_CONTEXTMENU: ShowMenu({GET_X_LPARAM(wp), GET_Y_LPARAM(wp)}); break;
             }
             return 0;
