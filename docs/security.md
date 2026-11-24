@@ -3,8 +3,8 @@
 ## Permissions
 
 - Runs as the user (`requestedExecutionLevel asInvoker`). It does not ask for administrator rights and installs no drivers or services.
-- Writes only to `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM` and, when enabled, `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
-- Opens no network connections. The settings window loads from the executable itself.
+- Writes only to `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM`, when enabled to `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, and during an update to the folder of `WRAM.exe`.
+- Opens network connections only when "Check for updates" is pressed (see [Updates from the app](#updates-from-the-app)). The settings window loads from the executable itself.
 
 ## Settings window (WebView2)
 
@@ -67,6 +67,16 @@ The file properties (Details tab) show the version metadata:
 | Copyright | © 2026 Juan Guillermo Marín Córdoba. Licencia MIT. |
 | Comments | Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM |
 | Original file name | WRAM.exe |
+
+## Updates from the app
+
+"Check for updates" in Settings is the only feature that uses the network, and it runs only when the button is pressed, on a background thread.
+
+- It asks `https://api.github.com/repos/Ju4nMarin/WRAM/releases/latest` for the latest version. The tag must be `vX.Y.Z` with digits only; anything else is rejected.
+- It downloads `WRAM.exe` and `WRAM.exe.sha256` from that release on `github.com`, over HTTPS with TLS 1.2 or 1.3 and certificate validation by WinHTTP. Redirects to HTTP are refused, and the download is capped at 16 MB.
+- The file is installed only if its SHA-256 matches the published hash, it starts with a PE header and its version resource matches the tag.
+- The current executable is renamed to `WRAM.exe.old`, the new one takes its place, and the app restarts after releasing its single-instance lock. If any step fails, the original file is restored. `WRAM.exe.old` is deleted on the next start.
+- No personal data is sent. The requests carry the user agent `WRAM-Updater`.
 
 ## Reporting a vulnerability
 

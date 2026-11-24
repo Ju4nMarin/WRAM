@@ -70,6 +70,7 @@ With Visible, the screen diagram has 8 spots (corners, edge centers and side cen
 | Start with Windows | Entry in `HKCU\...\Run`, no administrator rights |
 | Refresh rate | 0.5, 1, 2 or 5 seconds |
 | Settings file | Path of `config.ini` and a button to open its folder |
+| Updates | "Check for updates" asks GitHub for the latest version. If there is a newer one, "Update to" downloads it, verifies it, replaces `WRAM.exe` and restarts the app |
 | Reset | Goes back to the six default metrics, after confirmation |
 
 ### About

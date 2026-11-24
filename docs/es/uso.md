@@ -70,6 +70,7 @@ Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los b
 | Iniciar con Windows | Registro en `HKCU\...\Run`, sin administrador |
 | Frecuencia de actualización | 0,5, 1, 2 o 5 segundos |
 | Archivo de configuración | Ruta de `config.ini` y botón para abrir su carpeta |
+| Actualizaciones | "Buscar actualizaciones" consulta en GitHub la última versión. Si hay una más nueva, "Actualizar a" la descarga, la verifica, reemplaza `WRAM.exe` y reinicia la app |
 | Restablecer | Vuelve a las seis métricas iniciales, con confirmación |
 
 ### Acerca de

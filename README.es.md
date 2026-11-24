@@ -7,7 +7,7 @@
 
 <p align="center">
   Monitor del sistema para la barra de tareas de Windows.<br>
-  Hasta 10 métricas en vivo junto a la bandeja, en un solo ejecutable de unos 455 KB.
+  Hasta 10 métricas en vivo junto a la bandeja, en un solo ejecutable de unos 490 KB.
 </p>
 
 <p align="center">
@@ -57,6 +57,7 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 - En pantalla completa puede quedar oculta o visible en el recuadro de pantalla que elijas, y reacciona en el acto al entrar y al salir.
 - Interfaz en español, inglés, portugués, francés, chino simplificado y japonés.
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
+- Actualización desde la propia app, en Configuración: descarga, verificación SHA-256 y reinicio.
 - En reposo usa entre 12 y 17 MB de memoria y menos del 1 % de un núcleo de CPU.
 
 ![Métricas en tema oscuro](docs/img/app/metricas-oscuro.png)
@@ -136,7 +137,7 @@ Roles del equipo:
 
 Los cambios de otras personas entran por un pull request revisado por un autor antes de integrarse.
 
-Privacidad: este programa no transfiere información a otros sistemas en red salvo que lo pida expresamente el usuario o la persona que lo instala o lo usa. Los enlaces de la app (código fuente, licencia y donación) se abren en el navegador predeterminado solo al hacer clic. La ventana de configuración usa Microsoft Edge WebView2 Runtime, incluido en Windows, y su interfaz se carga desde dentro del ejecutable, sin contenido remoto.
+Privacidad: este programa no transfiere información a otros sistemas en red salvo que lo pida expresamente el usuario o la persona que lo instala o lo usa. "Buscar actualizaciones", en Configuración, contacta a GitHub (`api.github.com` y `github.com`) solo al pulsar ese botón y no envía datos personales. Los enlaces de la app (código fuente, licencia y donación) se abren en el navegador predeterminado solo al hacer clic. La ventana de configuración usa Microsoft Edge WebView2 Runtime, incluido en Windows, y su interfaz se carga desde dentro del ejecutable, sin contenido remoto.
 
 Componentes de terceros: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
