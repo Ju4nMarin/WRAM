@@ -2,6 +2,13 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.7.2
+
+### Changed
+
+- Taskbar preview: the Google Chrome logo now has its four real colors, and YouTube, Telegram, Spotify and VLC show their white or black details instead of the taskbar color.
+- In a wide settings window the app logos fill the preview taskbar from the left edge to where the apps end, as on a full taskbar. Seven more logos: Dropbox, Twitch, Pinterest, Reddit, OBS Studio, Obsidian and Notion.
+
 ## 1.7.1
 
 ### Changed
