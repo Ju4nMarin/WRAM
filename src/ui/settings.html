@@ -354,6 +354,9 @@ select.field option { background: var(--card); color: var(--text); }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .btn.danger { background: var(--danger-fill); border-color: var(--danger-fill); color: #ffffff; }
 .btn.danger:hover { filter: brightness(1.08); }
+.btn.accent { background: var(--accent); border-color: var(--accent); color: #0b1a22; font-weight: 600; }
+.btn.accent:hover { filter: brightness(1.06); background: var(--accent); }
+:root[data-theme="light"] .btn.accent { color: #ffffff; }
 
 .toggle { position: relative; display: inline-flex; flex: none; width: 40px; height: 20px; }
 .toggle input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
@@ -492,7 +495,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     <span class="donate-text"><strong data-i18n="rail.donateT"></strong><small data-i18n="rail.donateD"></small></span>
     <span class="donate-cta" data-i18n="rail.donateB"></span>
   </button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.5.2</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.6.0</span></div>
 </nav>
 
 <main>
@@ -621,6 +624,10 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="row-text"><strong data-i18n="set.file"></strong><small class="path" id="config-path"></small></div>
           <div class="row-ctl"><button class="btn" id="open-config" type="button"><svg class="i"><use href="#i-folder"/></svg><span data-i18n="set.open"></span></button></div>
         </div>
+        <div class="row" id="update-row">
+          <div class="row-text"><strong data-i18n="up.title"></strong><small id="update-text" aria-live="polite"></small></div>
+          <div class="row-ctl"><button class="btn" id="update-btn" type="button"></button></div>
+        </div>
         <div class="row" id="reset-row">
           <div class="row-text"><strong data-i18n="set.reset"></strong><small id="reset-text"></small></div>
           <div class="row-ctl" id="reset-ctl"></div>
@@ -664,7 +671,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.5.2</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.6.0</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.support"></dt><dd><button class="link-btn" type="button" data-open="donate" data-i18n="about.donate"></button></dd>
@@ -737,7 +744,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Oscura", "stage.noteForced": "Vista previa con la barra en tema {mode}. Tu barra de Windows usa tema {win}.", "word.light": "claro", "word.dark": "oscuro",
       "set.interval": "Frecuencia de actualización", "set.intervalD": "Intervalos más largos gastan menos CPU y batería.",
       "set.file": "Archivo de configuración", "set.open": "Abrir carpeta",
-      "set.reset": "Restablecer", "set.resetD": "Vuelve a las seis métricas iniciales y borra etiquetas, umbrales y apariencia. El inicio con Windows no cambia.",
+      "up.title": "Actualizaciones", "up.idle": "Versión instalada {v}. WRAM consulta GitHub solo cuando pulsas el botón.", "up.check": "Buscar actualizaciones", "up.checking": "Buscando…", "up.latest": "Tienes la versión más reciente ({v}).", "up.available": "Hay una versión nueva: {v}. Se descarga, se verifica y WRAM se reinicia solo.", "up.install": "Actualizar a {v}", "up.installing": "Actualizando…", "up.installingD": "Descargando y verificando la versión {v}…", "up.errNet": "No se pudo consultar GitHub. Revisa la conexión e inténtalo de nuevo.", "up.errVerify": "La descarga no pasó la verificación y no se instaló. Tu versión actual sigue igual.", "up.errWrite": "No se pudo reemplazar el archivo en esta carpeta. Descarga la versión nueva desde GitHub.", "up.retry": "Reintentar", "set.reset": "Restablecer", "set.resetD": "Vuelve a las seis métricas iniciales y borra etiquetas, umbrales y apariencia. El inicio con Windows no cambia.",
       "set.resetQ": "Se perderán las métricas elegidas, sus etiquetas y umbrales. ¿Restablecer?", "set.resetBtn": "Restablecer valores", "set.cancel": "Cancelar", "set.resetOk": "Restablecer",
       "about.desc": "Monitor del sistema para la barra de tareas de Windows. Muestra hasta 10 métricas junto a la bandeja, sin permisos de administrador ni drivers.",
       "about.support": "Apoyar el proyecto", "about.donate": "Donar con PayPal", "about.dev": "Desarrollado por", "about.version": "Versión", "about.license": "Licencia", "about.source": "Código fuente", "about.compat": "Compatibilidad",
@@ -780,7 +787,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "Taskbar", "stage.barWin": "Windows", "stage.barLight": "Light", "stage.barDark": "Dark", "stage.noteForced": "Preview with a {mode} taskbar. Your Windows taskbar uses the {win} theme.", "word.light": "light", "word.dark": "dark",
       "set.interval": "Refresh rate", "set.intervalD": "Longer intervals use less CPU and battery.",
       "set.file": "Settings file", "set.open": "Open folder",
-      "set.reset": "Reset", "set.resetD": "Goes back to the six default metrics and clears labels, thresholds and appearance. Startup with Windows is kept.",
+      "up.title": "Updates", "up.idle": "Installed version {v}. WRAM contacts GitHub only when you press the button.", "up.check": "Check for updates", "up.checking": "Checking…", "up.latest": "You have the latest version ({v}).", "up.available": "A new version is available: {v}. It is downloaded, verified and WRAM restarts by itself.", "up.install": "Update to {v}", "up.installing": "Updating…", "up.installingD": "Downloading and verifying version {v}…", "up.errNet": "Could not reach GitHub. Check your connection and try again.", "up.errVerify": "The download did not pass verification and was not installed. Your current version is unchanged.", "up.errWrite": "The file could not be replaced in this folder. Download the new version from GitHub.", "up.retry": "Try again", "set.reset": "Reset", "set.resetD": "Goes back to the six default metrics and clears labels, thresholds and appearance. Startup with Windows is kept.",
       "set.resetQ": "Your metrics, labels and thresholds will be lost. Reset?", "set.resetBtn": "Reset settings", "set.cancel": "Cancel", "set.resetOk": "Reset",
       "about.desc": "System monitor for the Windows taskbar. Shows up to 10 metrics next to the tray, without administrator rights or drivers.",
       "about.support": "Support the project", "about.donate": "Donate with PayPal", "about.dev": "Developed by", "about.version": "Version", "about.license": "License", "about.source": "Source code", "about.compat": "Compatibility",
@@ -823,7 +830,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "Barra", "stage.barWin": "Windows", "stage.barLight": "Clara", "stage.barDark": "Escura", "stage.noteForced": "Prévia com a barra no tema {mode}. Sua barra do Windows usa o tema {win}.", "word.light": "claro", "word.dark": "escuro",
       "set.interval": "Frequência de atualização", "set.intervalD": "Intervalos maiores gastam menos CPU e bateria.",
       "set.file": "Arquivo de configuração", "set.open": "Abrir pasta",
-      "set.reset": "Redefinir", "set.resetD": "Volta às seis métricas iniciais e apaga rótulos, limites e aparência. A inicialização com o Windows não muda.",
+      "up.title": "Atualizações", "up.idle": "Versão instalada {v}. O WRAM consulta o GitHub só quando você clica no botão.", "up.check": "Procurar atualizações", "up.checking": "Procurando…", "up.latest": "Você tem a versão mais recente ({v}).", "up.available": "Há uma versão nova: {v}. Ela é baixada, verificada e o WRAM reinicia sozinho.", "up.install": "Atualizar para {v}", "up.installing": "Atualizando…", "up.installingD": "Baixando e verificando a versão {v}…", "up.errNet": "Não foi possível acessar o GitHub. Verifique a conexão e tente de novo.", "up.errVerify": "O download não passou na verificação e não foi instalado. Sua versão atual continua igual.", "up.errWrite": "Não foi possível substituir o arquivo nesta pasta. Baixe a versão nova no GitHub.", "up.retry": "Tentar de novo", "set.reset": "Redefinir", "set.resetD": "Volta às seis métricas iniciais e apaga rótulos, limites e aparência. A inicialização com o Windows não muda.",
       "set.resetQ": "As métricas, rótulos e limites escolhidos serão perdidos. Redefinir?", "set.resetBtn": "Redefinir valores", "set.cancel": "Cancelar", "set.resetOk": "Redefinir",
       "about.desc": "Monitor do sistema para a barra de tarefas do Windows. Mostra até 10 métricas ao lado da bandeja, sem permissões de administrador nem drivers.",
       "about.support": "Apoiar o projeto", "about.donate": "Doar com PayPal", "about.dev": "Desenvolvido por", "about.version": "Versão", "about.license": "Licença", "about.source": "Código-fonte", "about.compat": "Compatibilidade",
@@ -866,7 +873,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "Barre", "stage.barWin": "Windows", "stage.barLight": "Claire", "stage.barDark": "Sombre", "stage.noteForced": "Aperçu avec une barre en thème {mode}. Votre barre Windows utilise le thème {win}.", "word.light": "clair", "word.dark": "sombre",
       "set.interval": "Fréquence d’actualisation", "set.intervalD": "Des intervalles plus longs consomment moins de CPU et de batterie.",
       "set.file": "Fichier de configuration", "set.open": "Ouvrir le dossier",
-      "set.reset": "Réinitialiser", "set.resetD": "Revient aux six mesures initiales et efface étiquettes, seuils et apparence. Le démarrage avec Windows ne change pas.",
+      "up.title": "Mises à jour", "up.idle": "Version installée {v}. WRAM contacte GitHub uniquement quand vous appuyez sur le bouton.", "up.check": "Rechercher des mises à jour", "up.checking": "Recherche…", "up.latest": "Vous avez la dernière version ({v}).", "up.available": "Une nouvelle version est disponible : {v}. Elle est téléchargée, vérifiée et WRAM redémarre tout seul.", "up.install": "Mettre à jour vers {v}", "up.installing": "Mise à jour…", "up.installingD": "Téléchargement et vérification de la version {v}…", "up.errNet": "Impossible de joindre GitHub. Vérifiez la connexion et réessayez.", "up.errVerify": "Le téléchargement n’a pas passé la vérification et n’a pas été installé. Votre version actuelle reste inchangée.", "up.errWrite": "Impossible de remplacer le fichier dans ce dossier. Téléchargez la nouvelle version depuis GitHub.", "up.retry": "Réessayer", "set.reset": "Réinitialiser", "set.resetD": "Revient aux six mesures initiales et efface étiquettes, seuils et apparence. Le démarrage avec Windows ne change pas.",
       "set.resetQ": "Les mesures choisies, leurs étiquettes et seuils seront perdus. Réinitialiser ?", "set.resetBtn": "Réinitialiser les valeurs", "set.cancel": "Annuler", "set.resetOk": "Réinitialiser",
       "about.desc": "Moniteur système pour la barre des tâches Windows. Affiche jusqu’à 10 mesures à côté de la zone de notification, sans droits d’administrateur ni pilotes.",
       "about.support": "Soutenir le projet", "about.donate": "Faire un don avec PayPal", "about.dev": "Développé par", "about.version": "Version", "about.license": "Licence", "about.source": "Code source", "about.compat": "Compatibilité",
@@ -909,7 +916,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "タスクバー", "stage.barWin": "Windows", "stage.barLight": "ライト", "stage.barDark": "ダーク", "stage.noteForced": "{mode}のタスクバーでプレビューしています。Windows のタスクバーは{win}テーマです。", "word.light": "ライト", "word.dark": "ダーク",
       "set.interval": "更新間隔", "set.intervalD": "間隔を長くすると CPU とバッテリーの消費が減ります。",
       "set.file": "設定ファイル", "set.open": "フォルダーを開く",
-      "set.reset": "リセット", "set.resetD": "最初の 6 つのメトリクスに戻し、ラベル、しきい値、外観を消去します。Windows 起動時の設定は変わりません。",
+      "up.title": "アップデート", "up.idle": "インストール済みのバージョン {v}。WRAM はボタンを押したときだけ GitHub に接続します。", "up.check": "アップデートを確認", "up.checking": "確認中…", "up.latest": "最新バージョンです（{v}）。", "up.available": "新しいバージョンがあります：{v}。ダウンロードと検証の後、WRAM が自動で再起動します。", "up.install": "{v} にアップデート", "up.installing": "アップデート中…", "up.installingD": "バージョン {v} をダウンロードして検証しています…", "up.errNet": "GitHub に接続できませんでした。接続を確認して、もう一度お試しください。", "up.errVerify": "ダウンロードが検証に失敗したため、インストールしませんでした。現在のバージョンはそのままです。", "up.errWrite": "このフォルダーのファイルを置き換えられませんでした。GitHub から新しいバージョンをダウンロードしてください。", "up.retry": "再試行", "set.reset": "リセット", "set.resetD": "最初の 6 つのメトリクスに戻し、ラベル、しきい値、外観を消去します。Windows 起動時の設定は変わりません。",
       "set.resetQ": "選んだメトリクス、ラベル、しきい値が失われます。リセットしますか？", "set.resetBtn": "設定をリセット", "set.cancel": "キャンセル", "set.resetOk": "リセット",
       "about.desc": "Windows タスクバー用のシステムモニターです。通知領域の横に最大 10 個のメトリクスを表示します。管理者権限やドライバーは不要です。",
       "about.support": "プロジェクトを支援", "about.donate": "PayPal で寄付", "about.dev": "開発者", "about.version": "バージョン", "about.license": "ライセンス", "about.source": "ソースコード", "about.compat": "互換性",
@@ -952,7 +959,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       "stage.bar": "任务栏", "stage.barWin": "Windows", "stage.barLight": "浅色", "stage.barDark": "深色", "stage.noteForced": "预览使用{mode}任务栏。你的 Windows 任务栏使用{win}主题。", "word.light": "浅色", "word.dark": "深色",
       "set.interval": "刷新频率", "set.intervalD": "间隔越长，CPU 和电池消耗越少。",
       "set.file": "配置文件", "set.open": "打开文件夹",
-      "set.reset": "重置", "set.resetD": "恢复为初始的六个指标，并清除标签、阈值和外观。开机启动设置不变。",
+      "up.title": "更新", "up.idle": "已安装版本 {v}。只有在你按下按钮时，WRAM 才会连接 GitHub。", "up.check": "检查更新", "up.checking": "正在检查…", "up.latest": "你使用的是最新版本（{v}）。", "up.available": "有新版本：{v}。下载并验证后，WRAM 会自动重启。", "up.install": "更新到 {v}", "up.installing": "正在更新…", "up.installingD": "正在下载并验证版本 {v}…", "up.errNet": "无法连接 GitHub。请检查网络后重试。", "up.errVerify": "下载未通过验证，未安装。当前版本保持不变。", "up.errWrite": "无法替换此文件夹中的文件。请从 GitHub 下载新版本。", "up.retry": "重试", "set.reset": "重置", "set.resetD": "恢复为初始的六个指标，并清除标签、阈值和外观。开机启动设置不变。",
       "set.resetQ": "已选择的指标、标签和阈值将会丢失。确定重置吗？", "set.resetBtn": "重置设置", "set.cancel": "取消", "set.resetOk": "重置",
       "about.desc": "用于 Windows 任务栏的系统监视器。在通知区域旁显示最多 10 个指标，无需管理员权限或驱动程序。",
       "about.support": "支持本项目", "about.donate": "通过 PayPal 捐赠", "about.dev": "开发者", "about.version": "版本", "about.license": "许可证", "about.source": "源代码", "about.compat": "兼容性",
@@ -1536,11 +1543,53 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     chip.style.opacity = (S.cfg.overlayAlpha / 100).toFixed(2);
   }
 
+  // ---------- Actualizaciones ----------
+  // El programa consulta GitHub solo cuando se pulsa el botón; aquí solo se muestra el estado que informa.
+  const UPD = { state: "idle", version: "", code: "" };
+  function renderUpdate() {
+    const text = $("#update-text");
+    const btn = $("#update-btn");
+    const v = { v: UPD.version || S.appVersion || "" };
+    const busy = UPD.state === "checking" || UPD.state === "installing";
+    btn.disabled = busy;
+    btn.classList.toggle("accent", UPD.state === "available");
+    if (UPD.state === "checking") {
+      text.textContent = t("up.idle", { v: S.appVersion || "" });
+      btn.textContent = t("up.checking");
+    } else if (UPD.state === "latest") {
+      text.textContent = t("up.latest", v);
+      btn.textContent = t("up.check");
+    } else if (UPD.state === "available") {
+      text.textContent = t("up.available", v);
+      btn.textContent = t("up.install", v);
+    } else if (UPD.state === "installing") {
+      text.textContent = t("up.installingD", v);
+      btn.textContent = t("up.installing");
+    } else if (UPD.state === "error") {
+      text.textContent = t(UPD.code === "verify" ? "up.errVerify" : UPD.code === "write" ? "up.errWrite" : "up.errNet");
+      btn.textContent = t("up.retry");
+    } else {
+      text.textContent = t("up.idle", { v: S.appVersion || "" });
+      btn.textContent = t("up.check");
+    }
+    btn.onclick = () => {
+      if (UPD.state === "available") send("update\ninstall");
+      else send("update\ncheck");
+    };
+  }
+  function onUpdate(m) {
+    UPD.state = String(m.state || "idle");
+    UPD.version = typeof m.version === "string" ? m.version : "";
+    UPD.code = typeof m.code === "string" ? m.code : "";
+    renderUpdate();
+  }
+
   function renderAll() {
     renderSlots();
     renderCatalog();
     renderPreview();
     renderFullscreen();
+    renderUpdate();
   }
   function refreshTexts() {
     applyStaticTexts();
@@ -1551,6 +1600,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   // ---------- Mensajes de la app ----------
   let lastInit = null;
   function onInit(m) {
+    S.appVersion = m.version;
     lastInit = m;
     lang = I18N[m.lang] ? m.lang : "en";
     S.dec = m.decimal || ".";
@@ -1611,6 +1661,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       if (!m || typeof m !== "object") return;
       if (m.t === "init") onInit(m);
       else if (m.t === "v" && S.cfg) onValues(m);
+      else if (m.t === "update") onUpdate(m);
     });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") send("close"); });
     send("ready");
@@ -1633,7 +1684,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.5.2", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.6.0", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",

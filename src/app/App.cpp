@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <memory>
+#include <thread>
 
 #include <shellapi.h>
 #include <windowsx.h>
@@ -27,7 +28,7 @@ constexpr UINT_PTR kTimerTrim = 2;
 constexpr UINT_PTR kTimerSettle = 3;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.5.2";
+constexpr char kVersion[] = "1.6.0";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -85,7 +86,7 @@ void TrimWorkingSet() {
 
 }  // namespace
 
-App::App(HINSTANCE instance) : instance_(instance), settings_(*this) {
+App::App(HINSTANCE instance, bool justUpdated) : instance_(instance), justUpdated_(justUpdated), settings_(*this) {
     sampler_.Add(std::make_unique<PdhProvider>());
     sampler_.Add(std::make_unique<MemoryProvider>());
     sampler_.Add(std::make_unique<GpuThermalProvider>());
@@ -127,7 +128,8 @@ int App::Run() {
     ApplyConfig(std::move(config), firstRun);
     RestartTimer();
     Tick();
-    if (firstRun) settings_.Show(instance_);
+    updater::RemoveLeftovers();  // ejecutable anterior de una actualización
+    if (firstRun || justUpdated_) settings_.Show(instance_);
     SetTimer(host_, kTimerTrim, 5000, nullptr);
 
     MSG msg;
@@ -265,6 +267,69 @@ void App::OnSettingsOpen(std::string_view target) {
     } else if (target == "donate") {
         ShellExecuteW(nullptr, L"open", kDonateUrlW, nullptr, nullptr, SW_SHOWNORMAL);
     }
+}
+
+void App::OnSettingsUpdate(std::string_view action) {
+    // La red se usa solo aquí, cuando la persona lo pide, y siempre fuera del hilo de la interfaz.
+    if (updateBusy_.exchange(true)) return;
+    const HWND host = host_;
+    if (action == "check") {
+        PostUpdateState("checking", {});
+        std::thread([host] {
+            auto* result = new updater::CheckResult(updater::CheckLatest());
+            if (!PostMessageW(host, kMsgUpdateChecked, 0, reinterpret_cast<LPARAM>(result))) delete result;
+        }).detach();
+    } else if (action == "install" && !updateTag_.empty()) {
+        PostUpdateState("installing", VersionToString(updateVersion_));
+        const std::string tag = updateTag_;
+        const Version version = updateVersion_;
+        std::thread([host, tag, version] {
+            const updater::Error error = updater::Install(tag, version);
+            PostMessageW(host, kMsgUpdateInstalled, static_cast<WPARAM>(error), 0);
+        }).detach();
+    } else {
+        updateBusy_ = false;
+    }
+}
+
+void App::OnUpdateChecked(const updater::CheckResult& result) {
+    updateBusy_ = false;
+    Version current;
+    ParseVersion(kVersion, current);
+    if (!result.ok) {
+        PostUpdateState("error", {}, "network");
+    } else if (CompareVersion(result.version, current) > 0) {
+        updateTag_ = result.tag;
+        updateVersion_ = result.version;
+        PostUpdateState("available", VersionToString(result.version));
+    } else {
+        updateTag_.clear();
+        PostUpdateState("latest", kVersion);
+    }
+}
+
+void App::OnUpdateInstalled(updater::Error error) {
+    if (error == updater::Error::None) {
+        // El ejecutable nuevo se lanza al salir, cuando esta instancia ya soltó el bloqueo de instancia única.
+        restartAfterExit_ = true;
+        store_.Save(config_);
+        settings_.Close();
+        PostQuitMessage(0);
+        return;
+    }
+    updateBusy_ = false;
+    const char* code = error == updater::Error::Network ? "network" : error == updater::Error::Verify ? "verify" : "write";
+    PostUpdateState("error", VersionToString(updateVersion_), code);
+}
+
+void App::PostUpdateState(const char* state, const std::string& version, const char* code) {
+    if (!settings_.IsOpen()) return;
+    std::string json = "{\"t\":\"update\",\"state\":\"";
+    json += state;
+    json += "\",\"version\":\"" + version + "\"";
+    if (code) json += std::string(",\"code\":\"") + code + "\"";
+    json += "}";
+    settings_.Post(json);
 }
 
 void App::RefreshSamplerMask() {
@@ -478,6 +543,12 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             }
             return 0;
         case kMsgShowSettings: OnBandActivate(); return 0;
+        case kMsgUpdateChecked: {
+            std::unique_ptr<updater::CheckResult> result(reinterpret_cast<updater::CheckResult*>(lp));
+            if (result) OnUpdateChecked(*result);
+            return 0;
+        }
+        case kMsgUpdateInstalled: OnUpdateInstalled(static_cast<updater::Error>(wp)); return 0;
         case WM_SETTINGCHANGE:
             ApplyUserDecimalSeparator();
             OnSystemChange();

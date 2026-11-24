@@ -3,8 +3,8 @@
 ## Permisos
 
 - Se ejecuta como el usuario (`requestedExecutionLevel asInvoker`). No pide administrador ni instala drivers ni servicios.
-- Escribe solo en `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM` y, si se activa, en `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
-- No abre conexiones de red. La ventana de configuración se carga desde el propio ejecutable.
+- Escribe solo en `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM`, si se activa en `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` y, durante una actualización, en la carpeta de `WRAM.exe`.
+- Solo abre conexiones de red al pulsar "Buscar actualizaciones" (ver [Actualizaciones desde la app](#actualizaciones-desde-la-app)). La ventana de configuración se carga desde el propio ejecutable.
 
 ## Ventana de configuración (WebView2)
 
@@ -67,6 +67,16 @@ Las propiedades del archivo (pestaña Detalles) muestran los metadatos de versi�
 | Copyright | © 2026 Juan Guillermo Marín Córdoba. Licencia MIT. |
 | Comentarios | Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM |
 | Nombre original | WRAM.exe |
+
+## Actualizaciones desde la app
+
+"Buscar actualizaciones", en Configuración, es la única función que usa la red, y solo se ejecuta al pulsar el botón, en un hilo aparte.
+
+- Consulta la última versión en `https://api.github.com/repos/Ju4nMarin/WRAM/releases/latest`. La etiqueta tiene que ser `vX.Y.Z` solo con dígitos; cualquier otra cosa se rechaza.
+- Descarga `WRAM.exe` y `WRAM.exe.sha256` de esa versión en `github.com`, por HTTPS con TLS 1.2 o 1.3 y validación de certificado de WinHTTP. Las redirecciones a HTTP se rechazan y la descarga tiene un tope de 16 MB.
+- El archivo se instala solo si su SHA-256 coincide con el publicado, empieza con cabecera PE y su recurso de versión coincide con la etiqueta.
+- El ejecutable actual pasa a `WRAM.exe.old`, el nuevo ocupa su lugar y la app se reinicia después de soltar su bloqueo de instancia única. Si algún paso falla, se restaura el archivo original. `WRAM.exe.old` se borra en el siguiente arranque.
+- No se envían datos personales. Las consultas llevan el agente de usuario `WRAM-Updater`.
 
 ## Reporte de vulnerabilidades
 

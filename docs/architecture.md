@@ -21,8 +21,10 @@ tests/        core tests
 | `core/Format` | Text for each value and the widest possible text per unit, with the user's decimal separator |
 | `core/Config` | Settings model and `ConfigCodec` (INI to `Config` and back), no I/O |
 | `core/I18n` | Active language (Spanish, English, Portuguese, French, Simplified Chinese, Japanese) and native strings |
+| `core/Version` | Reading and comparing `X.Y.Z` versions and the `tag_name` field of the GitHub response |
 | `platform/ConfigStore` | Atomic read and write of `%APPDATA%\WRAM\config.ini` |
 | `platform/Autostart` | Startup with Windows under `HKCU\...\Run` |
+| `platform/Updater` | Update check and install from GitHub Releases: WinHTTP, SHA-256 with BCrypt, file swap and restart |
 | `sensors/PdhProvider` | CPU, clock, ACPI temperature, GPU, VRAM, disk, network and processes through PDH counters |
 | `sensors/GpuThermalProvider` | GPU temperature through `D3DKMTQueryAdapterInfo` |
 | `sensors/SystemProviders` | Memory, battery and uptime |
@@ -91,7 +93,7 @@ Development PC, 6 metrics, 1 s interval:
 | Settings window open | 23 to 27 MB plus 6 WebView2 processes | |
 | After closing the settings window | 12 to 13 MB, no WebView2 processes | |
 
-Executable: 465,408 bytes (about 455 KB), with no runtime or extra files.
+Executable: 499,712 bytes (about 490 KB), with no runtime or extra files.
 
 ## Pending
 

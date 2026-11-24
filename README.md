@@ -7,7 +7,7 @@
 
 <p align="center">
   System monitor for the Windows taskbar.<br>
-  Up to 10 live metrics next to the tray, in a single executable of about 455 KB.
+  Up to 10 live metrics next to the tray, in a single executable of about 490 KB.
 </p>
 
 <p align="center">
@@ -57,6 +57,7 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 - In full screen it can stay hidden or visible in a spot you pick on the screen, and reacts instantly when entering and leaving.
 - Interface in Spanish, English, Portuguese, French, Simplified Chinese and Japanese.
 - No administrator rights, no drivers, no runtime: a single `WRAM.exe`.
+- Updates from the app itself, in Settings: download, SHA-256 verification and restart.
 - At idle it uses about 12 to 17 MB of memory and under 1% of one CPU core.
 
 ![Metrics, dark theme](docs/img/app/metrics-dark.png)
@@ -138,7 +139,7 @@ Team roles:
 
 Changes from other contributors go through a pull request reviewed by a committer before they are merged.
 
-Privacy: this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. The links in the app (source code, license and donation) open in the default browser only when clicked. The settings window uses the Microsoft Edge WebView2 Runtime included in Windows, and its interface is loaded from inside the executable, without remote content.
+Privacy: this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. "Check for updates" in Settings contacts GitHub (`api.github.com` and `github.com`) only when that button is pressed, and sends no personal data. The links in the app (source code, license and donation) open in the default browser only when clicked. The settings window uses the Microsoft Edge WebView2 Runtime included in Windows, and its interface is loaded from inside the executable, without remote content.
 
 Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 

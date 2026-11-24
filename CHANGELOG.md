@@ -2,6 +2,12 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.6.0
+
+### Added
+
+- Updates from the app: "Check for updates" in Settings looks for the latest version on GitHub and "Update to" downloads it, verifies its SHA-256, version and PE header, replaces `WRAM.exe` and restarts the app. GitHub is contacted only when the button is pressed.
+
 ## 1.5.2
 
 ### Added
