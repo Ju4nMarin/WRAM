@@ -38,4 +38,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Simple Icons 16.38.1
 
-The app logos in the taskbar preview of the settings window (Spotify, Discord, Google Chrome, Steam, GitHub, Telegram, WhatsApp, YouTube, Netflix and VLC media player) come from [Simple Icons](https://simpleicons.org), released under CC0 1.0. The logos are trademarks of their respective owners. They are shown only as sample apps in the preview and do not imply any endorsement of WRAM.
+The app logos in the taskbar preview of the settings window (Spotify, Discord, Steam, GitHub, Telegram, WhatsApp, YouTube, Netflix, VLC media player, Dropbox, Twitch, Pinterest, Reddit, OBS Studio, Obsidian and Notion) come from [Simple Icons](https://simpleicons.org), released under CC0 1.0. The Google Chrome logo is drawn from its geometry, in its four colors. The logos are trademarks of their respective owners. They are shown only as sample apps in the preview and do not imply any endorsement of WRAM.
