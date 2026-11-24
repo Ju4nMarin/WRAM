@@ -2,7 +2,7 @@
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src __CSP_STYLE__; script-src __CSP_SCRIPT__; img-src data:">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WRAM</title>
 <style>
@@ -364,6 +364,12 @@ select.field option { background: var(--card); color: var(--text); }
 .btn.accent:hover { filter: brightness(1.06); background: var(--accent); }
 :root[data-theme="light"] .btn.accent { color: #ffffff; }
 
+/* Sin atributos style en el HTML: la política de seguridad solo admite la hoja de estilos con su hash. */
+svg.defs { position: absolute; }
+.swatch[data-v="#ff5a4e"] { background: #ff5a4e; }
+.swatch[data-v="#ffb900"] { background: #ffb900; }
+.swatch[data-v="#ff4fa3"] { background: #ff4fa3; }
+.swatch[data-v="#60cdff"] { background: #60cdff; }
 .toggle { position: relative; display: inline-flex; flex: none; width: 40px; height: 20px; }
 .toggle input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
 .toggle span {
@@ -466,7 +472,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<svg class="defs" width="0" height="0" aria-hidden="true">
   <symbol id="i-metrics" viewBox="0 0 16 16"><path d="M2.5 13.5v-5M6.2 13.5v-11M9.8 13.5v-7M13.5 13.5v-9"/></symbol>
   <symbol id="i-look" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.8"/><path d="M8 2.2v11.6" /><path d="M8 2.2a5.8 5.8 0 0 1 0 11.6" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.8v1.6M8 12.6v1.6M14.2 8h-1.6M3.4 8H1.8M12.4 3.6l-1.1 1.1M4.7 11.3l-1.1 1.1M12.4 12.4l-1.1-1.1M4.7 4.7L3.6 3.6"/></symbol>
@@ -490,28 +496,28 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
   <symbol id="i-link" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5V13a.5.5 0 0 1-.5.5h-8.5a.5.5 0 0 1-.5-.5V4.5a.5.5 0 0 1 .5-.5H6.5"/></symbol>
 </svg>
 
-<nav class="rail" data-i18n-aria="nav.aria">
+<nav class="rail" aria-label="Sections" data-i18n-aria="nav.aria">
   <div class="brand" role="img" aria-label="WRAM"><span class="logo"></span><span class="logo mark"></span></div>
   <button class="nav-btn" data-nav="metrics" aria-current="page"><svg class="i"><use href="#i-metrics"/></svg><span data-i18n="nav.metrics"></span></button>
   <button class="nav-btn" data-nav="look"><svg class="i"><use href="#i-look"/></svg><span data-i18n="nav.look"></span></button>
   <button class="nav-btn" data-nav="fs"><svg class="i"><use href="#i-screen"/></svg><span data-i18n="nav.fs"></span></button>
   <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="nav.settings"></span></button>
   <button class="nav-btn" data-nav="about"><svg class="i"><use href="#i-info"/></svg><span data-i18n="nav.about"></span></button>
-  <button class="donate" type="button" data-open="donate" data-i18n-aria="rail.donateAria">
+  <button class="donate" type="button" data-open="donate" aria-label="Support WRAM with a donation on PayPal" data-i18n-aria="rail.donateAria">
     <span class="donate-face" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-smile"/></svg></span>
     <span class="donate-text"><strong data-i18n="rail.donateT"></strong><small data-i18n="rail.donateD"></small></span>
     <span class="donate-cta" data-i18n="rail.donateB"></span>
   </button>
-  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.7.2</span></div>
+  <div class="rail-foot"><span data-i18n="about.version"></span> <span id="rail-ver">1.7.3</span></div>
 </nav>
 
 <main>
   <div class="stage">
     <div class="stage-head">
       <p class="stage-title" data-i18n="stage.title"></p>
-      <div class="stage-ctl"><div class="seg seg-icons" role="radiogroup" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" data-i18n-aria="stage.barWin" data-i18n-title="stage.barWin"><svg class="i"><use href="#i-win"/></svg></button><button role="radio" data-v="light" data-i18n-aria="stage.barLight" data-i18n-title="stage.barLight"><svg class="i"><use href="#i-sun"/></svg></button><button role="radio" data-v="dark" data-i18n-aria="stage.barDark" data-i18n-title="stage.barDark"><svg class="i"><use href="#i-moon"/></svg></button></div></div>
+      <div class="stage-ctl"><div class="seg seg-icons" role="radiogroup" aria-label="Taskbar" data-i18n-aria="stage.bar" id="bar-mode"><button role="radio" data-v="auto" aria-label="Windows" data-i18n-aria="stage.barWin" data-i18n-title="stage.barWin"><svg class="i"><use href="#i-win"/></svg></button><button role="radio" data-v="light" aria-label="Light" data-i18n-aria="stage.barLight" data-i18n-title="stage.barLight"><svg class="i"><use href="#i-sun"/></svg></button><button role="radio" data-v="dark" aria-label="Dark" data-i18n-aria="stage.barDark" data-i18n-title="stage.barDark"><svg class="i"><use href="#i-moon"/></svg></button></div></div>
     </div>
-    <div class="taskbar" id="taskbar" data-i18n-aria="stage.title">
+    <div class="taskbar" id="taskbar" aria-label="Taskbar preview" data-i18n-aria="stage.title">
       <div class="tb-inner" id="tb-inner">
       <div class="tb-apps" aria-hidden="true"></div>
       <div class="band" id="band"></div>
@@ -530,7 +536,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     <section id="sec-metrics" aria-labelledby="h-metrics">
       <div class="sec-head">
         <div>
-          <h1 id="h-metrics" data-i18n="metrics.title"></h1>
+          <h1 id="h-metrics" data-i18n="metrics.title">Metrics on the taskbar</h1>
           <p data-i18n="metrics.desc"></p>
         </div>
         <div class="capacity" aria-live="polite">
@@ -540,14 +546,14 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
       </div>
       <ol class="board" id="slots" data-i18n-aria="metrics.title"></ol>
 
-      <h2 class="sub" id="h-catalog" data-i18n="catalog.title"></h2>
+      <h2 class="sub" id="h-catalog" data-i18n="catalog.title">Catalog</h2>
       <p class="sub-note" data-i18n="catalog.desc"></p>
       <div id="full-note" class="full-note" hidden><svg class="i"><use href="#i-warn"/></svg><span data-i18n="catalog.full"></span></div>
       <div class="catalog" id="catalog"></div>
     </section>
 
     <section id="sec-look" aria-labelledby="h-look" hidden>
-      <div class="sec-head"><div><h1 id="h-look" data-i18n="look.title"></h1><p data-i18n="look.desc"></p></div></div>
+      <div class="sec-head"><div><h1 id="h-look" data-i18n="look.title">Appearance</h1><p data-i18n="look.desc"></p></div></div>
       <div class="rows">
         <div class="row">
           <div class="row-text"><strong id="l-rows" data-i18n="look.rows"></strong><small data-i18n="look.rowsD"></small></div>
@@ -555,16 +561,16 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             <button role="radio" data-v="1" data-i18n="look.rows1"></button><button role="radio" data-v="2" data-i18n="look.rows2"></button></div></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="font" data-i18n="look.font"></label></strong><small data-i18n="look.fontD"></small></div>
+          <div class="row-text"><strong><label for="font" data-i18n="look.font">Font</label></strong><small data-i18n="look.fontD"></small></div>
           <div class="row-ctl"><select class="field" id="font" data-bind="font"></select></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="fontSize" data-i18n="look.size"></label></strong><small data-i18n="look.sizeD"></small></div>
+          <div class="row-text"><strong><label for="fontSize" data-i18n="look.size">Text size</label></strong><small data-i18n="look.sizeD"></small></div>
           <div class="row-ctl range"><input type="range" id="fontSize" data-bind="fontSize" data-type="int" min="9" max="18" step="1"><output id="fontSize-out">12 px</output></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="labels" data-i18n="look.labels"></label></strong><small data-i18n="look.labelsD"></small></div>
-          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="labels" data-bind="labels"><span></span></label></div>
+          <div class="row-text"><strong><label for="labels" data-i18n="look.labels">Show labels</label></strong><small data-i18n="look.labelsD"></small></div>
+          <div class="row-ctl"><span class="toggle"><input type="checkbox" id="labels" data-bind="labels"><span></span></span></div>
         </div>
         <div class="row">
           <div class="row-text"><strong id="l-vcolor" data-i18n="look.vcolor"></strong><small data-i18n="look.vcolorD"></small></div>
@@ -572,37 +578,37 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             <div class="seg" role="radiogroup" aria-labelledby="l-vcolor" id="vcolor-mode">
               <button role="radio" data-v="auto" data-i18n="look.auto"></button><button role="radio" data-v="custom" data-i18n="look.other"></button>
             </div>
-            <input type="color" id="vcolor-pick" data-i18n-aria="look.vcolor" hidden>
+            <input type="color" id="vcolor-pick" aria-label="Value color" data-i18n-aria="look.vcolor" hidden>
           </div>
         </div>
         <div class="row">
           <div class="row-text"><strong id="l-acolor" data-i18n="look.acolor"></strong><small data-i18n="look.acolorD"></small></div>
           <div class="row-ctl">
             <div class="swatches" role="radiogroup" aria-labelledby="l-acolor" id="acolor">
-              <button class="swatch" role="radio" data-v="#ff5a4e" style="background:#ff5a4e" data-i18n-aria="color.red"></button>
-              <button class="swatch" role="radio" data-v="#ffb900" style="background:#ffb900" data-i18n-aria="color.yellow"></button>
-              <button class="swatch" role="radio" data-v="#ff4fa3" style="background:#ff4fa3" data-i18n-aria="color.magenta"></button>
-              <button class="swatch" role="radio" data-v="#60cdff" style="background:#60cdff" data-i18n-aria="look.blue"></button>
+              <button class="swatch" role="radio" data-v="#ff5a4e" aria-label="Red" data-i18n-aria="color.red"></button>
+              <button class="swatch" role="radio" data-v="#ffb900" aria-label="Yellow" data-i18n-aria="color.yellow"></button>
+              <button class="swatch" role="radio" data-v="#ff4fa3" aria-label="Magenta" data-i18n-aria="color.magenta"></button>
+              <button class="swatch" role="radio" data-v="#60cdff" aria-label="Blue" data-i18n-aria="look.blue"></button>
             </div>
-            <input type="color" id="acolor-pick" data-i18n-aria="look.acolor">
+            <input type="color" id="acolor-pick" aria-label="Alert color" data-i18n-aria="look.acolor">
           </div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="offset" data-i18n="look.offset"></label></strong><small data-i18n="look.offsetD"></small></div>
+          <div class="row-text"><strong><label for="offset" data-i18n="look.offset">Distance from the tray</label></strong><small data-i18n="look.offsetD"></small></div>
           <div class="row-ctl range"><input type="range" id="offset" data-bind="offset" data-type="int" min="0" max="600" step="2"><output id="offset-out">8 px</output></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="allDisplays" data-i18n="look.allDisplays"></label></strong><small data-i18n="look.allDisplaysD"></small></div>
-          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="allDisplays" data-bind="allDisplays"><span></span></label></div>
+          <div class="row-text"><strong><label for="allDisplays" data-i18n="look.allDisplays">Show on all displays</label></strong><small data-i18n="look.allDisplaysD"></small></div>
+          <div class="row-ctl"><span class="toggle"><input type="checkbox" id="allDisplays" data-bind="allDisplays"><span></span></span></div>
         </div>
       </div>
     </section>
 
     <section id="sec-settings" aria-labelledby="h-settings" hidden>
-      <div class="sec-head"><div><h1 id="h-settings" data-i18n="set.title"></h1><p data-i18n="set.desc"></p></div></div>
+      <div class="sec-head"><div><h1 id="h-settings" data-i18n="set.title">Settings</h1><p data-i18n="set.desc"></p></div></div>
       <div class="rows">
         <div class="row">
-          <div class="row-text"><strong><label for="language" data-i18n="set.lang"></label></strong><small data-i18n="set.langD"></small></div>
+          <div class="row-text"><strong><label for="language" data-i18n="set.lang">Language</label></strong><small data-i18n="set.langD"></small></div>
           <div class="row-ctl"><select class="field" id="language">
             <option value="0" data-i18n="set.system"></option>
             <option value="1">Español</option>
@@ -619,8 +625,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             <button role="radio" data-v="0" data-i18n="set.system"></button><button role="radio" data-v="1" data-i18n="set.light"></button><button role="radio" data-v="2" data-i18n="set.dark"></button></div></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="autostart" data-i18n="set.autostart"></label></strong><small data-i18n="set.autostartD"></small></div>
-          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="autostart" data-bind="autostart"><span></span></label></div>
+          <div class="row-text"><strong><label for="autostart" data-i18n="set.autostart">Start with Windows</label></strong><small data-i18n="set.autostartD"></small></div>
+          <div class="row-ctl"><span class="toggle"><input type="checkbox" id="autostart" data-bind="autostart"><span></span></span></div>
         </div>
         <div class="row">
           <div class="row-text"><strong id="l-interval" data-i18n="set.interval"></strong><small data-i18n="set.intervalD"></small></div>
@@ -636,8 +642,8 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
           <div class="row-ctl"><button class="btn" id="update-btn" type="button"></button></div>
         </div>
         <div class="row">
-          <div class="row-text"><strong><label for="updateNotify" data-i18n="up.notify"></label></strong><small data-i18n="up.notifyD"></small></div>
-          <div class="row-ctl"><label class="toggle"><input type="checkbox" id="updateNotify" data-bind="updateNotify"><span></span></label></div>
+          <div class="row-text"><strong><label for="updateNotify" data-i18n="up.notify">Notify me about new versions</label></strong><small data-i18n="up.notifyD"></small></div>
+          <div class="row-ctl"><span class="toggle"><input type="checkbox" id="updateNotify" data-bind="updateNotify"><span></span></span></div>
         </div>
         <div class="row" id="reset-row">
           <div class="row-text"><strong data-i18n="set.reset"></strong><small id="reset-text"></small></div>
@@ -647,7 +653,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     </section>
 
     <section id="sec-fs" aria-labelledby="h-fs" hidden>
-      <div class="sec-head"><div><h1 id="h-fs" data-i18n="nav.fs"></h1><p data-i18n="fs.desc"></p></div></div>
+      <div class="sec-head"><div><h1 id="h-fs" data-i18n="nav.fs">Full screen</h1><p data-i18n="fs.desc"></p></div></div>
       <div class="rows">
         <div class="row">
           <div class="row-text"><strong id="l-fsmode" data-i18n="fs.mode"></strong><small id="fs-mode-desc"></small></div>
@@ -662,11 +668,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
             <span class="screen-label" data-i18n="fs.screen"></span>
           </div>
           <div class="opacity-row">
-            <div class="row-text"><strong><label for="overlayAlpha" data-i18n="fs.alpha"></label></strong><small data-i18n="fs.alphaD"></small></div>
+            <div class="row-text"><strong><label for="overlayAlpha" data-i18n="fs.alpha">Overall opacity</label></strong><small data-i18n="fs.alphaD"></small></div>
             <div class="row-ctl range"><input type="range" id="overlayAlpha" data-bind="overlayAlpha" data-type="int" min="10" max="100" step="5"><output id="overlayAlpha-out">100 %</output></div>
           </div>
           <div class="opacity-row">
-            <div class="row-text"><strong><label for="overlayOpacity" data-i18n="fs.opacity"></label></strong><small data-i18n="fs.opacityD"></small></div>
+            <div class="row-text"><strong><label for="overlayOpacity" data-i18n="fs.opacity">Background opacity</label></strong><small data-i18n="fs.opacityD"></small></div>
             <div class="row-ctl range"><input type="range" id="overlayOpacity" data-bind="overlayOpacity" data-type="int" min="0" max="100" step="5"><output id="overlayOpacity-out">72 %</output></div>
           </div>
           <p class="muted fs-note"><svg class="i"><use href="#i-info"/></svg><span data-i18n="fs.exclusive"></span></p>
@@ -675,20 +681,20 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     </section>
 
     <section id="sec-about" aria-labelledby="h-about" hidden>
-      <div class="sec-head"><div><h1 id="h-about" data-i18n="nav.about"></h1></div></div>
+      <div class="sec-head"><div><h1 id="h-about" data-i18n="nav.about">About</h1></div></div>
       <div class="about-head">
         <span class="logo" role="img" aria-label="WRAM"></span>
         <p data-i18n="about.desc"></p>
       </div>
       <dl class="facts">
         <dt data-i18n="about.dev"></dt><dd class="credit">Juan Guillermo Marín Córdoba</dd>
-        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.7.2</dd>
+        <dt data-i18n="about.version"></dt><dd class="num" id="about-ver">1.7.3</dd>
         <dt data-i18n="about.license"></dt><dd><button class="link-btn" type="button" data-open="license">MIT</button></dd>
         <dt data-i18n="about.source"></dt><dd><button class="link-btn" type="button" data-open="repo">github.com/Ju4nMarin/WRAM</button></dd>
         <dt data-i18n="about.support"></dt><dd><button class="link-btn" type="button" data-open="donate" data-i18n="about.donate"></button></dd>
         <dt data-i18n="about.compat"></dt><dd data-i18n="about.compatV"></dd>
       </dl>
-      <h2 class="sub" data-i18n="about.sources"></h2>
+      <h2 class="sub" data-i18n="about.sources">Where each value comes from</h2>
       <p class="sub-note" data-i18n="about.sourcesD"></p>
       <dl class="facts" id="sources"></dl>
     </section>
@@ -1131,7 +1137,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     inner.style.width = "100%";
     const available = $("#taskbar").clientWidth;
     const trayWidth = $("#taskbar .tray").offsetWidth;
-    const margin = parseFloat(band.dataset.margin) || 0;
+    const margin = Number.parseFloat(band.dataset.margin) || 0;
     band.style.marginRight = margin + "px";
     const apps = $("#taskbar .tb-apps");
     // La posición se recalcula aquí: el reloj y las fuentes cambian el ancho de la bandeja después del primer dibujo.
@@ -1428,7 +1434,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
         $$("button", n).forEach((b) => {
           b.setAttribute("aria-checked", String(String(c[key]) === b.dataset.v));
           b.onclick = () => {
-            c[key] = asInt ? parseInt(b.dataset.v, 10) : b.dataset.v;
+            c[key] = asInt ? Number.parseInt(b.dataset.v, 10) : b.dataset.v;
             bindSettings();
             if (key === "theme") applyTheme();
             if (key === "fullscreen") renderFullscreen();
@@ -1447,7 +1453,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
         const unit = key === "overlayOpacity" || key === "overlayAlpha" ? " %" : " px";
         if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + unit;
         n.oninput = () => {
-          c[key] = asInt ? parseInt(n.value, 10) : n.value;
+          c[key] = asInt ? Number.parseInt(n.value, 10) : n.value;
           if (out) out.textContent = (key === "offset" ? effectiveOffset() : c[key]) + unit;
           if (key === "overlayOpacity" || key === "overlayAlpha") paintChipOpacity();
           commit(false);
@@ -1458,7 +1464,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const langSel = $("#language");
     langSel.value = String(c.language || 0);
     langSel.onchange = () => {
-      c.language = parseInt(langSel.value, 10);
+      c.language = Number.parseInt(langSel.value, 10);
       // Con un idioma explícito se cambia al instante; con Sistema la app responde con el idioma de Windows.
       if (LANG_BY_SETTING[c.language]) { lang = LANG_BY_SETTING[c.language]; refreshTexts(); }
       commit(true);
@@ -1658,7 +1664,7 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     let last = null;
     $("#taskbar .tb-apps").innerHTML = Array.from({ length: 36 }, () => {
       if (!pool.length) pool = APP_ICONS.filter((icon) => icon !== last);  // una ronda nueva no repite el anterior
-      last = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      last = pool.splice(crypto.getRandomValues(new Uint32Array(1))[0] % pool.length, 1)[0];
       const [color, d, extra] = last;
       const art = d ? (extra || "") + '<path fill="' + (color || "currentColor") + '" d="' + d + '"/>' : extra;
       return '<i><svg viewBox="0 0 24 24">' + art + "</svg></i>";
@@ -1769,11 +1775,11 @@ input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 3px; }
     const dec = demoLang === "en" || demoLang === "zh" || demoLang === "ja" ? "." : ",";
     const f = (n, d) => n.toFixed(d).replace(".", dec);
     onInit({
-      t: "init", version: "1.7.2", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
+      t: "init", version: "1.7.3", lang: demoLang, decimal: dec, catalog: cat, taskbarLight: theme === 1, appsLight: theme === 1,
       fonts: ["Segoe UI Variable Text", "Bahnschrift", "Segoe UI", "Cascadia Mono", "Consolas"],
       limits: { slots: 10, label: 8, fontMin: 9, fontMax: 18, offsetMax: 1200, intervalMin: 500, intervalMax: 5000 },
       configPath: "C:\\Users\\user\\AppData\\Roaming\\WRAM\\config.ini",
-      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, allDisplays: true, updateNotify: true, overlayOpacity: 72, overlayAlpha: 100, fullscreen: 1, overlayPos: 2, offset: parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
+      config: { interval: 1000, rows: 2, font: "Segoe UI Variable Text", fontSize: 12, valueColor: "auto", alertColor: "#ff5a4e", labels: true, autostart: true, allDisplays: true, updateNotify: true, overlayOpacity: 72, overlayAlpha: 100, fullscreen: 1, overlayPos: 2, offset: Number.parseInt((hash.find((p) => /^off[0-9]+$/.test(p)) || "off8").slice(3), 10), theme: theme, language: 0,
         slots: [{ key: "cpu", label: "", thr: 90, alert: true }, { key: "ram", label: "", thr: 90, alert: true }, { key: "gpu", label: "", thr: 95, alert: true },
           { key: "gputemp", label: "", thr: 75, alert: true }, { key: "netdown", label: "", thr: 0, alert: false }, { key: "netup", label: "", thr: 0, alert: false }] }
     });
