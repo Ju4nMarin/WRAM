@@ -2,6 +2,16 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.7.0
+
+### Added
+
+- "Notify me about new versions", on by default: once a day WRAM checks GitHub and, if there is a new version, shows a Windows notification (once per version) and a dot on the tray icon and next to Settings. Clicking the notification opens Settings at the update button. It never checks during full screen, games, presentations or Do not disturb, and it never installs on its own.
+
+### Changed
+
+- The file description of `WRAM.exe` is now "WRAM", so notifications and Task Manager show the name cleanly.
+
 ## 1.6.0
 
 ### Added
