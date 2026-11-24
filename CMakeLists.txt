@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(WRAM VERSION 1.5.2 LANGUAGES CXX RC)
+project(WRAM VERSION 1.6.0 LANGUAGES CXX RC)
 
 if(NOT MSVC)
   message(FATAL_ERROR "WRAM se compila con MSVC (Visual Studio 2022).")
@@ -39,7 +39,8 @@ add_library(wram_core STATIC
   src/core/Format.cpp
   src/core/I18n.cpp
   src/core/MetricCatalog.cpp
-  src/core/Text.cpp)
+  src/core/Text.cpp
+  src/core/Version.cpp)
 target_include_directories(wram_core PUBLIC src)
 
 set(WRAM_WARNINGS /W4 /permissive- /utf-8 /Zc:__cplusplus)
@@ -63,6 +64,7 @@ add_executable(WRAM WIN32
   src/app/App.cpp
   src/platform/Autostart.cpp
   src/platform/ConfigStore.cpp
+  src/platform/Updater.cpp
   src/sensors/GpuThermalProvider.cpp
   src/sensors/PdhProvider.cpp
   src/sensors/SystemProviders.cpp
@@ -79,7 +81,7 @@ target_include_directories(WRAM PRIVATE src ${WEBVIEW2_DIR}/include)
 target_compile_options(WRAM PRIVATE ${WRAM_WARNINGS} ${WRAM_HARDENING} /EHsc /GR- "$<$<CONFIG:MinSizeRel,Release>:/O1;/Gy;/Gw;/GL>")
 target_link_libraries(WRAM PRIVATE wram_core
   ${WEBVIEW2_DIR}/lib/WebView2LoaderStatic.lib
-  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32)
+  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32 winhttp bcrypt)
 target_link_options(WRAM PRIVATE
   /MANIFEST:NO /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /GUARD:CF /CETCOMPAT
   /DEPENDENTLOADFLAG:0x800
