@@ -71,6 +71,7 @@ With Visible, the screen diagram has 8 spots (corners, edge centers and side cen
 | Refresh rate | 0.5, 1, 2 or 5 seconds |
 | Settings file | Path of `config.ini` and a button to open its folder |
 | Updates | "Check for updates" asks GitHub for the latest version. If there is a newer one, "Update to" downloads it, verifies it, replaces `WRAM.exe` and restarts the app |
+| Notify me about new versions | On by default. Once a day WRAM checks GitHub; if there is a new version it shows a Windows notification (once per version) and a dot on the tray icon and next to Settings. Clicking the notification opens Settings at the update button |
 | Reset | Goes back to the six default metrics, after confirmation |
 
 ### About

@@ -4,7 +4,7 @@
 
 - Se ejecuta como el usuario (`requestedExecutionLevel asInvoker`). No pide administrador ni instala drivers ni servicios.
 - Escribe solo en `%APPDATA%\WRAM`, `%LOCALAPPDATA%\WRAM`, si se activa en `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` y, durante una actualización, en la carpeta de `WRAM.exe`.
-- Solo abre conexiones de red al pulsar "Buscar actualizaciones" (ver [Actualizaciones desde la app](#actualizaciones-desde-la-app)). La ventana de configuración se carga desde el propio ejecutable.
+- Solo abre conexiones de red para buscar actualizaciones: al pulsar "Buscar actualizaciones" y, con "Avisarme de versiones nuevas" activado, como mucho una vez al día (ver [Actualizaciones desde la app](#actualizaciones-desde-la-app)). La ventana de configuración se carga desde el propio ejecutable.
 
 ## Ventana de configuración (WebView2)
 
@@ -62,7 +62,7 @@ Las propiedades del archivo (pestaña Detalles) muestran los metadatos de versi�
 | Campo | Valor |
 |---|---|
 | Nombre del producto | WRAM |
-| Descripción | WRAM - monitor del sistema en la barra de tareas |
+| Descripción | WRAM |
 | Compañía | Juan Guillermo Marín Córdoba |
 | Copyright | © 2026 Juan Guillermo Marín Córdoba. Licencia MIT. |
 | Comentarios | Desarrollado por Juan Guillermo Marín Córdoba. https://github.com/Ju4nMarin/WRAM |
@@ -70,7 +70,7 @@ Las propiedades del archivo (pestaña Detalles) muestran los metadatos de versi�
 
 ## Actualizaciones desde la app
 
-"Buscar actualizaciones", en Configuración, es la única función que usa la red, y solo se ejecuta al pulsar el botón, en un hilo aparte.
+Buscar actualizaciones es la única función que usa la red. Corre en un hilo aparte en dos casos: al pulsar "Buscar actualizaciones" y, con "Avisarme de versiones nuevas" activado (viene así), como mucho una vez al día, nunca con pantalla completa, juegos, presentaciones o "No molestar". La hora de la última consulta y la última versión avisada se guardan en `%LOCALAPPDATA%\WRAM\update.ini`. La revisión automática solo avisa; para instalar siempre hay que pulsar "Actualizar a".
 
 - Consulta la última versión en `https://api.github.com/repos/Ju4nMarin/WRAM/releases/latest`. La etiqueta tiene que ser `vX.Y.Z` solo con dígitos; cualquier otra cosa se rechaza.
 - Descarga `WRAM.exe` y `WRAM.exe.sha256` de esa versión en `github.com`, por HTTPS con TLS 1.2 o 1.3 y validación de certificado de WinHTTP. Las redirecciones a HTTP se rechazan y la descarga tiene un tope de 16 MB.

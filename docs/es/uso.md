@@ -71,6 +71,7 @@ Con Visible, el monitor de ejemplo tiene 8 recuadros (esquinas, centros de los b
 | Frecuencia de actualización | 0,5, 1, 2 o 5 segundos |
 | Archivo de configuración | Ruta de `config.ini` y botón para abrir su carpeta |
 | Actualizaciones | "Buscar actualizaciones" consulta en GitHub la última versión. Si hay una más nueva, "Actualizar a" la descarga, la verifica, reemplaza `WRAM.exe` y reinicia la app |
+| Avisarme de versiones nuevas | Activado por defecto. Una vez al día WRAM consulta GitHub; si hay una versión nueva muestra una notificación de Windows (una vez por versión) y un punto en el ícono de la bandeja y junto a Configuración. Al hacer clic en la notificación se abre Configuración en el botón de actualizar |
 | Restablecer | Vuelve a las seis métricas iniciales, con confirmación |
 
 ### Acerca de

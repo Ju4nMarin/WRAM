@@ -93,7 +93,7 @@ Development PC, 6 metrics, 1 s interval:
 | Settings window open | 23 to 27 MB plus 6 WebView2 processes | |
 | After closing the settings window | 12 to 13 MB, no WebView2 processes | |
 
-Executable: 499,712 bytes (about 490 KB), with no runtime or extra files.
+Executable: 516,096 bytes (about 505 KB), with no runtime or extra files.
 
 ## Pending
 
