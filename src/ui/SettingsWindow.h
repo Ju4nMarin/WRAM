@@ -19,6 +19,7 @@ public:
     virtual void OnSettingsReset() = 0;
     virtual void OnSettingsClosed() = 0;
     virtual void OnSettingsOpen(std::string_view target) = 0;  // "config", "repo" o "license"
+    virtual void OnSettingsUpdate(std::string_view action) = 0;  // "check" o "install"
 };
 
 // Ventana de configuración. La interfaz es un HTML embebido en el ejecutable y

@@ -9,6 +9,7 @@
 #include "core/Config.h"
 #include "core/Format.h"
 #include "core/MetricCatalog.h"
+#include "core/Version.h"
 
 using namespace wram;
 
@@ -137,6 +138,30 @@ TEST(all_displays_roundtrip) {
     c.allDisplays = true;
     CHECK(ConfigCodec::Parse(ConfigCodec::Serialize(c)).allDisplays);
     CHECK(!ConfigCodec::Parse("[general]\nallDisplays=0\n").allDisplays);
+}
+
+TEST(version_parse_and_compare) {
+    Version a, b;
+    CHECK(ParseVersion("v1.5.2", a) && a.major == 1 && a.minor == 5 && a.patch == 2);
+    CHECK(ParseVersion("1.10.0", b));
+    CHECK(CompareVersion(a, b) < 0);
+    CHECK(CompareVersion(b, a) > 0);
+    CHECK(CompareVersion(a, a) == 0);
+    CHECK(VersionToString(b) == "1.10.0");
+    Version bad;
+    CHECK(!ParseVersion("1.5", bad));
+    CHECK(!ParseVersion("1.5.2-beta", bad));
+    CHECK(!ParseVersion("1..2", bad));
+    CHECK(!ParseVersion("v1.5.2/../../x", bad));
+    CHECK(!ParseVersion("12345.0.0", bad));
+    CHECK(!ParseVersion("", bad));
+}
+
+TEST(json_string_field_reads_tag_name) {
+    CHECK(JsonStringField("{\"id\":1,\"tag_name\": \"v1.6.0\",\"name\":\"x\"}", "tag_name") == "v1.6.0");
+    CHECK(JsonStringField("{\"name\":\"tag_name\"}", "tag_name").empty());
+    CHECK(JsonStringField("{\"tag_name\":\"v1\\\"x\"}", "tag_name").empty());
+    CHECK(JsonStringField("{}", "tag_name").empty());
 }
 
 TEST(parse_empty_slots_section_means_no_metrics) {

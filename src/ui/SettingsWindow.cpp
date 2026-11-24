@@ -297,6 +297,8 @@ void SettingsWindow::OnMessage(std::wstring_view message) {
         Close();
     } else if (message.rfind(L"open\n", 0) == 0) {
         host_.OnSettingsOpen(text::WideToUtf8(message.substr(5)));
+    } else if (message == L"update\ncheck" || message == L"update\ninstall") {
+        host_.OnSettingsUpdate(message.substr(7) == L"check" ? "check" : "install");
     }
 }
 

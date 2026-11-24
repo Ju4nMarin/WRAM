@@ -21,8 +21,10 @@ tests/        pruebas del núcleo
 | `core/Format` | Texto de cada valor y texto más ancho posible por unidad, con el separador decimal del usuario |
 | `core/Config` | Modelo de configuración y `ConfigCodec` (INI a `Config` y de vuelta), sin E/S |
 | `core/I18n` | Idioma activo (español, inglés, portugués, francés, chino simplificado y japonés) y textos de la parte nativa |
+| `core/Version` | Lectura y comparación de versiones `X.Y.Z` y del campo `tag_name` de la respuesta de GitHub |
 | `platform/ConfigStore` | Lectura y escritura atómica de `%APPDATA%\WRAM\config.ini` |
 | `platform/Autostart` | Inicio con Windows en `HKCU\...\Run` |
+| `platform/Updater` | Búsqueda e instalación de actualizaciones desde GitHub Releases: WinHTTP, SHA-256 con BCrypt, reemplazo del archivo y reinicio |
 | `sensors/PdhProvider` | CPU, frecuencia, temperatura ACPI, GPU, VRAM, disco, red y procesos con contadores PDH |
 | `sensors/GpuThermalProvider` | Temperatura de GPU con `D3DKMTQueryAdapterInfo` |
 | `sensors/SystemProviders` | Memoria, batería y tiempo encendido |
@@ -91,7 +93,7 @@ Equipo de desarrollo, 6 métricas, intervalo de 1 s:
 | Configuración abierta | 23 a 27 MB más 6 procesos de WebView2 | |
 | Tras cerrar la configuración | 12 a 13 MB, sin procesos de WebView2 | |
 
-Ejecutable: 465 408 bytes (unos 455 KB), sin runtime ni archivos adicionales.
+Ejecutable: 499 712 bytes (unos 490 KB), sin runtime ni archivos adicionales.
 
 ## Pendiente
 
