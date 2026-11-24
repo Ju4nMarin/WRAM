@@ -139,7 +139,7 @@ Los cambios de otras personas entran por un pull request revisado por un autor a
 
 Privacidad: este programa no transfiere información a otros sistemas en red salvo que lo pida expresamente el usuario o la persona que lo instala o lo usa. WRAM contacta a GitHub (`api.github.com` y `github.com`) solo para buscar actualizaciones: al pulsar "Buscar actualizaciones" y, con "Avisarme de versiones nuevas" activado (viene así), como mucho una vez al día. No envía datos personales y la opción se puede desactivar en Configuración. Los enlaces de la app (código fuente, licencia y donación) se abren en el navegador predeterminado solo al hacer clic. La ventana de configuración usa Microsoft Edge WebView2 Runtime, incluido en Windows, y su interfaz se carga desde dentro del ejecutable, sin contenido remoto.
 
-Componentes de terceros: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Componentes de terceros: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Los logos de apps de la vista previa de la configuración son marcas de sus respectivos dueños y se muestran solo como apps de ejemplo.
 
 ## Autor
 
