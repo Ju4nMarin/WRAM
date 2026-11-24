@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include <compressapi.h>
 #include <dwmapi.h>
 #include <shellapi.h>
 #include <shlobj.h>
@@ -49,9 +50,24 @@ std::wstring LoadEmbeddedHtml(HINSTANCE instance) {
     HGLOBAL handle = LoadResource(instance, res);
     if (!handle) return {};
     const DWORD size = SizeofResource(instance, res);
-    const auto* data = static_cast<const char*>(LockResource(handle));
-    if (!data || size == 0) return {};
-    return text::Utf8ToWide(std::string_view(data, size));
+    const auto* data = static_cast<const unsigned char*>(LockResource(handle));
+    if (!data || size < 2) return {};
+    // El recurso viene comprimido (ver tools/pack.cpp): 1 byte con el algoritmo y el bloque comprimido.
+    const DWORD algorithm = data[0];
+    if (algorithm != COMPRESS_ALGORITHM_XPRESS_HUFF && algorithm != COMPRESS_ALGORITHM_LZMS) return {};
+    DECOMPRESSOR_HANDLE d = nullptr;
+    if (!CreateDecompressor(algorithm, nullptr, &d)) return {};
+    SIZE_T needed = 0;
+    Decompress(d, data + 1, size - 1, nullptr, 0, &needed);
+    std::string html;
+    if (needed > 0 && needed <= 4 * 1024 * 1024) {
+        html.resize(needed);
+        SIZE_T written = 0;
+        if (!Decompress(d, data + 1, size - 1, html.data(), needed, &written)) written = 0;
+        html.resize(written);
+    }
+    CloseDecompressor(d);
+    return html.empty() ? std::wstring() : text::Utf8ToWide(html);
 }
 
 std::wstring UserDataFolder() {
