@@ -45,6 +45,7 @@ struct Config {
     int theme = 0;                     // ventana de configuración: 0 sistema, 1 claro, 2 oscuro
     int language = 0;                  // ver I18n.h: 0 sistema, 1 es, 2 en, 3 pt, 4 fr, 5 zh, 6 ja
     bool allDisplays = false;          // también en las barras de las demás pantallas
+    bool updateNotify = true;          // revisa GitHub una vez al día y avisa si hay una versión nueva
 
     MetricMask ActiveMask() const;
     static Config Defaults();
