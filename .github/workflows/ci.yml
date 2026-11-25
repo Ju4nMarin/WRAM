@@ -160,7 +160,7 @@ jobs:
 
           Build provenance: ``gh attestation verify WRAM.exe --repo ${{ github.repository }}``
 
-          Changes: [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) · [Code signing policy](https://github.com/${{ github.repository }}#code-signing-policy)
+          Changes: [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) · [Release integrity](https://github.com/${{ github.repository }}#release-integrity)
           "@
           $notes | Out-File notes.md -Encoding utf8
           gh release create $tag build/WRAM.exe build/WRAM.exe.sha256 build/packages/wram.json (Get-ChildItem build/packages/winget/*.yaml).FullName --title "WRAM $($tag.TrimStart('v'))" --notes-file notes.md

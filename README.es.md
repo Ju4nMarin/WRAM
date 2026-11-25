@@ -130,16 +130,20 @@ Deja `build\WRAM.exe` y ejecuta las pruebas. Detalles en [docs/es/desarrollo.md]
 
 WRAM es gratuito y de código abierto. Si te resulta útil, puedes apoyar su desarrollo con una donación en [PayPal](https://www.paypal.com/paypalme/evopl). El mismo enlace está en la app, en la barra lateral y en Acerca de.
 
-## Política de firma de código
+## Integridad de las versiones
 
-La firma de código de las versiones para Windows se gestiona con el programa de [SignPath Foundation](https://signpath.org) para proyectos de código abierto, mediante [SignPath.io](https://about.signpath.io). Las versiones para Windows se compilan desde el código fuente en GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) a partir de una etiqueta de versión en `main`, y cada solicitud de firma se aprueba a mano antes de publicar el `WRAM.exe` firmado. Solo se firma el ejecutable compilado desde este repositorio.
+Las versiones para Windows se compilan desde el código fuente en GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) a partir de una etiqueta de versión en `main`. El ejecutable no lleva firma Authenticode, así que Windows SmartScreen puede mostrar un aviso la primera vez ([docs/es/instalacion.md](docs/es/instalacion.md#aviso-de-smartscreen)). Cada versión publica el SHA-256 de `WRAM.exe` y una atestación de procedencia firmada con Sigstore, que prueba que el archivo salió del workflow de este repositorio y de ese commit:
+
+```powershell
+gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
+```
 
 Roles del equipo:
 
 | Rol | Miembros |
 |---|---|
 | Autores y revisores | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
-| Aprobadores | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+| Publicación de versiones | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
 
 Los cambios de otras personas entran por un pull request revisado por un autor antes de integrarse.
 
