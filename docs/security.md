@@ -46,6 +46,8 @@ The process heap terminates on corruption (`HeapEnableTerminationOnCorruption`) 
 
 Pinning actions by commit SHA means a moved or compromised tag cannot change what the workflow runs. Dependabot (`.github/dependabot.yml`) checks the actions every week and opens a pull request to `develop` when there is a new version. The workflow token is read-only except in the release job, which only gets the permissions it needs to publish and attest.
 
+CodeQL (`.github/workflows/codeql.yml`) analyzes the C++ code and the settings interface with the `security-and-quality` queries on every push to `main` and `develop`, on pull requests and every week; the alerts appear in the Security tab. The core tests also run compiled with AddressSanitizer (`build.cmd asan`), and the release job waits for both test runs.
+
 ## Executable integrity
 
 Releases are built by the CI workflow from the tagged commit, not on a developer machine. Each release includes:

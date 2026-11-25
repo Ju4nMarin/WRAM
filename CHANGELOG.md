@@ -4,6 +4,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and sem
 
 ## 1.7.3
 
+### Added
+
+- Tooltip on the alert column of each metric: it explains that the value turns the alert color when it goes above (or below) the number, and why a metric such as CPU frequency has no alert.
+- CodeQL analysis of the C++ code and the settings interface on every push to `main` and `develop`, and every week.
+- The core tests also run with AddressSanitizer in CI (`build.cmd asan`).
+
 ### Changed
 
 - Smaller executable: 428 KB instead of 518 KB. The settings interface is embedded compressed with the Windows Compression API (LZMS, 160 KB to 64 KB) and decompressed when the window opens.

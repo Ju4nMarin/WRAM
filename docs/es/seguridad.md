@@ -46,6 +46,8 @@ La heap del proceso termina ante corrupción (`HeapEnableTerminationOnCorruption
 
 Fijar las acciones por SHA de commit impide que una etiqueta movida o comprometida cambie lo que ejecuta el workflow. Dependabot (`.github/dependabot.yml`) revisa las acciones cada semana y abre un pull request hacia `develop` cuando hay una versión nueva. El token del workflow es de solo lectura, salvo en el trabajo de publicación, que recibe solo los permisos para publicar y atestar.
 
+CodeQL (`.github/workflows/codeql.yml`) analiza el código C++ y la interfaz de configuración con las consultas `security-and-quality` en cada push a `main` y `develop`, en los pull requests y cada semana; las alertas aparecen en la pestaña Security. Las pruebas del núcleo también corren compiladas con AddressSanitizer (`build.cmd asan`), y la publicación espera a las dos ejecuciones de pruebas.
+
 ## Integridad del ejecutable
 
 Las versiones las compila el workflow de CI a partir del commit etiquetado, no una máquina de desarrollo. Cada versión incluye:
