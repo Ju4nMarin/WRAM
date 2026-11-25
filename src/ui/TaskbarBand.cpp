@@ -485,7 +485,9 @@ void TaskbarBand::RefreshTaskbarApps() {
     LONG right = kNoAppsEdge;
     std::vector<RECT> rects;
     if (taskbar_ && g.visible) {
-        if (!uia_) CoCreateInstance(__uuidof(CUIAutomation), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uia_.put()));
+        if (!uia_ && FAILED(CoCreateInstance(__uuidof(CUIAutomation), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uia_.put())))) {
+            uia_.reset();  // sin UI Automation se usa el borde de la bandeja como límite
+        }
         ComPtr<IUIAutomationElement> root;
         ComPtr<IUIAutomationCondition> isButton;
         ComPtr<IUIAutomationElementArray> buttons;
@@ -578,7 +580,11 @@ void TaskbarBand::ResizeSurface(int width, int height) {
     bi.bmiHeader.biBitCount = 32;
     bi.bmiHeader.biCompression = BI_RGB;
     void* bits = nullptr;
-    bitmap_ = CreateDIBSection(memDc_, &bi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    bitmap_ = memDc_ ? CreateDIBSection(memDc_, &bi, DIB_RGB_COLORS, &bits, nullptr, 0) : nullptr;
+    if (!bitmap_) {  // sin memoria de GDI: no se dibuja y se reintenta en el próximo Render
+        surfaceW_ = surfaceH_ = 0;
+        return;
+    }
     oldBitmap_ = SelectObject(memDc_, bitmap_);
     surfaceW_ = width;
     surfaceH_ = height;

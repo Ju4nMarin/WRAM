@@ -2,7 +2,7 @@
 
 #include <objbase.h>
 
-int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int) {
+int WINAPI wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ int) {
     HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
     // Tras actualizar, el ejecutable nuevo espera a que termine el anterior antes de tomar la instancia única.

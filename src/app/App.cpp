@@ -33,7 +33,7 @@ constexpr UINT kUpdateCheckEveryMs = 60 * 60 * 1000;  // luego cada hora se mira
 constexpr long long kUpdateCheckSpacing = 24 * 60 * 60;
 constexpr UINT kCmdSettings = 100;
 constexpr UINT kCmdExit = 101;
-constexpr char kVersion[] = "1.7.2";
+constexpr char kVersion[] = "1.7.3";
 constexpr char kRepoUrl[] = "https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kRepoUrlW[] = L"https://github.com/Ju4nMarin/WRAM";
 constexpr wchar_t kLicenseUrlW[] = L"https://github.com/Ju4nMarin/WRAM/blob/main/LICENSE";
@@ -89,6 +89,44 @@ void TrimWorkingSet() {
     SetProcessWorkingSetSizeEx(GetCurrentProcess(), static_cast<SIZE_T>(-1), static_cast<SIZE_T>(-1), 0);
 }
 
+// Consulta de la última versión en un hilo aparte. Ninguna excepción sale del hilo: cualquier fallo llega a la
+// ventana como resultado vacío (lParam 0), y el resultado se libera aunque el mensaje no se pueda enviar.
+bool CheckInBackground(HWND host) {
+    try {
+        std::thread([host]() noexcept {
+            std::unique_ptr<updater::CheckResult> result;
+            try {
+                result = std::make_unique<updater::CheckResult>(updater::CheckLatest());
+            } catch (...) {
+                result.reset();
+            }
+            if (PostMessageW(host, kMsgUpdateChecked, 0, reinterpret_cast<LPARAM>(result.get()))) {
+                (void)result.release();  // ahora es de la ventana, que lo libera al recibirlo
+            }
+        }).detach();
+        return true;
+    } catch (...) {
+        return false;  // no se pudo crear el hilo
+    }
+}
+
+bool InstallInBackground(HWND host, const std::string& tag, const Version& version) {
+    try {
+        std::thread([host, tag, version]() noexcept {
+            updater::Error error = updater::Error::Network;
+            try {
+                error = updater::Install(tag, version);
+            } catch (...) {
+                error = updater::Error::Write;
+            }
+            PostMessageW(host, kMsgUpdateInstalled, static_cast<WPARAM>(error), 0);
+        }).detach();
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 // Ícono de la bandeja con un punto azul abajo a la derecha: hay una versión nueva.
 HICON MakeBadgeIcon(HICON base) {
     ICONINFO info{};
@@ -99,11 +137,12 @@ HICON MakeBadgeIcon(HICON base) {
     const int h = info.hbmColor ? bm.bmHeight : bm.bmHeight / 2;
     HICON result = nullptr;
     BITMAPINFO bi{};
-    bi.bmiHeader = {sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB};
+    bi.bmiHeader = {sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB, static_cast<DWORD>(w) * static_cast<DWORD>(h) * 4};
     void* bits = nullptr;
     HDC screen = GetDC(nullptr);
     HBITMAP color = CreateDIBSection(screen, &bi, DIB_RGB_COLORS, &bits, nullptr, 0);
-    if (color && info.hbmColor && GetDIBits(screen, info.hbmColor, 0, h, bits, &bi, DIB_RGB_COLORS) == h) {
+    if (color && bits && info.hbmColor && w > 0 && h > 0 &&
+        GetDIBits(screen, info.hbmColor, 0, h, bits, &bi, DIB_RGB_COLORS) == h) {
         auto* px = static_cast<uint32_t*>(bits);
         const float r = w * 0.22f;
         const float cx = w - r - 0.5f;
@@ -125,8 +164,8 @@ HICON MakeBadgeIcon(HICON base) {
                 gg = mix(gg, 0x78 / 255.0f, dot);
                 bb = mix(bb, 0xD4 / 255.0f, dot);
                 const float aa = std::max(oa, ring);
-                px[y * w + x] = (static_cast<uint32_t>(aa * 255 + 0.5f) << 24) | (static_cast<uint32_t>(rr * 255 + 0.5f) << 16) |
-                                (static_cast<uint32_t>(gg * 255 + 0.5f) << 8) | static_cast<uint32_t>(bb * 255 + 0.5f);
+                auto to8 = [](float v) { return static_cast<uint32_t>(std::lround(std::clamp(v, 0.0f, 1.0f) * 255.0f)); };
+                px[y * w + x] = (to8(aa) << 24) | (to8(rr) << 16) | (to8(gg) << 8) | to8(bb);
             }
         }
         const std::vector<BYTE> zeros(static_cast<size_t>((w + 15) / 16) * 2 * h, 0);  // máscara vacía: manda el alfa
@@ -336,21 +375,18 @@ void App::OnSettingsOpen(std::string_view target) {
 void App::OnSettingsUpdate(std::string_view action) {
     // La red se usa solo aquí, cuando la persona lo pide, y siempre fuera del hilo de la interfaz.
     if (updateBusy_.exchange(true)) return;
-    const HWND host = host_;
     if (action == "check") {
         PostUpdateState("checking", {});
-        std::thread([host] {
-            auto* result = new updater::CheckResult(updater::CheckLatest());
-            if (!PostMessageW(host, kMsgUpdateChecked, 0, reinterpret_cast<LPARAM>(result))) delete result;
-        }).detach();
+        if (!CheckInBackground(host_)) {
+            updateBusy_ = false;
+            PostUpdateState("error", {}, "network");
+        }
     } else if (action == "install" && !updateTag_.empty()) {
         PostUpdateState("installing", VersionToString(updateVersion_));
-        const std::string tag = updateTag_;
-        const Version version = updateVersion_;
-        std::thread([host, tag, version] {
-            const updater::Error error = updater::Install(tag, version);
-            PostMessageW(host, kMsgUpdateInstalled, static_cast<WPARAM>(error), 0);
-        }).detach();
+        if (!InstallInBackground(host_, updateTag_, updateVersion_)) {
+            updateBusy_ = false;
+            PostUpdateState("error", VersionToString(updateVersion_), "write");
+        }
     } else {
         updateBusy_ = false;
     }
@@ -365,11 +401,10 @@ void App::MaybeCheckForUpdate() {
     if (updater::UnixNow() - updater::LoadNotifyState().lastCheck < kUpdateCheckSpacing) return;
     if (updateBusy_.exchange(true)) return;
     backgroundCheck_ = true;
-    const HWND host = host_;
-    std::thread([host] {
-        auto* result = new updater::CheckResult(updater::CheckLatest());
-        if (!PostMessageW(host, kMsgUpdateChecked, 0, reinterpret_cast<LPARAM>(result))) delete result;
-    }).detach();
+    if (!CheckInBackground(host_)) {
+        backgroundCheck_ = false;
+        updateBusy_ = false;
+    }
 }
 
 void App::OnUpdateChecked(const updater::CheckResult& result) {
@@ -660,7 +695,7 @@ LRESULT App::Handle(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         case kMsgShowSettings: OnBandActivate(); return 0;
         case kMsgUpdateChecked: {
             std::unique_ptr<updater::CheckResult> result(reinterpret_cast<updater::CheckResult*>(lp));
-            if (result) OnUpdateChecked(*result);
+            OnUpdateChecked(result ? *result : updater::CheckResult{});  // vacío: la consulta falló
             return 0;
         }
         case kMsgUpdateInstalled: OnUpdateInstalled(static_cast<updater::Error>(wp)); return 0;

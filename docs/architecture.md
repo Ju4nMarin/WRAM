@@ -77,7 +77,7 @@ The timer is coalescable (`SetCoalescableTimer`), so Windows can batch wake-ups.
 
 ## Settings window
 
-- The HTML is minified at build time, receives the logos as base64 and is embedded as an `RCDATA` resource.
+- The HTML is minified at build time, receives the logos as base64, gets the SHA-256 hashes of its stylesheet and script in its Content Security Policy, and is compressed with LZMS (`tools/pack.cpp`) before being embedded as an `RCDATA` resource.
 - WebView2 is created when the window opens and released when it closes; its processes exit and memory goes back to the idle level.
 - Messages from the interface: `ready`, `apply\n<ini>`, `reset`, `close` and `open\n<target>`.
 - Messages to the interface: `init` (settings, catalog in the active language, theme and limits) and `v` (values and alerts on every reading).
@@ -93,7 +93,7 @@ Development PC, 6 metrics, 1 s interval:
 | Settings window open | 23 to 27 MB plus 6 WebView2 processes | |
 | After closing the settings window | 12 to 13 MB, no WebView2 processes | |
 
-Executable: 516,096 bytes (about 505 KB), with no runtime or extra files.
+Executable: 438,272 bytes (about 430 KB), with no runtime or extra files. The settings interface is stored compressed with the Windows Compression API (LZMS) and decompressed when the window opens.
 
 ## Pending
 
