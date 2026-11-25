@@ -103,3 +103,11 @@ target_link_libraries(wram_tests PRIVATE wram_core)
 target_compile_options(wram_tests PRIVATE ${WRAM_WARNINGS} /EHsc $<$<CONFIG:MinSizeRel,Release>:/GL>)
 target_link_options(wram_tests PRIVATE $<$<CONFIG:MinSizeRel,Release>:/LTCG>)
 add_test(NAME core COMMAND wram_tests)
+
+# AddressSanitizer para las pruebas del núcleo (CI): cmake -DWRAM_ASAN=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
+option(WRAM_ASAN "Compila el núcleo y las pruebas con AddressSanitizer" OFF)
+if(WRAM_ASAN)
+  target_compile_options(wram_core PRIVATE /fsanitize=address /Zi)
+  target_compile_options(wram_tests PRIVATE /fsanitize=address /Zi)
+  target_link_options(wram_tests PRIVATE /DEBUG /INCREMENTAL:NO)
+endif()

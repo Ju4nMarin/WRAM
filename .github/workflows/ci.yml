@@ -49,10 +49,29 @@ jobs:
             build/WRAM.exe.sha256
             build/junit-core.xml
 
+  asan:
+    name: Pruebas con AddressSanitizer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compilar y ejecutar pruebas con AddressSanitizer
+        shell: cmd
+        run: build.cmd asan
+
+      - name: Reporte de pruebas
+        if: always()
+        uses: mikepenz/action-junit-report@a16be3a69023e9bd7e748ede768b3282ea7b30ce # v6.7.1
+        with:
+          report_paths: build-asan/junit-asan.xml
+          check_name: Pruebas con AddressSanitizer
+
   release:
     name: Publicación de la versión
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, asan]
     runs-on: windows-latest
     permissions:
       contents: write

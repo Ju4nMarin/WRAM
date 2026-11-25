@@ -1,5 +1,6 @@
 @echo off
 rem Compila WRAM en modo MinSizeRel y ejecuta las pruebas del nucleo.
+rem Con el argumento asan compila solo las pruebas con AddressSanitizer, en build-asan.
 rem Requiere Visual Studio 2022 o Build Tools con la carga de trabajo de C++.
 setlocal
 set "ROOT=%~dp0"
@@ -10,6 +11,12 @@ if not defined VSDIR (
   exit /b 1
 )
 call "%VSDIR%\VC\Auxiliary\Build\vcvars64.bat" >nul || exit /b 1
+if /i "%~1"=="asan" (
+  cmake -S "%ROOT%." -B "%ROOT%build-asan" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DWRAM_ASAN=ON || exit /b 1
+  cmake --build "%ROOT%build-asan" --target wram_tests || exit /b 1
+  "%ROOT%build-asan\wram_tests.exe" --junit "%ROOT%build-asan\junit-asan.xml" || exit /b 1
+  exit /b 0
+)
 cmake -S "%ROOT%." -B "%ROOT%build" -G Ninja -DCMAKE_BUILD_TYPE=MinSizeRel || exit /b 1
 cmake --build "%ROOT%build" || exit /b 1
 "%ROOT%build\wram_tests.exe" --junit "%ROOT%build\junit-core.xml" || exit /b 1
