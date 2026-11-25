@@ -127,6 +127,14 @@ jobs:
           $h = Get-FileHash build/WRAM.exe -Algorithm SHA256
           "$($h.Hash)  WRAM.exe" | Out-File build/WRAM.exe.sha256 -Encoding ascii
 
+      # Manifiestos de Scoop y winget con la URL y el hash de esta versión.
+      - name: Manifiestos de Scoop y winget
+        shell: pwsh
+        run: |
+          $hash = (Get-Content build/WRAM.exe.sha256).Split(" ")[0]
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          ./tools/package-manifests.ps1 -Version $version -Sha256 $hash -OutDir build/packages -Repo "${{ github.repository }}"
+
       # Atestación de procedencia firmada con Sigstore: prueba que el ejecutable salió de este
       # repositorio, de este commit y de este workflow. Se verifica con `gh attestation verify`.
       - name: Atestación de procedencia
@@ -148,9 +156,11 @@ jobs:
           |---|---|
           | WRAM.exe | ``$hash`` |
 
+          Scoop: ``scoop install https://github.com/${{ github.repository }}/releases/latest/download/wram.json``
+
           Build provenance: ``gh attestation verify WRAM.exe --repo ${{ github.repository }}``
 
           Changes: [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) · [Code signing policy](https://github.com/${{ github.repository }}#code-signing-policy)
           "@
           $notes | Out-File notes.md -Encoding utf8
-          gh release create $tag build/WRAM.exe build/WRAM.exe.sha256 --title "WRAM $($tag.TrimStart('v'))" --notes-file notes.md
+          gh release create $tag build/WRAM.exe build/WRAM.exe.sha256 build/packages/wram.json (Get-ChildItem build/packages/winget/*.yaml).FullName --title "WRAM $($tag.TrimStart('v'))" --notes-file notes.md
