@@ -39,10 +39,10 @@ $scoop = [ordered]@{
 }
 [IO.File]::WriteAllText((Join-Path $OutDir "wram.json"), ($scoop | ConvertTo-Json -Depth 5) + "`n", $utf8)
 
-# winget: manifiesto de varios archivos (versión, instalador y textos), esquema 1.10.
+# winget: manifiesto de varios archivos (versión, instalador y textos), esquema 1.28.
 $wingetDir = Join-Path $OutDir "winget"
 New-Item -ItemType Directory -Force $wingetDir | Out-Null
-$schema = "1.10.0"
+$schema = "1.28.0"
 $files = @{
     "$id.yaml"                = @"
 # yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.$schema.schema.json
