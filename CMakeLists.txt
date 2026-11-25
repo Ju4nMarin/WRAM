@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(WRAM VERSION 1.7.2 LANGUAGES CXX RC)
+project(WRAM VERSION 1.7.3 LANGUAGES CXX RC)
 
 if(NOT MSVC)
   message(FATAL_ERROR "WRAM se compila con MSVC (Visual Studio 2022).")
@@ -57,7 +57,16 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -DIN=${SETTINGS_SRC} -DOUT=${SETTINGS_MIN} -DASSETS=${CMAKE_SOURCE_DIR}/assets -P ${CMAKE_SOURCE_DIR}/tools/minify-html.cmake
   DEPENDS ${SETTINGS_SRC} ${CMAKE_SOURCE_DIR}/tools/minify-html.cmake ${CMAKE_SOURCE_DIR}/assets/logo-horizontal-light.b64 ${CMAKE_SOURCE_DIR}/assets/logo-mark.b64
   COMMENT "Minificando settings.html")
-add_custom_target(wram_settings_html DEPENDS ${SETTINGS_MIN})
+# Se comprime con la API de Windows (XPRESS-Huffman o LZMS) y la ventana lo descomprime al abrirse.
+add_executable(wram_pack tools/pack.cpp)
+target_link_libraries(wram_pack PRIVATE Cabinet)
+set(SETTINGS_PACK ${CMAKE_BINARY_DIR}/res/settings.pack)
+add_custom_command(
+  OUTPUT ${SETTINGS_PACK}
+  COMMAND wram_pack ${SETTINGS_MIN} ${SETTINGS_PACK}
+  DEPENDS ${SETTINGS_MIN} wram_pack
+  COMMENT "Comprimiendo settings.html")
+add_custom_target(wram_settings_html DEPENDS ${SETTINGS_PACK})
 
 add_executable(WRAM WIN32
   src/main.cpp
@@ -74,14 +83,14 @@ add_executable(WRAM WIN32
   res/wram.rc)
 add_dependencies(WRAM wram_settings_html)
 set_source_files_properties(res/wram.rc PROPERTIES
-  OBJECT_DEPENDS "${SETTINGS_MIN};${CMAKE_SOURCE_DIR}/res/wram.ico;${CMAKE_SOURCE_DIR}/res/wram.manifest")
+  OBJECT_DEPENDS "${SETTINGS_PACK};${CMAKE_SOURCE_DIR}/res/wram.ico;${CMAKE_SOURCE_DIR}/res/wram.manifest")
 set(CMAKE_RC_FLAGS "${CMAKE_RC_FLAGS} /I\"${CMAKE_BINARY_DIR}/res\" /I\"${CMAKE_SOURCE_DIR}/res\"")
 
 target_include_directories(WRAM PRIVATE src ${WEBVIEW2_DIR}/include)
 target_compile_options(WRAM PRIVATE ${WRAM_WARNINGS} ${WRAM_HARDENING} /EHsc /GR- "$<$<CONFIG:MinSizeRel,Release>:/O1;/Gy;/Gw;/GL>")
 target_link_libraries(WRAM PRIVATE wram_core
   ${WEBVIEW2_DIR}/lib/WebView2LoaderStatic.lib
-  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32 winhttp bcrypt)
+  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32 winhttp bcrypt Cabinet)
 target_link_options(WRAM PRIVATE
   /MANIFEST:NO /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /GUARD:CF /CETCOMPAT
   /DEPENDENTLOADFLAG:0x800
@@ -94,3 +103,11 @@ target_link_libraries(wram_tests PRIVATE wram_core)
 target_compile_options(wram_tests PRIVATE ${WRAM_WARNINGS} /EHsc $<$<CONFIG:MinSizeRel,Release>:/GL>)
 target_link_options(wram_tests PRIVATE $<$<CONFIG:MinSizeRel,Release>:/LTCG>)
 add_test(NAME core COMMAND wram_tests)
+
+# AddressSanitizer para las pruebas del núcleo (CI): cmake -DWRAM_ASAN=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
+option(WRAM_ASAN "Compila el núcleo y las pruebas con AddressSanitizer" OFF)
+if(WRAM_ASAN)
+  target_compile_options(wram_core PRIVATE /fsanitize=address /Zi)
+  target_compile_options(wram_tests PRIVATE /fsanitize=address /Zi)
+  target_link_options(wram_tests PRIVATE /DEBUG /INCREMENTAL:NO)
+endif()

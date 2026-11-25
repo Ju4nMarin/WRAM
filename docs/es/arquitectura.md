@@ -77,7 +77,7 @@ El temporizador es coalescente (`SetCoalescableTimer`), así Windows puede agrup
 
 ## Ventana de configuración
 
-- El HTML se minifica en el build, recibe los logos en base64 y se incrusta como recurso `RCDATA`.
+- El HTML se minifica en el build, recibe los logos en base64, lleva en su política de seguridad los hashes SHA-256 de su hoja de estilos y de su script, y se comprime con LZMS (`tools/pack.cpp`) antes de incrustarse como recurso `RCDATA`.
 - WebView2 se crea al abrir la ventana y se libera al cerrarla; sus procesos terminan y la memoria vuelve a la de reposo.
 - Mensajes de la interfaz al programa: `ready`, `apply\n<ini>`, `reset`, `close` y `open\n<destino>`.
 - Mensajes del programa a la interfaz: `init` (configuración, catálogo, tema y límites) y `v` (valores y alertas en cada lectura).
@@ -93,7 +93,7 @@ Equipo de desarrollo, 6 métricas, intervalo de 1 s:
 | Configuración abierta | 23 a 27 MB más 6 procesos de WebView2 | |
 | Tras cerrar la configuración | 12 a 13 MB, sin procesos de WebView2 | |
 
-Ejecutable: 516 096 bytes (unos 505 KB), sin runtime ni archivos adicionales.
+Ejecutable: 438 272 bytes (unos 430 KB), sin runtime ni archivos adicionales. La interfaz de configuración se guarda comprimida con la API de compresión de Windows (LZMS) y se descomprime al abrir la ventana.
 
 ## Pendiente
 

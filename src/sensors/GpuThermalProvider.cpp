@@ -38,7 +38,7 @@ void GpuThermalProvider::CloseAdapters() {
     for (const uint32_t h : adapters_) {
         D3DKMT_CLOSEADAPTER c{};
         c.hAdapter = h;
-        D3DKMTCloseAdapter(&c);
+        (void)D3DKMTCloseAdapter(&c);  // al cerrar no hay nada que hacer si falla
     }
     adapters_.clear();
 }
