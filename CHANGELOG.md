@@ -2,6 +2,12 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## 1.7.4
+
+### Added
+
+- Tooltips in the settings window: the label of each metric (and the default text it uses when empty), the live value, the capacity counter, where each reading comes from (and whether it can be approximate), the add button when the taskbar is full, and the alert colors.
+
 ## 1.7.3
 
 ### Added
@@ -12,7 +18,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and sem
 
 ### Changed
 
-- Smaller executable: 428 KB instead of 518 KB. The settings interface is embedded compressed with the Windows Compression API (LZMS, 160 KB to 64 KB) and decompressed when the window opens.
+- Smaller executable: 433 KB instead of 518 KB. The settings interface is embedded compressed with the Windows Compression API (LZMS, 160 KB to 64 KB) and decompressed when the window opens.
 
 ### Security
 
