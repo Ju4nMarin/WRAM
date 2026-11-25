@@ -44,6 +44,14 @@ Con GitHub CLI también se puede verificar que lo compiló el CI de este reposit
 gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
 ```
 
+## Scoop
+
+```powershell
+scoop install https://github.com/Ju4nMarin/WRAM/releases/latest/download/wram.json
+```
+
+El manifiesto se publica con cada versión y siempre apunta a la última: `scoop update wram` la actualiza y `scoop uninstall wram` la quita. Scoop agrega un acceso directo de WRAM al menú Inicio.
+
 ## Iniciar con Windows
 
 En la configuración, sección Configuración, activa "Iniciar con Windows". Se registra en `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` solo para tu usuario.

@@ -90,6 +90,12 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 2. Move it to a permanent folder, for example `%LOCALAPPDATA%\Programs\WRAM`.
 3. Run it. The settings window opens the first time.
 
+With [Scoop](https://scoop.sh):
+
+```powershell
+scoop install https://github.com/Ju4nMarin/WRAM/releases/latest/download/wram.json
+```
+
 The full guide, with requirements, startup with Windows and uninstalling, is in [docs/installation.md](docs/installation.md).
 
 ## Requirements

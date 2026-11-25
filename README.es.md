@@ -90,6 +90,12 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 2. Muévelo a una carpeta fija, por ejemplo `%LOCALAPPDATA%\Programs\WRAM`.
 3. Ejecútalo. La primera vez se abre la configuración.
 
+Con [Scoop](https://scoop.sh):
+
+```powershell
+scoop install https://github.com/Ju4nMarin/WRAM/releases/latest/download/wram.json
+```
+
 La guía completa, con requisitos, inicio con Windows y desinstalación, está en [docs/es/instalacion.md](docs/es/instalacion.md).
 
 ## Requisitos
