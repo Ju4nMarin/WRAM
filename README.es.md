@@ -52,6 +52,8 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
   <img src="docs/img/taskbar-dark.png" alt="Franja de WRAM en la barra de tareas de Windows 11, junto a la bandeja">
 </picture>
 
+![Los cambios de la configuración se ven en la franja al instante: filas, etiquetas, color de aviso y tema de la barra](docs/img/gif/strip-es.gif)
+
 - 14 métricas disponibles, hasta 10 a la vez, en una o dos filas.
 - Umbral de aviso por métrica: el valor cambia de color al cruzarlo.
 - En pantalla completa puede quedar oculta o visible en el recuadro de pantalla que elijas, y reacciona en el acto al entrar y al salir.
@@ -59,6 +61,8 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 - Sin permisos de administrador, sin drivers y sin runtime: un solo `WRAM.exe`.
 - Actualización desde la propia app, en Configuración: descarga, verificación SHA-256 y reinicio. Una revisión diaria avisa con una notificación cuando sale una versión nueva.
 - En reposo usa entre 12 y 17 MB de memoria y menos del 1 % de un núcleo de CPU.
+
+![Recorrido por la ventana de configuración](docs/img/gif/tour-es.gif)
 
 ![Métricas en tema oscuro](docs/img/app/metricas-oscuro.png)
 
