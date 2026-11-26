@@ -52,6 +52,8 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
   <img src="docs/img/taskbar-dark.png" alt="WRAM strip on the Windows 11 taskbar, next to the system tray">
 </picture>
 
+![Changes in the settings show up on the strip instantly: rows, labels, alert color and taskbar theme](docs/img/gif/strip-en.gif)
+
 - 14 metrics available, up to 10 at a time, in one or two rows.
 - Per-metric alert threshold: the value changes color when it crosses it.
 - In full screen it can stay hidden or visible in a spot you pick on the screen, and reacts instantly when entering and leaving.
@@ -59,6 +61,8 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 - No administrator rights, no drivers, no runtime: a single `WRAM.exe`.
 - Updates from the app itself, in Settings: download, SHA-256 verification and restart. A daily check shows a notification when a new version is out.
 - At idle it uses about 12 to 17 MB of memory and under 1% of one CPU core.
+
+![Tour of the settings window](docs/img/gif/tour-en.gif)
 
 ![Metrics, dark theme](docs/img/app/metrics-dark.png)
 
