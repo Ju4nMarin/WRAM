@@ -90,6 +90,12 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 2. Move it to a permanent folder, for example `%LOCALAPPDATA%\Programs\WRAM`.
 3. Run it. The settings window opens the first time.
 
+With [Scoop](https://scoop.sh):
+
+```powershell
+scoop install https://github.com/Ju4nMarin/WRAM/releases/latest/download/wram.json
+```
+
 The full guide, with requirements, startup with Windows and uninstalling, is in [docs/installation.md](docs/installation.md).
 
 ## Requirements
@@ -126,16 +132,20 @@ Spanish documentation: [README.es.md](README.es.md) and [docs/es](docs/es).
 
 WRAM is free and open source. If it is useful to you, you can support its development with a donation on [PayPal](https://www.paypal.com/paypalme/evopl). The same link is in the app, in the sidebar and under About.
 
-## Code signing policy
+## Release integrity
 
-Code signing for Windows releases is handled through the [SignPath Foundation](https://signpath.org) program for open source projects, using [SignPath.io](https://about.signpath.io). Windows releases are built from source by GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) from a version tag on `main`, and each signing request is approved manually before the signed `WRAM.exe` is published. Only the executable built from this repository is signed.
+Windows releases are built from source by GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) from a version tag on `main`. The executable is not signed with an Authenticode certificate, so Windows SmartScreen can show a warning on the first run ([docs/installation.md](docs/installation.md#smartscreen-warning)). Each release publishes the SHA-256 of `WRAM.exe` and a build provenance attestation signed with Sigstore, which proves the file came from this repository's workflow and from that commit:
+
+```powershell
+gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
+```
 
 Team roles:
 
 | Role | Members |
 |---|---|
 | Committers and reviewers | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
-| Approvers | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
+| Releases | [Juan Guillermo Marín Córdoba](https://github.com/Ju4nMarin) |
 
 Changes from other contributors go through a pull request reviewed by a committer before they are merged.
 
