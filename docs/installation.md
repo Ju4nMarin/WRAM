@@ -44,6 +44,14 @@ With the GitHub CLI you can also verify that it was built by this repository's C
 gh attestation verify WRAM.exe --repo Ju4nMarin/WRAM
 ```
 
+## Scoop
+
+```powershell
+scoop install https://github.com/Ju4nMarin/WRAM/releases/latest/download/wram.json
+```
+
+The manifest is published with each release and always points to the latest version: `scoop update wram` updates it and `scoop uninstall wram` removes it. Scoop adds a WRAM shortcut to the Start menu.
+
 ## Start with Windows
 
 In the settings window, Settings section, turn on "Start with Windows". It is registered under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` for your user only.
