@@ -47,12 +47,9 @@
 
 WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las métricas que elijas: uso de CPU, RAM y GPU, temperaturas, red, disco, batería y más. Se configura desde una ventana propia en tema claro u oscuro, y los cambios se ven al instante en la barra.
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
-  <img src="docs/img/taskbar-dark.png" alt="Franja de WRAM en la barra de tareas de Windows 11, junto a la bandeja">
-</picture>
-
-![Los cambios de la configuración se ven en la franja al instante: filas, etiquetas, color de aviso y tema de la barra](docs/img/gif/strip-es.gif)
+<p align="center">
+  <img src="docs/img/gif/strip-es.gif" alt="Franja de WRAM con valores en vivo: filas, etiquetas, color de aviso y tema de la barra cambian al instante" width="784">
+</p>
 
 - 14 métricas disponibles, hasta 10 a la vez, en una o dos filas.
 - Umbral de aviso por métrica: el valor cambia de color al cruzarlo.
@@ -62,15 +59,9 @@ WRAM dibuja una franja de texto a la izquierda de la bandeja del sistema con las
 - Actualización desde la propia app, en Configuración: descarga, verificación SHA-256 y reinicio. Una revisión diaria avisa con una notificación cuando sale una versión nueva.
 - En reposo usa entre 12 y 17 MB de memoria y menos del 1 % de un núcleo de CPU.
 
-![Recorrido por la ventana de configuración](docs/img/gif/tour-es.gif)
-
-![Métricas en tema oscuro](docs/img/app/metricas-oscuro.png)
-
-![Métricas en tema claro](docs/img/app/metricas-claro.png)
-
-| Pantalla completa | Configuración |
-|---|---|
-| ![Pantalla completa](docs/img/app/pantalla-completa-oscuro.png) | ![Configuración](docs/img/app/configuracion-claro.png) |
+<p align="center">
+  <img src="docs/img/gif/tour-es.gif" alt="Recorrido por la ventana de configuración" width="800">
+</p>
 
 ## Métricas
 

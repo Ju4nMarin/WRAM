@@ -47,12 +47,9 @@
 
 WRAM draws a text strip to the left of the system tray with the metrics you choose: CPU, RAM and GPU usage, temperatures, network, disk, battery and more. It is configured from its own window, in light or dark theme, and every change shows up on the taskbar instantly.
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="docs/img/taskbar-light.png">
-  <img src="docs/img/taskbar-dark.png" alt="WRAM strip on the Windows 11 taskbar, next to the system tray">
-</picture>
-
-![Changes in the settings show up on the strip instantly: rows, labels, alert color and taskbar theme](docs/img/gif/strip-en.gif)
+<p align="center">
+  <img src="docs/img/gif/strip-en.gif" alt="WRAM strip with live values: rows, labels, alert color and taskbar theme change instantly" width="784">
+</p>
 
 - 14 metrics available, up to 10 at a time, in one or two rows.
 - Per-metric alert threshold: the value changes color when it crosses it.
@@ -62,15 +59,9 @@ WRAM draws a text strip to the left of the system tray with the metrics you choo
 - Updates from the app itself, in Settings: download, SHA-256 verification and restart. A daily check shows a notification when a new version is out.
 - At idle it uses about 12 to 17 MB of memory and under 1% of one CPU core.
 
-![Tour of the settings window](docs/img/gif/tour-en.gif)
-
-![Metrics, dark theme](docs/img/app/metrics-dark.png)
-
-![Metrics, light theme](docs/img/app/metrics-light.png)
-
-| Full screen | Settings |
-|---|---|
-| ![Full screen](docs/img/app/fullscreen-dark.png) | ![Settings](docs/img/app/settings-light.png) |
+<p align="center">
+  <img src="docs/img/gif/tour-en.gif" alt="Tour of the settings window" width="800">
+</p>
 
 ## Metrics
 
