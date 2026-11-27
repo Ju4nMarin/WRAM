@@ -39,6 +39,11 @@ jobs:
           Get-Content build/WRAM.exe.sha256
           "Tamaño: $((Get-Item build/WRAM.exe).Length) bytes"
 
+      # Comprueba que el paquete MSIX se arma; la identidad de prueba no sirve para la tienda.
+      - name: Paquete MSIX de prueba
+        shell: pwsh
+        run: ./tools/package-msix.ps1 -Version 0.0.0 -IdentityName Test.WRAM -Publisher "CN=WRAM Test" -OutDir build/msix-test
+
       - name: Artefactos
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -134,6 +139,23 @@ jobs:
           $hash = (Get-Content build/WRAM.exe.sha256).Split(" ")[0]
           $version = "${{ github.ref_name }}".TrimStart('v')
           ./tools/package-manifests.ps1 -Version $version -Sha256 $hash -OutDir build/packages -Repo "${{ github.repository }}"
+
+      # Paquete MSIX para Microsoft Store, con la identidad que asigna Partner Center
+      # (variables MSIX_IDENTITY_NAME y MSIX_PUBLISHER del repositorio). Se sube a Partner Center a mano.
+      - name: Paquete para Microsoft Store
+        if: vars.MSIX_IDENTITY_NAME != ''
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          ./tools/package-msix.ps1 -Version $version -IdentityName "${{ vars.MSIX_IDENTITY_NAME }}" -Publisher "${{ vars.MSIX_PUBLISHER }}" -OutDir build/msix
+
+      - name: Artefacto del paquete para Microsoft Store
+        if: vars.MSIX_IDENTITY_NAME != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: WRAM-msix-${{ github.ref_name }}
+          path: build/msix/*.msix
+          if-no-files-found: error
 
       # Atestación de procedencia firmada con Sigstore: prueba que el ejecutable salió de este
       # repositorio, de este commit y de este workflow. Se verifica con `gh attestation verify`.
