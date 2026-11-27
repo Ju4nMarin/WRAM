@@ -1,5 +1,6 @@
 #include "ConfigStore.h"
 
+#include "Package.h"
 #include "Win.h"
 
 #include <shlobj.h>
@@ -10,12 +11,17 @@ constexpr DWORD kMaxFileBytes = 64 * 1024;
 }
 
 ConfigStore::ConfigStore() {
-    PWSTR appData = nullptr;
-    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE, nullptr, &appData))) {
-        dir_ = appData;
-        CoTaskMemFree(appData);
+    // En el paquete de Microsoft Store se usa la carpeta real del paquete: la ruta de AppData
+    // queda virtualizada y "Abrir carpeta" no la encontraría.
+    dir_ = package::LocalStateDir();
+    if (dir_.empty()) {
+        PWSTR appData = nullptr;
+        if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE, nullptr, &appData))) {
+            dir_ = appData;
+            CoTaskMemFree(appData);
+        }
+        dir_ += L"\\WRAM";
     }
-    dir_ += L"\\WRAM";
     path_ = dir_ + L"\\config.ini";
 }
 

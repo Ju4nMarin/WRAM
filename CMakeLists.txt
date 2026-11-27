@@ -73,6 +73,7 @@ add_executable(WRAM WIN32
   src/app/App.cpp
   src/platform/Autostart.cpp
   src/platform/ConfigStore.cpp
+  src/platform/Package.cpp
   src/platform/Updater.cpp
   src/sensors/GpuThermalProvider.cpp
   src/sensors/PdhProvider.cpp
@@ -90,7 +91,7 @@ target_include_directories(WRAM PRIVATE src ${WEBVIEW2_DIR}/include)
 target_compile_options(WRAM PRIVATE ${WRAM_WARNINGS} ${WRAM_HARDENING} /EHsc /GR- "$<$<CONFIG:MinSizeRel,Release>:/O1;/Gy;/Gw;/GL>")
 target_link_libraries(WRAM PRIVATE wram_core
   ${WEBVIEW2_DIR}/lib/WebView2LoaderStatic.lib
-  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32 winhttp bcrypt Cabinet)
+  d2d1 dwrite pdh dwmapi shcore version advapi32 shell32 ole32 gdi32 user32 winhttp bcrypt Cabinet runtimeobject)
 target_link_options(WRAM PRIVATE
   /MANIFEST:NO /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA /GUARD:CF /CETCOMPAT
   /DEPENDENTLOADFLAG:0x800

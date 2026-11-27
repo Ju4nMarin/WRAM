@@ -16,6 +16,7 @@
 #include "../core/I18n.h"
 #include "../core/Text.h"
 #include "../platform/Autostart.h"
+#include "../platform/Package.h"
 #include "../sensors/GpuThermalProvider.h"
 #include "../sensors/PdhProvider.h"
 #include "../sensors/SystemProviders.h"
@@ -226,7 +227,8 @@ int App::Run() {
     badgeIcon_ = MakeBadgeIcon(icon_);
     largeIcon_ = static_cast<HICON>(LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON, GetSystemMetrics(SM_CXICON) * 2,
                                                GetSystemMetrics(SM_CYICON) * 2, 0));
-    SetTimer(host_, kTimerUpdate, kFirstUpdateCheckMs, nullptr);
+    // En Microsoft Store las actualizaciones las instala la tienda: sin consultas a GitHub.
+    if (!package::IsPackaged()) SetTimer(host_, kTimerUpdate, kFirstUpdateCheckMs, nullptr);
 
     ApplyConfig(std::move(config), firstRun);
     RestartTimer();
@@ -374,7 +376,7 @@ void App::OnSettingsOpen(std::string_view target) {
 
 void App::OnSettingsUpdate(std::string_view action) {
     // La red se usa solo aquí, cuando la persona lo pide, y siempre fuera del hilo de la interfaz.
-    if (updateBusy_.exchange(true)) return;
+    if (package::IsPackaged() || updateBusy_.exchange(true)) return;
     if (action == "check") {
         PostUpdateState("checking", {});
         if (!CheckInBackground(host_)) {
@@ -572,6 +574,7 @@ std::string App::BuildInitMessage() {
     out += "]}";
     // Versión nueva ya encontrada y sección a abrir (por ejemplo, desde la notificación).
     if (!updateTag_.empty()) out += ",\"update\":{\"state\":\"available\",\"version\":\"" + VersionToString(updateVersion_) + "\"}";
+    if (package::IsPackaged()) out += ",\"store\":true";
     if (!openSection_.empty()) out += ",\"section\":\"" + std::exchange(openSection_, std::string()) + "\"";
     out += ",\"catalog\":[";
     for (size_t i = 0; i < kMetricCount; ++i) {
